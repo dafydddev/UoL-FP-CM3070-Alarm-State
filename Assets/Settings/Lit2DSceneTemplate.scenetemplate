@@ -62,7 +62,7 @@ MonoBehaviour:
   templateName: Lit 2D (URP)
   description: Contains an orthographic camera and a Global Light 2D. Works with
     the 2D Renderer in Universal RP.
-  preview: {fileID: 0}
+  preview: {fileID: -9133765543424215881}
   dependencies: []
   templatePipeline: {fileID: 0}
   badge: {fileID: 0}
