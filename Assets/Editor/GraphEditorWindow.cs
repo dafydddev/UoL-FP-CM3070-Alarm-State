@@ -17,6 +17,7 @@ namespace Editor
         // Generation settings, mirroring the runtime generators.
         private DifficultyProfile _profile;
         private int _level = 1;
+        private int _totalLevels = 20; // the run length the player chose (10/20/30)
         private MissionType _forcedType = MissionType.Assassination;
         private bool _randomType = true;
         private int _seed = 1;
@@ -63,7 +64,6 @@ namespace Editor
 
         // Generation slider range for the player-progression level.
         private const int MinLevel = 0;
-        private const int MaxLevel = 20;
 
         // Meta-bar column widths.
         private const float MetaFacilityWidth = 220f;
@@ -133,7 +133,8 @@ namespace Editor
             EditorGUILayout.LabelField("Generation", EditorStyles.boldLabel);
 
             _profile = (DifficultyProfile)EditorGUILayout.ObjectField("Difficulty Profile", _profile, typeof(DifficultyProfile), false);
-            _level = EditorGUILayout.IntSlider("Level", _level, MinLevel, MaxLevel);
+            _totalLevels = EditorGUILayout.IntPopup("Total Levels", _totalLevels, new[] { "10", "20", "30" }, new[] { 10, 20, 30 });
+            _level = EditorGUILayout.IntSlider("Level", _level, MinLevel, _totalLevels);
             _randomType = EditorGUILayout.Toggle("Random Type", _randomType);
             if (!_randomType)
             {
@@ -156,15 +157,14 @@ namespace Editor
                 var gen = new MissionGeneratorRuntime
                 {
                     Profile = _profile,
-                    Level = _level,
                     ForcedType = _forcedType,
                     RandomType = _randomType,
                     Seed = _seed,
                     RandomSeed = _randomSeed
                 };
 
-                _missionGraph = gen.Generate();
-                _roomGraph = RoomGraphGenerator.Generate(_missionGraph, _profile, _level);
+                _missionGraph = gen.Generate(_level, _totalLevels);
+                _roomGraph = RoomGraphGenerator.Generate(_missionGraph, _profile, _level, _totalLevels);
                 _seed = _missionGraph.seed; // reflect the used seed back into the field
 
                 // Compute node positions for both diagrams.
@@ -525,7 +525,6 @@ namespace Editor
     public class MissionGeneratorRuntime
     {
         public DifficultyProfile Profile;
-        public int Level;
         public MissionType ForcedType = MissionType.Assassination;
         public bool RandomType = true;
         public int Seed;
@@ -534,7 +533,7 @@ namespace Editor
         private System.Random _rng;
 
         // Builds a mission graph; see MissionGenerator.Generate for the full explanation.
-        public MissionGraph Generate()
+        public MissionGraph Generate(int level, int totalLevels)
         {
             // Resolve and seed the RNG for repeatable previews.
             var resolvedSeed = RandomSeed ? UnityEngine.Random.Range(0, int.MaxValue) : Seed;
@@ -547,9 +546,7 @@ namespace Editor
             // Choose facility, prerequisite chain, and how many secondaries to add.
             var facility = Pick(MissionObjectives.Facilities);
             var prereqSet = Pick(prereqSets);
-            var numSecondaries = _rng.Next(
-                (int)Profile.minSecondaryObjectives.Evaluate(Level),
-                (int)Profile.maxSecondaryObjectives.Evaluate(Level));
+            var numSecondaries = Profile.SecondaryObjectiveCount(level, totalLevels, _rng);
 
             var graph = new MissionGraph { type = type, facility = facility, seed = resolvedSeed };
 

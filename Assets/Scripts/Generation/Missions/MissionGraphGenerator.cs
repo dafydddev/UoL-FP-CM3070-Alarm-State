@@ -11,7 +11,6 @@ namespace Generation.Missions
     {
         [Header("Generation Settings")]
         public DifficultyProfile profile;
-        public int level;
 
         public MissionType forcedType = MissionType.Assassination; // used when randomType is off
         public bool randomType = true;
@@ -21,7 +20,7 @@ namespace Generation.Missions
         private System.Random _rng;
 
         // Generates a fresh mission graph.
-        public MissionGraph Generate()
+        public MissionGraph Generate(int level, int totalLevels)
         {
             // Resolve and seed the RNG so a given seed always produces the same mission.
             var resolvedSeed = randomSeed ? Random.Range(0, int.MaxValue) : seed;
@@ -36,10 +35,7 @@ namespace Generation.Missions
             var facility = Pick(MissionObjectives.Facilities);
             var prereqSet = Pick(prereqSets);
 
-            // Decide how many optional objectives to add, based on profile.
-            var numSecondaries = _rng.Next(
-                (int)profile.minSecondaryObjectives.Evaluate(level),
-                (int)profile.maxSecondaryObjectives.Evaluate(level));
+            var numSecondaries = profile.SecondaryObjectiveCount(level, totalLevels, _rng);
 
             var graph = new MissionGraph { type = type, facility = facility, seed = resolvedSeed };
 

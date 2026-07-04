@@ -7,11 +7,11 @@ namespace Generation.Rooms
 {
     public static class RoomGraphGenerator
     {
-        // Expands an abstract mission into a concrete room graph: one room per mission node,
-        // Plus an entrance, optional locked keycard rooms, guard posts, connecting corridors, and exits.
+        // Expands an abstract mission into a concrete room graph:
+        // one room per mission node, plus an entrance, optional locked keycard rooms, guard posts, connecting rooms, and exits.
 
-        // Builds the room graph for a mission at the given profile and level.
-        public static RoomGraph Generate(MissionGraph mission, DifficultyProfile profile, int level)
+        // Builds the room graph for a mission at the given profile, level, and chosen run length.
+        public static RoomGraph Generate(MissionGraph mission, DifficultyProfile profile, int level, int totalLevels)
         {
             var graph = new RoomGraph { seed = mission.seed, level = level };
             var rng = new Random(mission.seed);
@@ -36,7 +36,7 @@ namespace Generation.Rooms
             graph.edges.Add(new RoomEdge { fromId = entrance.id, toId = missionRoomMap["entry"].id });
 
             // 3. Turn mission dependencies into edges, locking some objective/keycard rooms.
-            var lockChance = profile.lockChance.Evaluate(level);
+            var lockChance = profile.LockChance(level, totalLevels, rng);
             var usedKeys = new HashSet<string>();
             foreach (var node in mission.nodes)
             {
@@ -129,25 +129,14 @@ namespace Generation.Rooms
                     { fromId = corridor.id, toId = edge.toId, locked = edge.locked, keyRoomId = edge.keyRoomId });
             }
 
-            // 6. Add exits. There's always one from the primary objective room.
-            var exitCount = (int)profile.exitCount.Evaluate(level);
+            // 6. The entrance always doubles as an exit.
+            var entranceExit = new RoomNode { id = "room_exit_0", type = RoomType.Exit };
+            graph.rooms.Add(entranceExit);
+            graph.edges.Add(new RoomEdge { fromId = entrance.id, toId = entranceExit.id });
 
-            var primaryRoom = graph.rooms.Find(r => r.type == RoomType.ObjectiveRoom && r.missionNodeId == "primary");
-            var primaryExit = new RoomNode { id = "room_exit_0", type = RoomType.Exit };
-            graph.rooms.Add(primaryExit);
-
-            if (exitCount <= 0)
-            {
-                // No free exits at this level: the only way out is back through the entrance.
-                graph.edges.Add(new RoomEdge { fromId = entrance.id, toId = primaryExit.id });
-            }
-            else if (primaryRoom != null)
-            {
-                graph.edges.Add(new RoomEdge { fromId = primaryRoom.id, toId = primaryExit.id });
-            }
-
-            // Add extra exits on non-critical rooms if the level allows more than one.
-            if (exitCount > 1)
+            // Layer on extra exits, scattered across non-critical rooms.
+            var extraExitCount = profile.ExtraExitCount(level, totalLevels, rng);
+            if (extraExitCount > 0)
             {
                 // Rooms on the critical path must not host an alternate exit.
                 var criticalIds = new HashSet<string>(
@@ -156,11 +145,10 @@ namespace Generation.Rooms
                         .Select(n => n.id)
                 );
 
-                // Eligible hosts: corridors / objective rooms that aren't critical or the primary.
+                // Eligible hosts: corridors / objective rooms that aren't on the critical path.
                 var exitCandidates = graph.rooms
                     .Where(r => r.type is RoomType.Corridor or RoomType.ObjectiveRoom)
                     .Where(r => r.missionNodeId == null || !criticalIds.Contains(r.missionNodeId))
-                    .Where(r => r.id != primaryExit.id && r.id != primaryRoom?.id)
                     .ToList();
 
                 // Fisher–Yates shuffle so the chosen exit rooms vary by seed.
@@ -171,7 +159,7 @@ namespace Generation.Rooms
                 }
 
                 // Attach as many additional exits as we have room for.
-                var additionalCount = Math.Min(exitCount - 1, exitCandidates.Count);
+                var additionalCount = Math.Min(extraExitCount, exitCandidates.Count);
                 for (var i = 0; i < additionalCount; i++)
                 {
                     var exit = new RoomNode { id = $"room_exit_{i + 1}", type = RoomType.Exit };
