@@ -6,12 +6,10 @@ using Random = UnityEngine.Random;
 namespace Generation.Missions
 {
     // Procedurally builds a MissionGraph from the content pool, scaling the number of
-    // optional objectives by the complexity setting and using a seeded RNG for repeatability.
+    // optional objectives by the difficulty profile and using a seeded RNG for repeatability.
     public class MissionGenerator : MonoBehaviour
     {
         [Header("Generation Settings")]
-        public DifficultyProfile profile;
-
         public MissionType forcedType = MissionType.Assassination; // used when randomType is off
         public bool randomType = true;
         public int seed; // used when randomSeed is off
@@ -19,8 +17,8 @@ namespace Generation.Missions
 
         private System.Random _rng;
 
-        // Generates a fresh mission graph.
-        public MissionGraph Generate(int level, int totalLevels)
+        // Generates a fresh mission graph, scaled by the given difficulty profile.
+        public MissionGraph Generate(DifficultyProfile profile, int level, int totalLevels)
         {
             // Resolve and seed the RNG so a given seed always produces the same mission.
             var resolvedSeed = randomSeed ? Random.Range(0, int.MaxValue) : seed;
