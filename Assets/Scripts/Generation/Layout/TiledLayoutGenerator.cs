@@ -38,8 +38,8 @@ namespace Generation.Layout
     // room as walls + floor and carves doorways between connected rooms.
     public static class TiledLayoutGenerator
     {
-        private const int RoomW = 9; // room width in tiles
-        private const int RoomH = 7; // room height in tiles
+        private const int RoomW = 10; // room width in tiles
+        private const int RoomH = 10; // room height in tiles
 
         // Convert an abstract cell coord to a tile origin; rooms overlap by 1 tile so walls are shared.
         private static int Ox(int cx) => cx * (RoomW - 1);
