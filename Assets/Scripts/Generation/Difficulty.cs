@@ -24,6 +24,7 @@ namespace Generation
         public Range secondaryObjectives;
         public Range extraExits;
         public Range lockChance;
+        public Range guardChance;
 
         private static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));
@@ -55,6 +56,14 @@ namespace Generation
             var p = Progress(level, totalLevels);
             var min = CurrentMin(lockChance, p);
             var max = Mathf.Max(CurrentMax(lockChance, p), min);
+            return min + (float)rng.NextDouble() * (max - min);
+        }
+
+        public float GuardChance(int level, int totalLevels, Random rng)
+        {
+            var p = Progress(level, totalLevels);
+            var min = CurrentMin(guardChance, p);
+            var max = Mathf.Max(CurrentMax(guardChance, p), min);
             return min + (float)rng.NextDouble() * (max - min);
         }
     }

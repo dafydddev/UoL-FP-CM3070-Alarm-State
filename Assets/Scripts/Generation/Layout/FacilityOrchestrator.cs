@@ -1,16 +1,6 @@
-﻿// Spawner systems not yet ported — restore these usings as each comes back.
-// using Disguises;
-// using Doors;
-// using Exits;
-// using Guards;
-// using Items;
-// using Keycards;
-// using Navigation;
-// using Objectives;
-// using Player;
-
-using Generation.Missions;
+﻿using Generation.Missions;
 using Generation.Rooms;
+using Generation.Spawners;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -23,7 +13,7 @@ namespace Generation.Layout
     {
         [SerializeField] private DifficultyProfile profile; // difficulty curves shared by the whole pipeline
         [SerializeField, Min(1)] private int level = 1; // current level within the run, feeds difficulty scaling
-        [SerializeField, Min(1)] private int totalLevels = 5; // run length, sets how far along the difficulty curves we are
+        [SerializeField, Min(1)] private int totalLevels = 10; // total run length
 
         // Tilemap and tile assets used to paint the grid.
         [SerializeField] private Tilemap tilemap;
@@ -32,9 +22,10 @@ namespace Generation.Layout
         [SerializeField] private TileBase doorTile;
 
         // The per-system spawners/services this orchestrator drives.
-        // public PlayerSpawner playerSpawner;
-        // public KeycardSpawner keycardSpawner;
-        // public LockedDoorSpawner lockedDoorSpawner;
+        [SerializeField] private PlayerSpawner playerSpawner;
+
+        [SerializeField] private KeycardSpawner keycardSpawner;
+        [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
         // public ObjectiveSpawner objectiveSpawner;
         // public ObjectiveTracker objectiveTracker;
         // public ExitSpawner exitSpawner;
@@ -44,12 +35,14 @@ namespace Generation.Layout
         // public CoverSpawner coverSpawner;
         // public DisguiseSpawner disguiseSpawner;
 
+        private void Awake() => Generate();
+
         // Builds a complete level. Exposed in the inspector's context menu for quick testing.
         [ContextMenu("Generate")]
         public void Generate()
         {
             // Remove anything spawned by a previous run.
-            // ClearSpawned();
+            ClearSpawned();
 
             // Generate the mission, expand it into a room graph, then into a tile grid.
             // The orchestrator owns the difficulty profile and hands it to each stage.
@@ -78,13 +71,13 @@ namespace Generation.Layout
             RoomColourCoder.Apply(tilemap, rooms, rects);
 
             // Spawn the player at the centre of the entrance room.
-            // var e = rects["room_entrance"];
-            // var spawn = tilemap.GetCellCenterWorld(new Vector3Int(e.CenterX, e.CenterY, 0));
-            // playerSpawner.SpawnPlayer(spawn);
+            var e = rects["room_entrance"];
+            var playerSpawnPos = tilemap.GetCellCenterWorld(new Vector3Int(e.CenterX, e.CenterY, 0)); 
+            playerSpawner?.Spawn(playerSpawnPos);
 
             // Populate the rest of the level. Navigation must be built before guards, which need it.
-            // keycardSpawner.Spawn(rooms, rects, tilemap);
-            // lockedDoorSpawner.Spawn(rooms, rects, tilemap);
+            keycardSpawner?.Spawn(rooms, rects, tilemap); 
+            lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
             // objectiveSpawner.Spawn(rooms, rects, tilemap);
             // objectiveTracker.Init(rooms, mission);
             // exitSpawner.Spawn(rooms, rects, tilemap);
@@ -99,27 +92,17 @@ namespace Generation.Layout
         }
 
         // Destroys everything spawned under each spawner from the previous level.
-        // private void ClearSpawned()
-        // {
-        //     ClearChildren(keycardSpawner.transform);
-        //     ClearChildren(lockedDoorSpawner.transform);
-        //     ClearChildren(objectiveSpawner.transform);
-        //     ClearChildren(exitSpawner.transform);
-        //     ClearChildren(guardSpawner.transform);
-        //     ClearChildren(distractionSpawner.transform);
-        //     ClearChildren(coverSpawner.transform);
-        //     ClearChildren(disguiseSpawner.transform);
-        // }
-
-        // Destroys all children of a transform, using the play-mode-safe destroy call.
-        // private static void ClearChildren(Transform t)
-        // {
-        //     for (var i = t.childCount - 1; i >= 0; i--)
-        //     {
-        //         var child = t.GetChild(i).gameObject;
-        //         if (Application.isPlaying) Destroy(child);
-        //         else DestroyImmediate(child);
-        //     }
-        // }
+        private void ClearSpawned()
+        {
+            playerSpawner?.ClearPlayer();
+            keycardSpawner?.ClearChildren();
+            lockedDoorSpawner?.ClearChildren();
+            // ClearChildren(objectiveSpawner.transform);
+            // ClearChildren(exitSpawner.transform);
+            // ClearChildren(guardSpawner.transform);
+            // ClearChildren(distractionSpawner.transform);
+            // ClearChildren(coverSpawner.transform);
+            // ClearChildren(disguiseSpawner.transform);
+        }
     }
 }

@@ -36,9 +36,9 @@ namespace Generation.Rooms
         private static void TintRect(Tilemap tilemap, RoomRect rect, Color colour)
         {
             // Walk every cell in the rectangle (Right/Bottom are exclusive bounds).
-            for (var x = rect.x; x < rect.Right; x++)
+            for (var x = rect.X; x < rect.Right; x++)
             {
-                for (var y = rect.y; y < rect.Bottom; y++)
+                for (var y = rect.Y; y < rect.Bottom; y++)
                 {
                     var pos = new Vector3Int(x, y, 0);
                     if (!tilemap.HasTile(pos)) continue;

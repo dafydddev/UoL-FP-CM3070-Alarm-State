@@ -18,18 +18,18 @@ namespace Generation.Layout
     // An axis-aligned room rectangle in tile coordinates, with handy derived bounds.
     public readonly struct RoomRect
     {
-        public readonly int x, y, w, h;
-        public int CenterX => x + w / 2;
-        public int CenterY => y + h / 2;
-        public int Right => x + w; // exclusive right edge
-        public int Bottom => y + h; // exclusive top edge
+        public readonly int X, Y, W, H;
+        public int CenterX => X + W / 2;
+        public int CenterY => Y + H / 2;
+        public int Right => X + W; // exclusive right edge
+        public int Bottom => Y + H; // exclusive top edge
 
         public RoomRect(int x, int y, int w, int h)
         {
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
+            X = x;
+            Y = y;
+            W = w;
+            H = h;
         }
     }
 
@@ -38,8 +38,8 @@ namespace Generation.Layout
     // room as walls + floor and carves doorways between connected rooms.
     public static class TiledLayoutGenerator
     {
-        private const int RoomW = 10; // room width in tiles
-        private const int RoomH = 10; // room height in tiles
+        private const int RoomW = 12; // room width in tiles
+        private const int RoomH = 12; // room height in tiles
 
         // Convert an abstract cell coord to a tile origin; rooms overlap by 1 tile so walls are shared.
         private static int Ox(int cx) => cx * (RoomW - 1);
@@ -62,25 +62,22 @@ namespace Generation.Layout
 
             // The root is the room with no parent (fall back to the first room).
             var root = graph.rooms.Find(r => !inbound.Contains(r.id))?.id ?? graph.rooms[0].id;
-
             // The "spine" is the path from root to the primary objective room, laid out in a straight line.
             var primary = graph.rooms
                 .Find(r => r.type == RoomType.ObjectiveRoom && r.missionNodeId == "primary")?.id;
             var spine = PathTo(primary, parent, root) ?? new List<string> { root };
             var onSpine = new HashSet<string>(spine);
-
             // Abstract cell positions per room, the cells already taken, and the connections to door.
             var cell = new Dictionary<string, Vector2Int>();
             var used = new HashSet<Vector2Int>();
-            var conns = new List<(string a, string b)>();
-
+            var connections = new List<(string a, string b)>();
             // Lay the spine left-to-right along y = 0, connecting each room to the previous.
             for (var i = 0; i < spine.Count; i++)
             {
                 var p = new Vector2Int(i, 0);
                 cell[spine[i]] = p;
                 used.Add(p);
-                if (i > 0) conns.Add((spine[i - 1], spine[i]));
+                if (i > 0) connections.Add((spine[i - 1], spine[i]));
             }
 
             // Hang each spine room's off-spine children as subtrees, alternating above/below.
@@ -91,7 +88,7 @@ namespace Generation.Layout
                 foreach (var child in kids)
                 {
                     if (onSpine.Contains(child)) continue;
-                    PlaceSubtree(s, child, side, cell, used, conns, children);
+                    PlaceSubtree(s, child, side, cell, used, connections, children);
                     side = -side; // alternate sides for the next child
                 }
             }
@@ -100,30 +97,27 @@ namespace Generation.Layout
             var minX = cell.Values.Min(c => c.x);
             var minY = cell.Values.Min(c => c.y);
             var pos = cell.ToDictionary(kv => kv.Key, kv => new Vector2Int(kv.Value.x - minX, kv.Value.y - minY));
-
             // Size the tile grid to fit all rooms (+1 for the shared outer wall).
             var gridW = Ox(pos.Values.Max(c => c.x)) + RoomW + 1;
             var gridH = Oy(pos.Values.Max(c => c.y)) + RoomH + 1;
             var grid = new TileType[gridW, gridH];
-
             // Paint each room: a wall block with a floor interior, and record its rect.
             roomRects = new Dictionary<string, RoomRect>();
             foreach (var (id, c) in pos)
             {
                 var rect = new RoomRect(Ox(c.x), Oy(c.y), RoomW, RoomH);
                 roomRects[id] = rect;
-                FillRect(grid, rect.x, rect.y, RoomW, RoomH, TileType.Wall);
-                FillRect(grid, rect.x + 1, rect.y + 1, RoomW - 2, RoomH - 2, TileType.Floor);
+                FillRect(grid, rect.X, rect.Y, RoomW, RoomH, TileType.Wall);
+                FillRect(grid, rect.X + 1, rect.Y + 1, RoomW - 2, RoomH - 2, TileType.Floor);
             }
 
             // Carve a doorway (floor tile in the shared wall) for every connection.
-            foreach (var (a, b) in conns)
+            foreach (var (a, b) in connections)
             {
                 var ca = pos[a];
                 var cb = pos[b];
                 var dx = cb.x - ca.x;
                 var dy = cb.y - ca.y;
-
                 // Place the door on the wall facing whichever direction b sits relative to a.
                 int doorX, doorY;
                 if (dx == 1) // b to the east
@@ -156,16 +150,15 @@ namespace Generation.Layout
         // Recursively places child room (and its descendants) in a free cell next to its parent.
         private static void PlaceSubtree(string parentId, string node, int dirY,
             Dictionary<string, Vector2Int> cell, HashSet<Vector2Int> used,
-            List<(string, string)> conns, Dictionary<string, List<string>> children)
+            List<(string, string)> connections, Dictionary<string, List<string>> children)
         {
             var pos = FindFree(cell[parentId], dirY, used);
             cell[node] = pos;
             used.Add(pos);
-            conns.Add((parentId, node));
-
+            connections.Add((parentId, node));
             if (!children.TryGetValue(node, out var kids)) return;
             foreach (var child in kids)
-                PlaceSubtree(node, child, dirY, cell, used, conns, children);
+                PlaceSubtree(node, child, dirY, cell, used, connections, children);
         }
 
         // Finds the first free neighbouring cell, preferring the branch direction, then sideways.
@@ -226,6 +219,7 @@ namespace Generation.Layout
         public Tilemap tilemap;
         public TileBase floorTile;
         public TileBase wallTile;
+
         public TileBase doorTile;
 
         // Clears the tilemap and paints every cell with the tile matching its type.
@@ -234,7 +228,6 @@ namespace Generation.Layout
             tilemap.ClearAllTiles();
             var w = grid.GetLength(0);
             var h = grid.GetLength(1);
-
             for (var x = 0; x < w; x++)
             for (var y = 0; y < h; y++)
             {
@@ -246,7 +239,7 @@ namespace Generation.Layout
                     TileType.Door => doorTile,
                     _ => null
                 };
-                if (tile != null) tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile);
             }
         }
     }
