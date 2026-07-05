@@ -21,15 +21,15 @@ namespace Generation.Layout
     [RequireComponent(typeof(MissionGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
-        public DifficultyProfile profile; // difficulty curves shared by the whole pipeline
-        [Min(1)] public int level = 1; // current level within the run, feeds difficulty scaling
-        [Min(1)] public int totalLevels = 5; // run length, sets how far along the difficulty curves we are
+        [SerializeField] private DifficultyProfile profile; // difficulty curves shared by the whole pipeline
+        [SerializeField, Min(1)] private int level = 1; // current level within the run, feeds difficulty scaling
+        [SerializeField, Min(1)] private int totalLevels = 5; // run length, sets how far along the difficulty curves we are
 
         // Tilemap and tile assets used to paint the grid.
-        public Tilemap tilemap;
-        public TileBase floorTile;
-        public TileBase wallTile;
-        public TileBase doorTile;
+        [SerializeField] private Tilemap tilemap;
+        [SerializeField] private TileBase floorTile;
+        [SerializeField] private TileBase wallTile;
+        [SerializeField] private TileBase doorTile;
 
         // The per-system spawners/services this orchestrator drives.
         // public PlayerSpawner playerSpawner;
