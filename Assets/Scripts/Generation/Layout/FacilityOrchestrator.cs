@@ -26,7 +26,7 @@ namespace Generation.Layout
 
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
-        // public ObjectiveSpawner objectiveSpawner;
+        [SerializeField] private ObjectiveSpawner objectiveSpawner;
         // public ObjectiveTracker objectiveTracker;
         // public ExitSpawner exitSpawner;
         // public FacilityNavigation navigation;
@@ -78,7 +78,7 @@ namespace Generation.Layout
             // Populate the rest of the level. Navigation must be built before guards, which need it.
             keycardSpawner?.Spawn(rooms, rects, tilemap); 
             lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
-            // objectiveSpawner.Spawn(rooms, rects, tilemap);
+            objectiveSpawner?.Spawn(rooms, rects, tilemap);
             // objectiveTracker.Init(rooms, mission);
             // exitSpawner.Spawn(rooms, rects, tilemap);
             // navigation.Build(grid);
