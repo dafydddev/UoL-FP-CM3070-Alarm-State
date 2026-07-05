@@ -27,8 +27,8 @@ namespace Generation.Layout
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
         [SerializeField] private ObjectiveSpawner objectiveSpawner;
+        [SerializeField] private ExitSpawner exitSpawner;
         // public ObjectiveTracker objectiveTracker;
-        // public ExitSpawner exitSpawner;
         // public FacilityNavigation navigation;
         // public GuardSpawner guardSpawner;
         // public DistractionSpawner distractionSpawner;
@@ -79,8 +79,8 @@ namespace Generation.Layout
             keycardSpawner?.Spawn(rooms, rects, tilemap); 
             lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
+            exitSpawner?.Spawn(rooms, rects, tilemap);
             // objectiveTracker.Init(rooms, mission);
-            // exitSpawner.Spawn(rooms, rects, tilemap);
             // navigation.Build(grid);
             // guardSpawner.Spawn(rooms, rects, tilemap, navigation);
             // distractionSpawner.Spawn(rooms, rects, tilemap);
@@ -97,8 +97,8 @@ namespace Generation.Layout
             playerSpawner?.ClearPlayer();
             keycardSpawner?.ClearChildren();
             lockedDoorSpawner?.ClearChildren();
-            // ClearChildren(objectiveSpawner.transform);
-            // ClearChildren(exitSpawner.transform);
+            exitSpawner?.ClearChildren();
+            objectiveSpawner?.ClearChildren();
             // ClearChildren(guardSpawner.transform);
             // ClearChildren(distractionSpawner.transform);
             // ClearChildren(coverSpawner.transform);
