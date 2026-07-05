@@ -36,14 +36,21 @@ namespace Generation.Layout
         // public DisguiseSpawner disguiseSpawner;
 
         private void Awake() => Generate();
+        
+        [ContextMenu("Clear")]
+        private void ClearFacility()
+        {
+            if (tilemap) tilemap.ClearAllTiles();
+            ClearSpawners();
+        }
 
         // Builds a complete level. Exposed in the inspector's context menu for quick testing.
         [ContextMenu("Generate")]
         public void Generate()
         {
             // Remove anything spawned by a previous run.
-            ClearSpawned();
-
+            ClearFacility();
+            
             // Generate the mission, expand it into a room graph, then into a tile grid.
             // The orchestrator owns the difficulty profile and hands it to each stage.
             var mission = GetComponent<MissionGenerator>().Generate(profile, level, totalLevels);
@@ -51,7 +58,6 @@ namespace Generation.Layout
             var grid = TiledLayoutGenerator.Generate(rooms, out var rects);
 
             // Paint the grid onto the tilemap.
-            tilemap.ClearAllTiles();
             for (var x = 0; x < grid.GetLength(0); x++)
             {
                 for (var y = 0; y < grid.GetLength(1); y++)
@@ -92,7 +98,7 @@ namespace Generation.Layout
         }
 
         // Destroys everything spawned under each spawner from the previous level.
-        private void ClearSpawned()
+        private void ClearSpawners()
         {
             playerSpawner?.ClearPlayer();
             keycardSpawner?.ClearChildren();
