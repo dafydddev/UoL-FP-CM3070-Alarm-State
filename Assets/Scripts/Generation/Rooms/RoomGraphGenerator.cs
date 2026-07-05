@@ -23,7 +23,7 @@ namespace Generation.Rooms
                 var room = new RoomNode
                 {
                     id = $"room_{node.id}",
-                    type = MissionRoleToRoomRole(node.nodeType, node.text),
+                    type = MissionRoleToRoomRole(node.nodeType),
                     missionNodeId = node.id
                 };
                 graph.rooms.Add(room);
@@ -35,9 +35,8 @@ namespace Generation.Rooms
             graph.rooms.Add(entrance);
             graph.edges.Add(new RoomEdge { fromId = entrance.id, toId = missionRoomMap["entry"].id });
 
-            // 3. Turn mission dependencies into edges, locking some objective/keycard rooms.
+            // 3. Turn mission dependencies into edges; when a door locks, branch off its own keycard room.
             var lockChance = profile.LockChance(level, totalLevels, rng);
-            var usedKeys = new HashSet<string>();
             foreach (var node in mission.nodes)
             {
                 if (!missionRoomMap.TryGetValue(node.id, out var toRoom)) continue;
@@ -45,28 +44,19 @@ namespace Generation.Rooms
                 {
                     if (!missionRoomMap.TryGetValue(depId, out var fromRoom)) continue;
 
-                    // Only objective and keycard rooms are eligible to be locked.
-                    var eligible = toRoom.type is RoomType.ObjectiveRoom or RoomType.KeycardRoom;
+                    // Only objective rooms are eligible to be locked.
+                    var eligible = toRoom.type == RoomType.ObjectiveRoom;
 
                     string keyRoomId = null;
                     if (eligible && rng.NextDouble() < lockChance)
                     {
-                        // Reuse an existing keycard room earlier in the chain if one is free.
-                        var found = FindKeycardRoomInChain(depId, mission, missionRoomMap);
-                        if (found != null && usedKeys.Add(found))
-                        {
-                            keyRoomId = found;
-                        }
-                        else
-                        {
-                            // Or spawn a fresh keycard room off the source room.
-                            var key = new RoomNode
-                                { id = $"room_key_{graph.rooms.Count}", type = RoomType.KeycardRoom };
-                            graph.rooms.Add(key);
-                            graph.edges.Add(new RoomEdge { fromId = fromRoom.id, toId = key.id });
-                            usedKeys.Add(key.id);
-                            keyRoomId = key.id;
-                        }
+                        // Every locked door gets its own keycard room, branched off the source room
+                        // so the key is reachable before the door it opens.
+                        var key = new RoomNode
+                            { id = $"room_key_{graph.rooms.Count}", type = RoomType.KeycardRoom };
+                        graph.rooms.Add(key);
+                        graph.edges.Add(new RoomEdge { fromId = fromRoom.id, toId = key.id });
+                        keyRoomId = key.id;
                     }
 
                     // Connect the dependency to its dependent, locked if a key was assigned.
@@ -80,12 +70,13 @@ namespace Generation.Rooms
                 }
             }
 
-            // 4. Insert guard posts in front of objective rooms (always) and keycard rooms (50%).
+            // 4. Insert guard posts in front of objective rooms (always) and keycard rooms (per profile).
+            var guardChance = profile.GuardChance(level, totalLevels, rng);
             var guardCandidates =
                 graph.rooms.FindAll(r => r.type is RoomType.ObjectiveRoom or RoomType.KeycardRoom);
             foreach (var candidate in guardCandidates)
             {
-                if (!(candidate.type == RoomType.ObjectiveRoom || rng.NextDouble() > 0.5)) continue;
+                if (!(candidate.type == RoomType.ObjectiveRoom || rng.NextDouble() < guardChance)) continue;
 
                 var guard = new RoomNode { id = $"room_guard_{graph.rooms.Count}", type = RoomType.GuardPost };
                 graph.rooms.Add(guard);
@@ -171,42 +162,18 @@ namespace Generation.Rooms
             return graph;
         }
 
-        // Maps a mission node's type (and text) to the room role it should become.
-        // Prerequisites become keycard rooms if their text mentions card/code/badge, else guard posts.
-        private static RoomType MissionRoleToRoomRole(NodeType nodeType, string text)
+        // Maps a mission node's type to the room role it should become.
+        // Keycard rooms are not produced here — they are inserted by the locking pass (step 3).
+        private static RoomType MissionRoleToRoomRole(NodeType nodeType)
         {
             return nodeType switch
             {
                 NodeType.Entry => RoomType.Entrance,
                 NodeType.Primary => RoomType.ObjectiveRoom,
                 NodeType.Secondary => RoomType.ObjectiveRoom,
-                NodeType.Prerequisite => text.ToLower().Contains("card") || text.ToLower().Contains("code") ||
-                                         text.ToLower().Contains("badge")
-                    ? RoomType.KeycardRoom
-                    : RoomType.GuardPost,
+                NodeType.Prerequisite => RoomType.GuardPost,
                 _ => RoomType.Corridor
             };
-        }
-
-        // Searches the dependency chain upstream of a mission node for an existing keycard room,
-        // returning its room id, or null if none is found. (Depth-first over dependencies.)
-        private static string FindKeycardRoomInChain(string fromMissionId, MissionGraph mission,
-            Dictionary<string, RoomNode> map)
-        {
-            var visited = new HashSet<string>();
-            var stack = new Stack<string>();
-            stack.Push(fromMissionId);
-            while (stack.Count > 0)
-            {
-                var id = stack.Pop();
-                if (!visited.Add(id)) continue; // skip already-seen nodes
-                if (map.TryGetValue(id, out var room) && room.type == RoomType.KeycardRoom) return room.id;
-                var node = mission.nodes.Find(n => n.id == id);
-                if (node == null) continue;
-                foreach (var dep in node.dependencies) stack.Push(dep);
-            }
-
-            return null;
         }
     }
 }
