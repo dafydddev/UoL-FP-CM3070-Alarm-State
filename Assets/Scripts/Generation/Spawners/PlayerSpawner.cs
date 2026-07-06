@@ -11,7 +11,7 @@ namespace Generation.Spawners
         private GameObject _player;
 
         // Spawns the player at the given position, replacing any existing instance.
-        public void Spawn(Vector3 spawnPosition)
+        public void SpawnPlayer(Vector3 spawnPosition)
         {
             // Clear out the previous player first so we never leave duplicates behind.
             if (_player)

@@ -8,12 +8,12 @@ using UnityEngine.Tilemaps;
 namespace Generation.Spawners
 {
     // Spawns an exit prefab at the centre of every room flagged as an Exit room.
-    public class ExitSpawner : MonoBehaviour, ISpawner
+    public class ExitSpawner : Spawner
     {
-        public GameObject exitPrefab;
+        [SerializeField] private GameObject exitPrefab;
 
         // Places an exit at the centre of each Exit-role room in the graph.
-        public void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
         {
             foreach (var room in graph.rooms.Where(r => r.type == RoomType.Exit))
             {
@@ -23,16 +23,6 @@ namespace Generation.Spawners
                 var worldPos = tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(exitPrefab, worldPos, Quaternion.identity, transform);
                 go.name = $"Exit_{room.id}";
-            }
-        }
-
-        public void ClearChildren()
-        {
-            for (var i = transform.childCount - 1; i >= 0; i--)
-            {
-                var child = transform.GetChild(i).gameObject;
-                if (Application.isPlaying) Destroy(child);
-                else DestroyImmediate(child);
             }
         }
     }
