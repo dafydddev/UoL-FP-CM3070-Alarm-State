@@ -1,34 +1,45 @@
+using Camera;
+using Generation.Layout;
+using Player;
+using Simulation;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Generation.Spawners
 {
-    // Spawns (or respawns) the player prefab at a given position and points the camera at it.
+    // Spawns (or respawns) the player prefab, hands it the world it moves through,
+    // and registers it with the scheduler so it takes turns.
     public class PlayerSpawner : MonoBehaviour
     {
         [SerializeField] private GameObject playerPrefab;
+        [SerializeField] private CameraFollow cameraFollow;
 
-        // The current player instance, or null if none has been spawned yet.
         private GameObject _player;
+        private PlayerActor _actor;
+        private Scheduler _scheduler;
 
-        // Spawns the player at the given position, replacing any existing instance.
-        public void SpawnPlayer(Vector3 spawnPosition)
+        public void SpawnPlayer(Vector3 spawnPosition, FacilityGrid grid, Tilemap tilemap, Scheduler scheduler)
         {
-            // Clear out the previous player first so we never leave duplicates behind.
-            if (_player)
-            {
-                // Destroy is deferred and only valid in play mode; editor/generation needs the immediate version.
-                if (Application.isPlaying) Destroy(_player);
-                else DestroyImmediate(_player);
-            }
+            ClearPlayer();
 
-            // Create the new player
+            _scheduler = scheduler;
             _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+            _actor = _player.GetComponent<PlayerActor>();
+            _actor.Bind(grid, tilemap);
+            scheduler.Register(_actor);
+            if (cameraFollow) cameraFollow.SetTarget(_player.transform);
         }
 
         public void ClearPlayer()
         {
+            if (!_player) return;
+
+            if (_scheduler) _scheduler.Unregister(_actor);
             if (Application.isPlaying) Destroy(_player);
             else DestroyImmediate(_player);
+
+            _player = null;
+            _actor = null;
         }
     }
 }
