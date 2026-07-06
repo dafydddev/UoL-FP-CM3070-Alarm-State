@@ -23,20 +23,20 @@ namespace Generation.Layout
 
         // The per-system spawners/services this orchestrator drives.
         [SerializeField] private PlayerSpawner playerSpawner;
-
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
         [SerializeField] private ObjectiveSpawner objectiveSpawner;
         [SerializeField] private ExitSpawner exitSpawner;
+        [SerializeField] private CoverSpawner coverSpawner;
+
         // public ObjectiveTracker objectiveTracker;
         // public FacilityNavigation navigation;
         // public GuardSpawner guardSpawner;
         // public DistractionSpawner distractionSpawner;
-        // public CoverSpawner coverSpawner;
         // public DisguiseSpawner disguiseSpawner;
 
         private void Awake() => Generate();
-        
+
         [ContextMenu("Clear")]
         private void ClearFacility()
         {
@@ -50,7 +50,6 @@ namespace Generation.Layout
         {
             // Remove anything spawned by a previous run.
             ClearFacility();
-            
             // Generate the mission, expand it into a room graph, then into a tile grid.
             // The orchestrator owns the difficulty profile and hands it to each stage.
             var mission = GetComponent<MissionGenerator>().Generate(profile, level, totalLevels);
@@ -78,14 +77,16 @@ namespace Generation.Layout
 
             // Spawn the player at the centre of the entrance room.
             var e = rects["room_entrance"];
-            var playerSpawnPos = tilemap.GetCellCenterWorld(new Vector3Int(e.CenterX, e.CenterY, 0)); 
-            playerSpawner?.Spawn(playerSpawnPos);
+            var playerSpawnPos = tilemap.GetCellCenterWorld(new Vector3Int(e.CenterX, e.CenterY, 0));
+            playerSpawner?.SpawnPlayer(playerSpawnPos);
 
             // Populate the rest of the level. Navigation must be built before guards, which need it.
-            keycardSpawner?.Spawn(rooms, rects, tilemap); 
+            keycardSpawner?.Spawn(rooms, rects, tilemap);
             lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
             exitSpawner?.Spawn(rooms, rects, tilemap);
+            coverSpawner?.Spawn(rooms, rects, tilemap);
+
             // objectiveTracker.Init(rooms, mission);
             // navigation.Build(grid);
             // guardSpawner.Spawn(rooms, rects, tilemap, navigation);
@@ -105,6 +106,8 @@ namespace Generation.Layout
             lockedDoorSpawner?.ClearChildren();
             exitSpawner?.ClearChildren();
             objectiveSpawner?.ClearChildren();
+            coverSpawner?.ClearChildren();
+
             // ClearChildren(guardSpawner.transform);
             // ClearChildren(distractionSpawner.transform);
             // ClearChildren(coverSpawner.transform);
