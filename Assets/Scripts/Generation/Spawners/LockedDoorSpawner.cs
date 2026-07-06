@@ -8,12 +8,12 @@ using UnityEngine.Tilemaps;
 namespace Generation.Spawners
 {
     // Spawns a locked-door prefab on each locked edge of the room graph, tagged with the key required to open it.
-    public class LockedDoorSpawner : MonoBehaviour, ISpawner
+    public class LockedDoorSpawner : Spawner
     {
-        public GameObject lockedDoorPrefab;
+        [SerializeField] private GameObject lockedDoorPrefab;
 
         // Places a locked door between the two rooms of every locked edge in the graph.
-        public void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
         {
             foreach (var edge in graph.edges.Where(e => e.locked))
             {
@@ -30,16 +30,6 @@ namespace Generation.Spawners
                 var door = go.GetComponent<LockedDoor>() ?? go.AddComponent<LockedDoor>();
                 door.keyId = edge.keyRoomId;
                 go.name = $"LockedDoor_{edge.keyRoomId}";
-            }
-        }
-
-        public void ClearChildren()
-        {
-            for (var i = transform.childCount - 1; i >= 0; i--)
-            {
-                var child = transform.GetChild(i).gameObject;
-                if (Application.isPlaying) Destroy(child);
-                else DestroyImmediate(child);
             }
         }
 

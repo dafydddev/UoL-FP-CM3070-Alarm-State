@@ -9,12 +9,12 @@ using UnityEngine.Tilemaps;
 namespace Generation.Spawners
 {
     // Spawns one keycard per locked-edge key, placing it in its key room and tinting it with that key's colour.
-    public class KeycardSpawner : MonoBehaviour, ISpawner
+    public class KeycardSpawner : Spawner
     {
-        public GameObject keycardPrefab;
+        [SerializeField] private GameObject keycardPrefab;
 
         // Spawns a keycard in each room that acts as a key source for a locked edge.
-        public void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
         {
             // Gather the distinct key rooms referenced by locked edges.
             var keyRoomIds = graph.edges
@@ -39,16 +39,6 @@ namespace Generation.Spawners
                 var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
                 if (spriteRend) spriteRend.color = KeyColour.For(keyId);
                 go.name = $"Keycard_{keyId}";
-            }
-        }
-
-        public void ClearChildren()
-        {
-            for (var i = transform.childCount - 1; i >= 0; i--)
-            {
-                var child = transform.GetChild(i).gameObject;
-                if (Application.isPlaying) Destroy(child);
-                else DestroyImmediate(child);
             }
         }
     }
