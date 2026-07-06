@@ -1,27 +1,26 @@
 ﻿using Generation.Missions;
 using Generation.Rooms;
 using Generation.Spawners;
+using Simulation;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace Generation.Layout
 {
     // Top-level level builder. Runs the full generation pipeline in order:
-    // mission -> room -> graph -> tile layout -> paint tiles -> spawn props (e.g. player, items, guard, etc.).
+    // mission -> room -> layout -> realise tiles -> paint -> spawn props (player, items, etc.).
     [RequireComponent(typeof(MissionGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
+        [SerializeField] private Scheduler scheduler;
+
         [SerializeField] private DifficultyProfile profile; // difficulty curves shared by the whole pipeline
         [SerializeField, Min(1)] private int level = 1; // current level within the run, feeds difficulty scaling
         [SerializeField, Min(1)] private int totalLevels = 10; // total run length
 
-        // Tilemap and tile assets used to paint the grid.
         [SerializeField] private Tilemap tilemap;
-        [SerializeField] private TileBase floorTile;
-        [SerializeField] private TileBase wallTile;
-        [SerializeField] private TileBase doorTile;
+        [SerializeField] private Tileset tileset;
 
-        // The per-system spawners/services this orchestrator drives.
         [SerializeField] private PlayerSpawner playerSpawner;
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
@@ -29,11 +28,8 @@ namespace Generation.Layout
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
 
-        // public ObjectiveTracker objectiveTracker;
-        // public FacilityNavigation navigation;
-        // public GuardSpawner guardSpawner;
-        // public DistractionSpawner distractionSpawner;
-        // public DisguiseSpawner disguiseSpawner;
+        // The walkable grid the actors query, rebuilt each generation.
+        public FacilityGrid Grid { get; private set; }
 
         private void Awake() => Generate();
 
@@ -50,27 +46,25 @@ namespace Generation.Layout
         {
             // Remove anything spawned by a previous run.
             ClearFacility();
-            // Generate the mission, expand it into a room graph, then into a tile grid.
-            // The orchestrator owns the difficulty profile and hands it to each stage.
+
+            // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = GetComponent<MissionGenerator>().Generate(profile, level, totalLevels);
             var rooms = RoomGraphGenerator.Generate(mission, profile, level, totalLevels);
-            var grid = TiledLayoutGenerator.Generate(rooms, out var rects);
+            var roles = TiledLayoutGenerator.Generate(rooms, out var rects);
 
-            // Paint the grid onto the tilemap.
-            for (var x = 0; x < grid.GetLength(0); x++)
+            // Realise each role into a tile: keep it for queries and paint it onto the tilemap.
+            var gridW = roles.GetLength(0);
+            var gridH = roles.GetLength(1);
+            var tiles = new TileDefinition[gridW, gridH];
+            for (var x = 0; x < gridW; x++)
+            for (var y = 0; y < gridH; y++)
             {
-                for (var y = 0; y < grid.GetLength(1); y++)
-                {
-                    var tile = grid[x, y] switch
-                    {
-                        TileType.Floor => floorTile,
-                        TileType.Wall => wallTile,
-                        TileType.Door => doorTile,
-                        _ => null
-                    };
-                    if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile);
-                }
+                var tile = tileset.For(roles[x, y]);
+                tiles[x, y] = tile;
+                if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
             }
+
+            Grid = new FacilityGrid(tiles);
 
             // Tint rooms by role for readability.
             RoomColourCoder.Apply(tilemap, rooms, rects);
@@ -78,9 +72,9 @@ namespace Generation.Layout
             // Spawn the player at the centre of the entrance room.
             var e = rects["room_entrance"];
             var playerSpawnPos = tilemap.GetCellCenterWorld(new Vector3Int(e.CenterX, e.CenterY, 0));
-            playerSpawner?.SpawnPlayer(playerSpawnPos);
+            playerSpawner?.SpawnPlayer(playerSpawnPos, Grid, tilemap, scheduler);
 
-            // Populate the rest of the level. Navigation must be built before guards, which need it.
+            // Populate the rest of the level.
             keycardSpawner?.Spawn(rooms, rects, tilemap);
             lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
@@ -88,14 +82,9 @@ namespace Generation.Layout
             coverSpawner?.Spawn(rooms, rects, tilemap);
 
             // objectiveTracker.Init(rooms, mission);
-            // navigation.Build(grid);
             // guardSpawner.Spawn(rooms, rects, tilemap, navigation);
             // distractionSpawner.Spawn(rooms, rects, tilemap);
-            // coverSpawner.Spawn(rooms, rects, tilemap);
             // disguiseSpawner.Spawn(rooms, rects, tilemap);
-
-            // Reset the static distraction list so stale entries don't carry over.
-            // DistractionItem.Clear();
         }
 
         // Destroys everything spawned under each spawner from the previous level.
@@ -107,11 +96,6 @@ namespace Generation.Layout
             exitSpawner?.ClearChildren();
             objectiveSpawner?.ClearChildren();
             coverSpawner?.ClearChildren();
-
-            // ClearChildren(guardSpawner.transform);
-            // ClearChildren(distractionSpawner.transform);
-            // ClearChildren(coverSpawner.transform);
-            // ClearChildren(disguiseSpawner.transform);
         }
     }
 }
