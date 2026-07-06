@@ -2,39 +2,31 @@ using System.Collections.Generic;
 using System.Linq;
 using Generation.Rooms;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Generation.Layout
 {
-    // The kinds of tile a generated grid cell can hold.
-    public enum TileType : byte
-    {
-        Empty,
-        Floor,
-        Wall,
-        Door
-    }
-
     // An axis-aligned room rectangle in tile coordinates, with handy derived bounds.
     public readonly struct RoomRect
     {
-        public readonly int X, Y, W, H;
-        public int CenterX => X + W / 2;
-        public int CenterY => Y + H / 2;
-        public int Right => X + W; // exclusive right edge
-        public int Bottom => Y + H; // exclusive top edge
+        public readonly int X, Y;
+        private readonly int _w;
+        private readonly int _h;
+        public int CenterX => X + _w / 2;
+        public int CenterY => Y + _h / 2;
+        public int Right => X + _w; // exclusive right edge
+        public int Bottom => Y + _h; // exclusive top edge
 
         public RoomRect(int x, int y, int w, int h)
         {
             X = x;
             Y = y;
-            W = w;
-            H = h;
+            _w = w;
+            _h = h;
         }
     }
 
-    // Turns a mission RoomGraph into a tile grid: lays rooms out on an abstract cell grid
-    // (a straight "spine" to the primary objective with side branches), then paints each
+    // Turns a mission RoomGraph into a grid of structural roles: lays rooms out on an abstract
+    // cell grid (a straight "spine" to the primary objective with side branches), then marks each
     // room as walls + floor and carves doorways between connected rooms.
     public static class TiledLayoutGenerator
     {
@@ -45,8 +37,8 @@ namespace Generation.Layout
         private static int Ox(int cx) => cx * (RoomW - 1);
         private static int Oy(int cy) => cy * (RoomH - 1);
 
-        // Builds the tile grid and outputs each room's tile rectangle.
-        public static TileType[,] Generate(RoomGraph graph, out Dictionary<string, RoomRect> roomRects)
+        // Builds the structural grid and outputs each room's tile rectangle.
+        public static CellRole[,] Generate(RoomGraph graph, out Dictionary<string, RoomRect> roomRects)
         {
             // Build parent/child lookups from the graph edges, tracking which rooms have a parent.
             var children = new Dictionary<string, List<string>>();
@@ -97,21 +89,21 @@ namespace Generation.Layout
             var minX = cell.Values.Min(c => c.x);
             var minY = cell.Values.Min(c => c.y);
             var pos = cell.ToDictionary(kv => kv.Key, kv => new Vector2Int(kv.Value.x - minX, kv.Value.y - minY));
-            // Size the tile grid to fit all rooms (+1 for the shared outer wall).
+            // Size the grid to fit all rooms (+1 for the shared outer wall).
             var gridW = Ox(pos.Values.Max(c => c.x)) + RoomW + 1;
             var gridH = Oy(pos.Values.Max(c => c.y)) + RoomH + 1;
-            var grid = new TileType[gridW, gridH];
-            // Paint each room: a wall block with a floor interior, and record its rect.
+            var grid = new CellRole[gridW, gridH];
+            // Mark each room: a wall block with a floor interior, and record its rect.
             roomRects = new Dictionary<string, RoomRect>();
             foreach (var (id, c) in pos)
             {
                 var rect = new RoomRect(Ox(c.x), Oy(c.y), RoomW, RoomH);
                 roomRects[id] = rect;
-                FillRect(grid, rect.X, rect.Y, RoomW, RoomH, TileType.Wall);
-                FillRect(grid, rect.X + 1, rect.Y + 1, RoomW - 2, RoomH - 2, TileType.Floor);
+                FillRect(grid, rect.X, rect.Y, RoomW, RoomH, CellRole.Wall);
+                FillRect(grid, rect.X + 1, rect.Y + 1, RoomW - 2, RoomH - 2, CellRole.Floor);
             }
 
-            // Carve a doorway (floor tile in the shared wall) for every connection.
+            // Carve a doorway (floor cell in the shared wall) for every connection.
             foreach (var (a, b) in connections)
             {
                 var ca = pos[a];
@@ -141,7 +133,7 @@ namespace Generation.Layout
                     doorY = Oy(ca.y);
                 }
 
-                grid[doorX, doorY] = TileType.Floor;
+                grid[doorX, doorY] = CellRole.Floor;
             }
 
             return grid;
@@ -200,46 +192,15 @@ namespace Generation.Layout
             return path.Count > 0 && path[0] == root ? path : null;
         }
 
-        // Fills a rectangle of the grid with a tile type, clamped to the grid bounds.
-        private static void FillRect(TileType[,] g, int x, int y, int w, int h, TileType t)
+        // Fills a rectangle of the grid with a role, clamped to the grid bounds.
+        private static void FillRect(CellRole[,] g, int x, int y, int w, int h, CellRole role)
         {
             for (var dx = 0; dx < w; dx++)
             for (var dy = 0; dy < h; dy++)
             {
                 var px = x + dx;
                 var py = y + dy;
-                if (px >= 0 && py >= 0 && px < g.GetLength(0) && py < g.GetLength(1)) g[px, py] = t;
-            }
-        }
-    }
-
-    // Renders a generated TileType grid onto a Unity Tilemap using the assigned tile assets.
-    public class FacilityLayoutPainter : MonoBehaviour
-    {
-        public Tilemap tilemap;
-        public TileBase floorTile;
-        public TileBase wallTile;
-
-        public TileBase doorTile;
-
-        // Clears the tilemap and paints every cell with the tile matching its type.
-        public void Paint(TileType[,] grid)
-        {
-            tilemap.ClearAllTiles();
-            var w = grid.GetLength(0);
-            var h = grid.GetLength(1);
-            for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-            {
-                // Map the cell's type to a tile asset (Empty → none).
-                var tile = grid[x, y] switch
-                {
-                    TileType.Floor => floorTile,
-                    TileType.Wall => wallTile,
-                    TileType.Door => doorTile,
-                    _ => null
-                };
-                if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                if (px >= 0 && py >= 0 && px < g.GetLength(0) && py < g.GetLength(1)) g[px, py] = role;
             }
         }
     }
