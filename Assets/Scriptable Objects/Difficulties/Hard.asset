@@ -41,7 +41,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     maxFloor: 3
-    maxCeiling: 5
+    maxCeiling: 6
     maxShape:
       serializedVersion: 2
       m_Curve:
@@ -94,24 +94,24 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     maxFloor: 0
-    maxCeiling: 1
+    maxCeiling: 2
     maxShape:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: -1
-        outSlope: -1
+        inSlope: -1.9530697
+        outSlope: -1.9530697
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.09792627
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: -1
-        outSlope: -1
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
