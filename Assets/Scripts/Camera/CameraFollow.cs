@@ -5,38 +5,31 @@ namespace Camera
     public class CameraFollow : MonoBehaviour
     {
         // The object the camera follows.
-        [SerializeField] private Transform target;
-
-        // How quickly the camera catches up to the target.
-        [SerializeField] private float speed = 10f;
+        private Transform _target;
 
         // How far back the camera sits from the target.
         [SerializeField] private float zOffset = 10f;
 
         // Must match the Pixel Perfect Camera's Assets PPU.
-        [SerializeField] private int pixelsPerUnit = 16;
+        [SerializeField] private int pixelsPerUnit = 8;
 
-        private void Update()
+        private void LateUpdate()
         {
-            // Do nothing if there's no target to follow.
-            if (!target) return;
-            transform.position = SnapToPixel(Vector3.Lerp(transform.position, target.position + Vector3.back * zOffset, speed * Time.deltaTime));
+            if (!_target) return;
+            transform.position = SnapToPixel(_target.position + Vector3.back * zOffset);
         }
-
 
         public void SetTarget(Transform targetTransform)
         {
-            // Set which object the camera should follow.
-            target = targetTransform;
+            _target = targetTransform;
             SnapToTarget();
         }
 
-        // Jump straight to the target with no interpolation — used on (re)spawn
-        // so the camera doesn't slide across the level to the new position.
+        // Jump straight to the target — used on (re)spawn.
         private void SnapToTarget()
         {
-            if (!target) return;
-            transform.position = target.position + Vector3.back * zOffset;
+            if (!_target) return;
+            transform.position = SnapToPixel(_target.position + Vector3.back * zOffset);
         }
 
         // Round x/y to the nearest whole pixel so the camera never sits mid-pixel.

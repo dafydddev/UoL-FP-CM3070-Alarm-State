@@ -1,105 +1,81 @@
 ﻿using System.Collections.Generic;
-using Generation.Layout;
 using Simulation;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
 
 namespace Player
 {
-    // The player as a scheduled actor. The most recently pressed direction owns movement; a press
-    // steps one tile and holding repeats after a delay. Moves only onto walkable cells, sliding
-    // between cell centres.
     public class PlayerActor : Actor
     {
         [SerializeField] private InputActionReference moveAction;
-        [SerializeField, Min(0.01f)] private float slideDuration = 0.1f;
-        [SerializeField, Min(0f)] private float repeatDelay = 0.25f;
+        [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
 
-        private FacilityGrid _grid;
-        private Tilemap _tilemap;
-        private Vector2Int _cell;
-
-        private readonly List<Vector2Int> _pressed = new(); // held directions, newest last
-        private Vector2Int _owner;
-        private Vector2Int _pressPending;
+        private Vector2Int _cell, _prevCell;
+        private readonly List<Vector2Int> _pressed = new();
+        private Vector2Int _owner, _pending;
         private float _holdTime;
 
-        private Vector3 _from, _to;
-        private float _slide;
-        private bool _sliding;
-
-        public void Bind(FacilityGrid grid, Tilemap tilemap)
+        protected override void OnEnable()
         {
-            _grid = grid;
-            _tilemap = tilemap;
-            _cell = (Vector2Int)tilemap.WorldToCell(transform.position);
+            base.OnEnable();
+            moveAction.action.Enable();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            moveAction.action.Disable();
+        }
+
+        private void Start()
+        {
+            var tilemap = World.Instance.Tilemap;
+            _cell = _prevCell = (Vector2Int)tilemap.WorldToCell(transform.position);
             transform.position = tilemap.GetCellCenterWorld((Vector3Int)_cell);
         }
 
-        private void OnEnable() => moveAction.action.Enable();
-        private void OnDisable() => moveAction.action.Disable();
-
         private void Update()
         {
-            RefreshPressed();
-
-            var owner = _pressed.Count > 0 ? _pressed[^1] : Vector2Int.zero;
-            if (owner != _owner)
-            {
-                if (owner != Vector2Int.zero) _pressPending = owner; // newest press takes over
-                _owner = owner;
-                _holdTime = 0f;
-            }
-            else
-            {
-                _holdTime += Time.deltaTime;
-            }
-
-            if (_sliding) AdvanceSlide();
+            ReadInput();
+            var tilemap = World.Instance.Tilemap;
+            transform.position = Vector3.Lerp(
+                tilemap.GetCellCenterWorld((Vector3Int)_prevCell),
+                tilemap.GetCellCenterWorld((Vector3Int)_cell),
+                Mathf.Clamp01(World.Instance.Clock.Alpha));
         }
 
         protected override void Act()
         {
-            if (_sliding || _grid == null) return;
+            _prevCell = _cell;
 
             Vector2Int dir;
-            if (_pressPending != Vector2Int.zero)
-            {
-                dir = _pressPending;
-                _pressPending = Vector2Int.zero;
-            }
-            else if (_owner != Vector2Int.zero && _holdTime >= repeatDelay)
-            {
-                dir = _owner;
-            }
+            if (_pending != Vector2Int.zero) { dir = _pending; _pending = Vector2Int.zero; }
+            else if (_owner != Vector2Int.zero && _holdTime >= repeatDelay) dir = _owner;
             else return;
 
             var target = _cell + dir;
-            if (!_grid.IsWalkable(target)) return;
+            if (!World.Instance.CanEnter(target, this)) return;
 
             _cell = target;
-            _from = transform.position;
-            _to = _tilemap.GetCellCenterWorld((Vector3Int)target);
-            _slide = 0f;
-            _sliding = true;
+            World.Instance.HandleEntered(target, this);
         }
 
-        private void AdvanceSlide()
-        {
-            _slide += Time.deltaTime;
-            var t = Mathf.Clamp01(_slide / slideDuration);
-            transform.position = Vector3.Lerp(_from, _to, t);
-            if (t >= 1f) _sliding = false;
-        }
-
-        private void RefreshPressed()
+        private void ReadInput()
         {
             var v = moveAction.action.ReadValue<Vector2>();
             Track(Vector2Int.right, v.x > 0.5f);
             Track(Vector2Int.left, v.x < -0.5f);
             Track(Vector2Int.up, v.y > 0.5f);
             Track(Vector2Int.down, v.y < -0.5f);
+
+            var owner = _pressed.Count > 0 ? _pressed[^1] : Vector2Int.zero;
+            if (owner != _owner)
+            {
+                if (owner != Vector2Int.zero) _pending = owner;
+                _owner = owner;
+                _holdTime = 0f;
+            }
+            else _holdTime += Time.deltaTime;
         }
 
         private void Track(Vector2Int dir, bool held)

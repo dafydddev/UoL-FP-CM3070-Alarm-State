@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2e8c8ceb30f7a748bfef4afd9e39c7c, type: 3}
+  m_Name: Wireframe
+  m_EditorClassIdentifier: Assembly-CSharp::Generation.Layout.Tileset
+  wall: {fileID: 11400000, guid: 6ec81e7b44f1b974da510ae78be9b275, type: 2}
+  floor: {fileID: 11400000, guid: 44bc9eeaddbd5d74aa94ba8c0d85fabc, type: 2}

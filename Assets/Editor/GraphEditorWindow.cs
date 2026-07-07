@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Generation;
+using Graphs;
 using UnityEditor;
 using UnityEngine;
-using Generation.Missions;
-using Generation.Rooms;
+using Graphs.Missions;
+using Graphs.Rooms;
 
 namespace Editor
 {
