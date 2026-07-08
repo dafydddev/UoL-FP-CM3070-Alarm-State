@@ -26,10 +26,11 @@ namespace Entities
             world.Occupancy.Place(_cell, gameObject);
         }
 
+        // A null mover is an anonymous query (e.g. the nav debug drawer): treat it as keyless.
         public bool BlocksEntry(Actor mover)
         {
             if (_open) return false;
-            return !(mover.TryGetComponent(out PlayerKeycardInventory inventory) && inventory.HasKey(keyId));
+            return !(mover && mover.TryGetComponent(out PlayerKeycardInventory inventory) && inventory.HasKey(keyId));
         }
 
         public void OnEntered(Actor mover)

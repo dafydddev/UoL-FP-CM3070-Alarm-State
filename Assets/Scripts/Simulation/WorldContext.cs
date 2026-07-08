@@ -1,4 +1,5 @@
 using Generation.Facility;
+using Navigation;
 using UnityEngine.Tilemaps;
 
 namespace Simulation
@@ -13,6 +14,7 @@ namespace Simulation
         public FacilityGrid Grid { get; }
         public OccupancyMap Occupancy { get; }
         public EntryRules Entry { get; }
+        public Navigator Navigator { get; }
 
         public WorldContext(Tilemap tilemap, Scheduler scheduler, SimulationClock clock, FacilityGrid grid)
         {
@@ -22,6 +24,7 @@ namespace Simulation
             Grid = grid;
             Occupancy = new OccupancyMap();
             Entry = new EntryRules(grid, Occupancy);
+            Navigator = new Navigator(tilemap, Entry);
         }
     }
 }
