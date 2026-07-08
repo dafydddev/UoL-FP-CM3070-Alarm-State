@@ -10,9 +10,12 @@ namespace Generation.Facility
 
         public FacilityGrid(TileDefinition[,] tiles) => _tiles = tiles;
 
+        public int Width => _tiles.GetLength(0);
+        public int Height => _tiles.GetLength(1);
+
         public TileDefinition At(Vector2Int cell) =>
             cell is { x: >= 0, y: >= 0 } &&
-            cell.x < _tiles.GetLength(0) && cell.y < _tiles.GetLength(1)
+            cell.x < Width && cell.y < Height
                 ? _tiles[cell.x, cell.y]
                 : null;
     }
