@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Generation;
 using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
@@ -20,7 +21,7 @@ namespace Spawners
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
         {
             // Seed from the graph so cover placement is repeatable per level.
-            var rng = new System.Random(graph.seed);
+            var rng = new System.Random(Seeds.For(graph.seed, Seeds.Cover, graph.level));
 
             // Eligible rooms: corridors, objective rooms, and guard posts that have a rectangle.
             var candidates = graph.rooms

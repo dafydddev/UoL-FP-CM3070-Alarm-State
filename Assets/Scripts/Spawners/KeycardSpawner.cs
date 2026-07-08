@@ -39,7 +39,7 @@ namespace Spawners
 
                 // Tint the sprite to match the key/door colour.
                 var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
-                if (spriteRend) spriteRend.color = KeyColour.For(keyId);
+                if (spriteRend) spriteRend.color = KeyColour.For(keyId, graph.seed);
                 go.name = $"Keycard_{keyId}";
             }
         }

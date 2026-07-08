@@ -17,11 +17,11 @@ namespace Entities
         private WorldContext _world;
 
         // Called by the spawner after Instantiate.
-        public void Init(WorldContext world)
+        public void Init(WorldContext world, int seed)
         {
             _world = world;
             _sprite = GetComponentInChildren<SpriteRenderer>();
-            if (_sprite) _sprite.color = KeyColour.For(keyId);
+            if (_sprite) _sprite.color = KeyColour.For(keyId, seed);
             _cell = (Vector2Int)world.Tilemap.WorldToCell(transform.position);
             world.Occupancy.Place(_cell, gameObject);
         }

@@ -536,9 +536,9 @@ namespace Editor
         // Builds a mission graph; see MissionGenerator.Generate for the full explanation.
         public MissionGraph Generate(int level, int totalLevels)
         {
-            // Resolve and seed the RNG for repeatable previews.
+            // Resolve the seed, then mix in the level so the same seed still varies per level.
             var resolvedSeed = RandomSeed ? UnityEngine.Random.Range(0, int.MaxValue) : Seed;
-            _rng = new System.Random(resolvedSeed);
+            _rng = new System.Random(Seeds.For(resolvedSeed, Seeds.Mission, level));
 
             // Pick the mission type and pull its content. Length comes from the enum itself, not a hardcoded count.
             var type = RandomType ? (MissionType)_rng.Next(0, Enum.GetValues(typeof(MissionType)).Length) : ForcedType;
