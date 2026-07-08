@@ -15,7 +15,7 @@ namespace Graphs.Rooms
         public static RoomGraph Generate(MissionGraph mission, DifficultyProfile profile, int level, int totalLevels)
         {
             var graph = new RoomGraph { seed = mission.seed, level = level };
-            var rng = new Random(mission.seed);
+            var rng = new Random(Seeds.For(mission.seed, Seeds.Rooms, level));
             var missionRoomMap = new Dictionary<string, RoomNode>(); // mission node id → its room
 
             // 1. Create one room per mission node.

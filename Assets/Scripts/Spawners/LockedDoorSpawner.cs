@@ -30,7 +30,7 @@ namespace Spawners
                 // Ensure the door has a LockedDoor component and stamp it with the required key.
                 var door = go.GetComponent<LockedDoor>() ?? go.AddComponent<LockedDoor>();
                 door.keyId = edge.keyRoomId;
-                door.Init(world);
+                door.Init(world, graph.seed);
                 go.name = $"LockedDoor_{edge.keyRoomId}";
             }
         }

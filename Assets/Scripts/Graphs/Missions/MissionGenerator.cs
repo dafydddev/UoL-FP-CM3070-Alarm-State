@@ -20,9 +20,9 @@ namespace Graphs.Missions
         // Generates a fresh mission graph, scaled by the given difficulty profile.
         public MissionGraph Generate(DifficultyProfile profile, int level, int totalLevels)
         {
-            // Resolve and seed the RNG so a given seed always produces the same mission.
+            // Resolve the seed, then mix in the level so the same seed still varies per level.
             var resolvedSeed = randomSeed ? UnityEngine.Random.Range(0, int.MaxValue) : seed;
-            _rng = new System.Random(resolvedSeed);
+            _rng = new System.Random(Seeds.For(resolvedSeed, Seeds.Mission, level));
 
             // Pick the mission type and grab its content set.
             var typeCount = Enum.GetValues(typeof(MissionType)).Length;
