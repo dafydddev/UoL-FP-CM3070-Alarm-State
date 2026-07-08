@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 namespace Spawners
 {
     // Spawns an exit prefab at the centre of every room flagged as an Exit room.
-    public class ExitSpawner : Spawner
+    public class ExitSpawner : PropSpawner
     {
         [SerializeField] private GameObject exitPrefab;
 

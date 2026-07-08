@@ -3,18 +3,18 @@ using System.Linq;
 using Entities;
 using Generation.Facility;
 using Graphs.Rooms;
+using Simulation;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Spawners
 {
     // Spawns a locked-door prefab on each locked edge of the room graph, tagged with the key required to open it.
-    public class LockedDoorSpawner : Spawner
+    public class LockedDoorSpawner : EntitySpawner
     {
         [SerializeField] private GameObject lockedDoorPrefab;
 
         // Places a locked door between the two rooms of every locked edge in the graph.
-        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             foreach (var edge in graph.edges.Where(e => e.locked))
             {
@@ -24,12 +24,13 @@ namespace Spawners
 
                 // Work out the boundary cell between the two rooms and convert it to world space.
                 var cell = DoorCell(a, b);
-                var worldPos = tilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+                var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
                 var go = Instantiate(lockedDoorPrefab, worldPos, Quaternion.identity, transform);
 
                 // Ensure the door has a LockedDoor component and stamp it with the required key.
                 var door = go.GetComponent<LockedDoor>() ?? go.AddComponent<LockedDoor>();
                 door.keyId = edge.keyRoomId;
+                door.Init(world);
                 go.name = $"LockedDoor_{edge.keyRoomId}";
             }
         }

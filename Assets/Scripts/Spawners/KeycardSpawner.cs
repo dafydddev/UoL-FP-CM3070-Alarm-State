@@ -4,18 +4,18 @@ using Entities.Keycards;
 using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
+using Simulation;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Spawners
 {
     // Spawns one keycard per locked-edge key, placing it in its key room and tinting it with that key's colour.
-    public class KeycardSpawner : Spawner
+    public class KeycardSpawner : EntitySpawner
     {
         [SerializeField] private GameObject keycardPrefab;
 
         // Spawns a keycard in each room that acts as a key source for a locked edge.
-        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             // Gather the distinct key rooms referenced by locked edges.
             var keyRoomIds = graph.edges
@@ -29,12 +29,13 @@ namespace Spawners
                 if (!rects.TryGetValue(keyId, out var rect)) continue;
 
                 // Spawn the keycard in the room centre.
-                var worldPos = tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
+                var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(keycardPrefab, worldPos, Quaternion.identity, transform);
 
                 // Ensure it has a Keycard component carrying the key id.
                 var card = go.GetComponent<Keycard>() ?? go.AddComponent<Keycard>();
                 card.keyId = keyId;
+                card.Init(world);
 
                 // Tint the sprite to match the key/door colour.
                 var spriteRend = go.GetComponentInChildren<SpriteRenderer>();

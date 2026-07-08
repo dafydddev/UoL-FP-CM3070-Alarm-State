@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using Generation.Facility;
-using Generation.Tiles;
-using Graphs.Rooms;
-using UnityEngine;
-using UnityEngine.Tilemaps;
+﻿using UnityEngine;
 
 namespace Spawners
 {
+    // Shared base: owns the spawned children's lifecycle.
+    // The Spawn contract lives on:
+    // PropSpawner (set dressing, needs only the tilemap)
+    // EntitySpawner (sim participants, need the world context).
     public abstract class Spawner : MonoBehaviour
     {
-        public abstract void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap);
-
         public void ClearChildren()
         {
             for (var i = transform.childCount - 1; i >= 0; i--)

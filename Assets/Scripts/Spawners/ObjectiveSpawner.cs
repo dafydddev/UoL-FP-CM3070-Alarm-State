@@ -10,7 +10,7 @@ using UnityEngine.Tilemaps;
 namespace Spawners
 {
     // Spawns an objective pickup/interactable at the centre of every objective room.
-    public class ObjectiveSpawner : Spawner
+    public class ObjectiveSpawner : PropSpawner
     {
         [SerializeField] private GameObject objectivePrefab;
 
