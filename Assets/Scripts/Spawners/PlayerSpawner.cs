@@ -2,23 +2,27 @@ using System.Collections.Generic;
 using Camera;
 using Generation.Facility;
 using Graphs.Rooms;
+using Simulation;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Spawners
 {
-    public class PlayerSpawner : Spawner
+    public class PlayerSpawner : EntitySpawner
     {
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private CameraFollow cameraFollow;
-        
+
         private GameObject _player;
 
-        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             var entrance = rects["room_entrance"];
-            var playerSpawn = tilemap.GetCellCenterWorld(new Vector3Int(entrance.CenterX, entrance.CenterY, 0));
+            var playerSpawn = world.Tilemap.GetCellCenterWorld(new Vector3Int(entrance.CenterX, entrance.CenterY, 0));
             _player = Instantiate(playerPrefab, playerSpawn, Quaternion.identity, transform);
+
+            // Hand the player its world before anything ticks.
+            foreach (var actor in _player.GetComponentsInChildren<Actor>()) actor.Init(world);
+
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
         }
     }

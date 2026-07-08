@@ -27,21 +27,23 @@ namespace Player
             moveAction.action.Disable();
         }
 
-        private void Start()
+        public override void Init(WorldContext world)
         {
-            var tilemap = World.Instance.Tilemap;
+            base.Init(world);
+            var tilemap = world.Tilemap;
             _cell = _prevCell = (Vector2Int)tilemap.WorldToCell(transform.position);
             transform.position = tilemap.GetCellCenterWorld((Vector3Int)_cell);
         }
 
         private void Update()
         {
+            if (World == null) return;
             ReadInput();
-            var tilemap = World.Instance.Tilemap;
+            var tilemap = World.Tilemap;
             transform.position = Vector3.Lerp(
                 tilemap.GetCellCenterWorld((Vector3Int)_prevCell),
                 tilemap.GetCellCenterWorld((Vector3Int)_cell),
-                Mathf.Clamp01(World.Instance.Clock.Alpha));
+                Mathf.Clamp01(World.Clock.Alpha));
         }
 
         protected override void Act()
@@ -54,10 +56,10 @@ namespace Player
             else return;
 
             var target = _cell + dir;
-            if (!World.Instance.CanEnter(target, this)) return;
+            if (!World.Entry.CanEnter(target, this)) return;
 
             _cell = target;
-            World.Instance.HandleEntered(target, this);
+            World.Entry.HandleEntered(target, this);
         }
 
         private void ReadInput()

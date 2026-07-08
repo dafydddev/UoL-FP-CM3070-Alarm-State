@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 namespace Spawners
 {
     // Scatters cover objects around the facility, placing each against a room's interior wall.
-    public class CoverSpawner : Spawner
+    public class CoverSpawner : PropSpawner
     {
         public GameObject coverPrefab;
         public int count = 6;

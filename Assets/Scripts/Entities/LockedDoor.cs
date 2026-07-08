@@ -1,4 +1,4 @@
-﻿using Entities.Keycards;
+using Entities.Keycards;
 using Generation.Cells;
 using Player;
 using Simulation;
@@ -14,13 +14,16 @@ namespace Entities
         private SpriteRenderer _sprite;
         private Vector2Int _cell;
         private bool _open;
+        private WorldContext _world;
 
-        private void Start()
+        // Called by the spawner after Instantiate.
+        public void Init(WorldContext world)
         {
+            _world = world;
             _sprite = GetComponentInChildren<SpriteRenderer>();
             if (_sprite) _sprite.color = KeyColour.For(keyId);
-            _cell = (Vector2Int)World.Instance.Tilemap.WorldToCell(transform.position);
-            World.Instance.Place(_cell, gameObject);
+            _cell = (Vector2Int)world.Tilemap.WorldToCell(transform.position);
+            world.Occupancy.Place(_cell, gameObject);
         }
 
         public bool BlocksEntry(Actor mover)
@@ -38,8 +41,8 @@ namespace Entities
 
         private void OnDestroy()
         {
-            if (World.Instance && World.Instance.OccupantAt(_cell) == gameObject)
-                World.Instance.Remove(_cell);
+            if (_world != null && _world.Occupancy.At(_cell) == gameObject)
+                _world.Occupancy.Remove(_cell);
         }
     }
 }

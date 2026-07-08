@@ -12,7 +12,9 @@ namespace Generation.Facility
     [RequireComponent(typeof(MissionGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
-        [SerializeField] private World world;
+        [SerializeField] private UnityEngine.Tilemaps.Tilemap tilemap;
+        [SerializeField] private Scheduler scheduler;
+        [SerializeField] private SimulationClock clock;
 
         [SerializeField] private DifficultyProfile profile; // difficulty curves shared by the whole pipeline
         [SerializeField, Min(1)] private int level = 1; // current level within the run, feeds difficulty scaling
@@ -27,7 +29,10 @@ namespace Generation.Facility
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
 
-        // Start, not Awake, so World.Awake has run and the spawned actors can reach it.
+        // The context for the current level, rebuilt on every Generate.
+        // Future systems (pathfinding, enemies) read from here.
+        public WorldContext World { get; private set; }
+
         private void Start()
         {
             Generate();
@@ -36,7 +41,7 @@ namespace Generation.Facility
         [ContextMenu("Clear")]
         private void ClearFacility()
         {
-            if (world.Tilemap) world.Tilemap.ClearAllTiles();
+            if (tilemap) tilemap.ClearAllTiles();
             ClearSpawners();
         }
 
@@ -47,14 +52,12 @@ namespace Generation.Facility
             // Remove anything spawned by a previous run.
             ClearFacility();
 
-            var tilemap = world.Tilemap;
-
             // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = GetComponent<MissionGenerator>().Generate(profile, level, totalLevels);
             var rooms = RoomGraphGenerator.Generate(mission, profile, level, totalLevels);
             var roles = FacilityTiledLayoutGenerator.Generate(rooms, out var rects);
 
-            // Realise each role into a tile: store it on the world for queries and paint it.
+            // Realise each role into a tile: keep it in the grid for queries and paint it.
             var gridW = roles.GetLength(0);
             var gridH = roles.GetLength(1);
             var tiles = new TileDefinition[gridW, gridH];
@@ -66,15 +69,16 @@ namespace Generation.Facility
                 if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
             }
 
-            world.Grid = new FacilityGrid(tiles);
+            // Wire up the fresh level context that everything spawned below receives.
+            World = new WorldContext(tilemap, scheduler, clock, new FacilityGrid(tiles));
 
             // Tint rooms by role for readability.
             FacilityColourCoder.Apply(tilemap, rooms, rects);
 
-            // Populate the level.
-            playerSpawner?.Spawn(rooms, rects, tilemap);
-            keycardSpawner?.Spawn(rooms, rects, tilemap);
-            lockedDoorSpawner?.Spawn(rooms, rects, tilemap);
+            // Populate the level: sim participants get the world, set dressing just the tilemap.
+            playerSpawner?.Spawn(rooms, rects, World);
+            keycardSpawner?.Spawn(rooms, rects, World);
+            lockedDoorSpawner?.Spawn(rooms, rects, World);
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
             exitSpawner?.Spawn(rooms, rects, tilemap);
             coverSpawner?.Spawn(rooms, rects, tilemap);
