@@ -30,7 +30,6 @@ namespace Generation.Facility
         [SerializeField] private CoverSpawner coverSpawner;
 
         // The context for the current level, rebuilt on every Generate.
-        // Future systems (pathfinding, enemies) read from here.
         public WorldContext World { get; private set; }
 
         private void Start()

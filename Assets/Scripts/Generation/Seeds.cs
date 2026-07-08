@@ -1,9 +1,9 @@
 namespace Generation
 {
-    // Derives RNG seeds from one base seed, one per subsystem and per level, so systems
-    // sharing a master seed never replay each other's sequences. System.Random produces
-    // similar output for nearby seeds, so ids are folded in with a splitmix-style hash
-    // rather than added to the seed directly.
+    // Derives RNG seeds from one base seed, one per subsystem and per level.
+    // Systems sharing a master seed never replay each other's sequences.
+    // System.Random produces similar output for nearby seeds,
+    // so ids are folded in with a splitmix-style hash rather than added to the seed directly.
     public static class Seeds
     {
         // One id per subsystem that owns its own RNG stream.
