@@ -28,6 +28,7 @@ namespace Generation.Facility
         [SerializeField] private ObjectiveSpawner objectiveSpawner;
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
+        [SerializeField] private DistractionSpawner distractionSpawner;
 
         private MissionGenerator _missionGenerator;
 
@@ -90,6 +91,7 @@ namespace Generation.Facility
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
             exitSpawner?.Spawn(rooms, rects, World);
             coverSpawner?.Spawn(rooms, rects, tilemap);
+            distractionSpawner?.Spawn(rooms, rects, World);
         }
 
         // Destroys everything spawned under each spawner from the previous level.
@@ -101,6 +103,7 @@ namespace Generation.Facility
             exitSpawner?.ClearChildren();
             objectiveSpawner?.ClearChildren();
             coverSpawner?.ClearChildren();
+            distractionSpawner?.ClearChildren();
         }
     }
 }

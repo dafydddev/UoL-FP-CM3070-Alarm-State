@@ -30,7 +30,7 @@ namespace Entities
         public bool BlocksEntry(Actor mover)
         {
             if (_open) return false;
-            return !(mover && mover.TryGetComponent(out PlayerKeycardInventory inventory) && inventory.HasKey(keyId));
+            return !(mover && mover.TryGetComponent(out PlayerInventory inventory) && inventory.HasKey(keyId));
         }
 
         public void OnEntered(Actor mover)
