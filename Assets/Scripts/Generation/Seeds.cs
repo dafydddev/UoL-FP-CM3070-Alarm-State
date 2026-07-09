@@ -11,6 +11,7 @@ namespace Generation
         public const int Rooms = 2;
         public const int Cover = 3;
         public const int Keys = 4;
+        public const int Distraction = 5;
 
         // Mixes the base seed with a subsystem id and an optional salt (e.g. the level number).
         public static int For(int seed, int subsystem, int salt = 0)
