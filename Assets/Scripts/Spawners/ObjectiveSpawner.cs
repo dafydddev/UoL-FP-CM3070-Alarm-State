@@ -25,7 +25,7 @@ namespace Spawners
                 var worldPos = tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(objectivePrefab, worldPos, Quaternion.identity, transform);
                 // Ensure it has an Objective component and link it to its room id (used by the tracker).
-                var objective = go.GetComponent<Objective>() ?? go.AddComponent<Objective>();
+                var objective = go.GetComponent<Objective>();
                 objective.id = room.id;
                 go.name = $"Objective_{room.id}";
             }

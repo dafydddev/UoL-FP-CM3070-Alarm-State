@@ -28,7 +28,7 @@ namespace Spawners
                 var go = Instantiate(lockedDoorPrefab, worldPos, Quaternion.identity, transform);
 
                 // Ensure the door has a LockedDoor component and stamp it with the required key.
-                var door = go.GetComponent<LockedDoor>() ?? go.AddComponent<LockedDoor>();
+                var door = go.GetComponent<LockedDoor>();
                 door.keyId = edge.keyRoomId;
                 door.Init(world, graph.seed);
                 go.name = $"LockedDoor_{edge.keyRoomId}";
