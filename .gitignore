@@ -109,3 +109,7 @@ InitTestScene*.unity*
 # IDE files
 
 /.idea/*
+
+# Local Recovery Files
+
+[Aa]ssets/_Recovery*
