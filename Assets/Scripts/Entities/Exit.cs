@@ -1,13 +1,15 @@
+using System;
 using Generation.Cells;
 using Player;
 using Simulation;
 using UnityEngine;
 
-namespace Entities.Keycards
+namespace Entities
 {
-    public class Keycard : MonoBehaviour, IEnterHandler
+    // A level exit. Fires Reached when the player steps onto it.
+    public class Exit : MonoBehaviour, IEnterHandler
     {
-        public string keyId;
+        public static event Action Reached;
 
         private Vector2Int _cell;
         private WorldContext _world;
@@ -22,15 +24,13 @@ namespace Entities.Keycards
 
         public void OnEntered(Actor mover)
         {
-            if (!mover.TryGetComponent(out PlayerKeycardInventory inventory)) return;
-            inventory.Collect(keyId);
-            _world.Occupancy.Remove(_cell);
-            Destroy(gameObject);
+            if (mover is PlayerActor) Reached?.Invoke();
         }
 
         private void OnDestroy()
         {
-            if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
+            if (_world != null && _world.Occupancy.At(_cell) == gameObject)
+                _world.Occupancy.Remove(_cell);
         }
     }
 }
