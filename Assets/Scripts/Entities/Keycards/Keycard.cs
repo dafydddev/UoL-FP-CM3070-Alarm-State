@@ -22,8 +22,8 @@ namespace Entities.Keycards
 
         public void OnEntered(Actor mover)
         {
-            if (!mover.TryGetComponent(out PlayerKeycardInventory inventory)) return;
-            inventory.Collect(keyId);
+            if (!mover.TryGetComponent(out PlayerInventory inventory)) return;
+            inventory.CollectKey(keyId);
             _world.Occupancy.Remove(_cell);
             Destroy(gameObject);
         }
