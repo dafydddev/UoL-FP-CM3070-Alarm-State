@@ -1,9 +1,11 @@
 ﻿using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
+using Run;
 using Simulation;
 using Spawners;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Generation.Facility
 {
@@ -12,13 +14,11 @@ namespace Generation.Facility
     [RequireComponent(typeof(MissionGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
-        [SerializeField] private UnityEngine.Tilemaps.Tilemap tilemap;
+        [SerializeField] private Tilemap tilemap;
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
-        [SerializeField] private DifficultyProfile profile; // difficulty curves shared by the whole pipeline
-        [SerializeField, Min(1)] private int level = 1; // current level within the run, feeds difficulty scaling
-        [SerializeField, Min(1)] private int totalLevels = 10; // total run length
+        [SerializeField] private DifficultyProfile profile;
 
         [SerializeField] private Tileset tileset;
 
@@ -29,43 +29,52 @@ namespace Generation.Facility
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
 
+        private MissionGenerator _missionGenerator;
+
+        [SerializeField] private int previewLevel = 1;
+
+        private MissionGenerator MissionGenerator => _missionGenerator ??= GetComponent<MissionGenerator>();
+
         // The context for the current level, rebuilt on every Generate.
         public WorldContext World { get; private set; }
 
-        private void Start()
-        {
-            Generate();
-        }
-
-        [ContextMenu("Clear")]
+        [ContextMenu("Clear Level")]
         private void ClearFacility()
         {
             if (tilemap) tilemap.ClearAllTiles();
             ClearSpawners();
         }
 
-        // Builds a complete level. Exposed in the inspector's context menu for quick testing.
-        [ContextMenu("Generate")]
-        public void Generate()
+        [ContextMenu("Generate Preview")]
+        public void GeneratePreview()
+        {
+            Generate(new RunContext(previewLevel, previewLevel));
+        }
+
+        // Builds a complete level using the supplied run state.
+        public void Generate(RunContext run)
         {
             // Remove anything spawned by a previous run.
             ClearFacility();
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
-            var mission = GetComponent<MissionGenerator>().Generate(profile, level, totalLevels);
-            var rooms = RoomGraphGenerator.Generate(mission, profile, level, totalLevels);
+            var mission = MissionGenerator.Generate(profile, run.CurrentLevel, run.TotalLevels);
+            var rooms = RoomGraphGenerator.Generate(mission, profile, run.CurrentLevel, run.TotalLevels);
             var roles = FacilityTiledLayoutGenerator.Generate(rooms, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
             var gridW = roles.GetLength(0);
             var gridH = roles.GetLength(1);
             var tiles = new TileDefinition[gridW, gridH];
+
             for (var x = 0; x < gridW; x++)
             for (var y = 0; y < gridH; y++)
             {
                 var tile = tileset.For(roles[x, y]);
                 tiles[x, y] = tile;
-                if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
+
+                if (tile)
+                    tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
             }
 
             // Wire up the fresh level context that everything spawned below receives.
@@ -79,7 +88,7 @@ namespace Generation.Facility
             keycardSpawner?.Spawn(rooms, rects, World);
             lockedDoorSpawner?.Spawn(rooms, rects, World);
             objectiveSpawner?.Spawn(rooms, rects, tilemap);
-            exitSpawner?.Spawn(rooms, rects, tilemap);
+            exitSpawner?.Spawn(rooms, rects, World);
             coverSpawner?.Spawn(rooms, rects, tilemap);
         }
 
