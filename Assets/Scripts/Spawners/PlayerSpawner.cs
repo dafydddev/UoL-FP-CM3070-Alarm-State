@@ -21,8 +21,8 @@ namespace Spawners
             _player = Instantiate(playerPrefab, playerSpawn, Quaternion.identity, transform);
 
             // Hand the player its world before anything ticks.
-            foreach (var actor in _player.GetComponentsInChildren<Actor>()) actor.Init(world);
-
+            var actor = _player.GetComponent<Actor>();
+            actor.Init(world);
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
         }
     }

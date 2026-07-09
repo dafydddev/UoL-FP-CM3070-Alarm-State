@@ -33,12 +33,12 @@ namespace Spawners
                 var go = Instantiate(keycardPrefab, worldPos, Quaternion.identity, transform);
 
                 // Ensure it has a Keycard component carrying the key id.
-                var card = go.GetComponent<Keycard>() ?? go.AddComponent<Keycard>();
+                var card = go.GetComponent<Keycard>();
                 card.keyId = keyId;
                 card.Init(world);
 
                 // Tint the sprite to match the key/door colour.
-                var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
+                var spriteRend = go.GetComponent<SpriteRenderer>();
                 if (spriteRend) spriteRend.color = KeyColour.For(keyId, graph.seed);
                 go.name = $"Keycard_{keyId}";
             }
