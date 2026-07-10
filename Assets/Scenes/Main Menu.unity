@@ -770,20 +770,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44c8bcff3b1d70e41b91be9db7578581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Menu.RebindingMenu
-  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  rows:
-  - direction: up
+  entries:
+  - action: {fileID: 143677209014762759, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     button: {fileID: 241621705}
     label: {fileID: 106142952}
-  - direction: left
+  - action: {fileID: -651965338403404756, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     button: {fileID: 956559699}
     label: {fileID: 1935711162}
-  - direction: down
+  - action: {fileID: -7604597296427933014, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     button: {fileID: 669379330}
     label: {fileID: 122098964}
-  - direction: right
+  - action: {fileID: 7534374900712896568, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     button: {fileID: 1917259210}
     label: {fileID: 29015411}
+  - action: {fileID: 5469640936615731471, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    button: {fileID: 758501250}
+    label: {fileID: 432153754}
   resetButton: {fileID: 1786753466}
 --- !u!1 &37348810
 GameObject:

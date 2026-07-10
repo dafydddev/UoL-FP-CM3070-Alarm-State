@@ -7,7 +7,10 @@ namespace Player
 {
     public class PlayerActor : Actor
     {
-        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private InputActionReference upAction;
+        [SerializeField] private InputActionReference downAction;
+        [SerializeField] private InputActionReference leftAction;
+        [SerializeField] private InputActionReference rightAction;
         [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
 
         private Vector2Int _cell, _prevCell;
@@ -18,13 +21,19 @@ namespace Player
         protected override void OnEnable()
         {
             base.OnEnable();
-            moveAction.action.Enable();
+            upAction.action.Enable();
+            downAction.action.Enable();
+            leftAction.action.Enable();
+            rightAction.action.Enable();
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            moveAction.action.Disable();
+            upAction.action.Disable();
+            downAction.action.Disable();
+            leftAction.action.Disable();
+            rightAction.action.Disable();
         }
 
         public override void Init(WorldContext world)
@@ -69,11 +78,10 @@ namespace Player
 
         private void ReadInput()
         {
-            var v = moveAction.action.ReadValue<Vector2>();
-            Track(Vector2Int.right, v.x > 0.5f);
-            Track(Vector2Int.left, v.x < -0.5f);
-            Track(Vector2Int.up, v.y > 0.5f);
-            Track(Vector2Int.down, v.y < -0.5f);
+            Track(Vector2Int.up, upAction.action.IsPressed());
+            Track(Vector2Int.down, downAction.action.IsPressed());
+            Track(Vector2Int.left, leftAction.action.IsPressed());
+            Track(Vector2Int.right, rightAction.action.IsPressed());
 
             var owner = _pressed.Count > 0 ? _pressed[^1] : Vector2Int.zero;
             if (owner != _owner)

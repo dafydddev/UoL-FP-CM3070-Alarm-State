@@ -106,7 +106,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerActor
   ticksPerAction: 1
-  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  upAction: {fileID: 143677209014762759, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  downAction: {fileID: -7604597296427933014, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  leftAction: {fileID: -651965338403404756, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  rightAction: {fileID: 7534374900712896568, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   repeatDelay: 0.2
 --- !u!114 &1424040589631600358
 MonoBehaviour:
