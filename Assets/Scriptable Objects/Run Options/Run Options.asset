@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9683c1288d5d214db88a523bc6d7458, type: 3}
+  m_Name: Run Options
+  m_EditorClassIdentifier: Assembly-CSharp::Run.RunOptions
+  profiles:
+  - {fileID: 11400000, guid: 4dbcffe389577bd4ab41d4ef1e68dbb8, type: 2}
+  - {fileID: 11400000, guid: ebc59509eb7d2f54d9ca50064425f8a9, type: 2}
+  - {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
+  runLengths: 0a000000140000001e000000
