@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using Generation.Facility;
+using Generation.Tiles;
 using Graphs.Rooms;
 using Simulation;
 using UnityEngine;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Camera;
 using Generation.Facility;
+using Generation.Tiles;
 using Graphs.Rooms;
 using Simulation;
 using UnityEngine;
