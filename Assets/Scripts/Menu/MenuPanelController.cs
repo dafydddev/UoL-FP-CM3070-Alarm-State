@@ -1,19 +1,26 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Menu
 {
-    public class MenuController : MonoBehaviour
+    public class MenuPanelController : MonoBehaviour
     {
         // The menu panels know to the scene
         [SerializeField] private MenuPanel[] menuPanels;
 
         // The default panel to show on scene load
-        [SerializeField] private MenuPanel defaultPanel;
+        [SerializeField] protected MenuPanel defaultPanel; 
+        
+        [SerializeField] protected bool showOnStart;
 
         // The current panel being displayed
         private MenuPanel _currentPanel;
-        
-        private void Awake() => UpdateMenu(defaultPanel);
+
+        private void Awake()
+        {
+            if (!showOnStart)  return;
+            UpdateMenu(defaultPanel);
+        }
 
         private void UpdateMenu(MenuPanel panel)
         {

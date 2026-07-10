@@ -38,6 +38,7 @@ namespace Player
         private void Update()
         {
             if (World == null) return;
+            if (GameLock.Locked) return;
             ReadInput();
             var tilemap = World.Tilemap;
             transform.position = Vector3.Lerp(
@@ -51,7 +52,11 @@ namespace Player
             _prevCell = _cell;
 
             Vector2Int dir;
-            if (_pending != Vector2Int.zero) { dir = _pending; _pending = Vector2Int.zero; }
+            if (_pending != Vector2Int.zero)
+            {
+                dir = _pending;
+                _pending = Vector2Int.zero;
+            }
             else if (_owner != Vector2Int.zero && _holdTime >= repeatDelay) dir = _owner;
             else return;
 

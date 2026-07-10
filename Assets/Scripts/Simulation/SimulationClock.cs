@@ -23,6 +23,9 @@ namespace Simulation
 
         private void Update()
         {
+            // The world stands still while anything holds the lock.
+            if (GameLock.Locked) return;
+
             var step = 1f / ticksPerSecond;
             _accumulator += Mathf.Min(Time.deltaTime, step * maxCatchUpTicks); // cap catch-up so a hitch can't leap
             while (_accumulator >= step)
