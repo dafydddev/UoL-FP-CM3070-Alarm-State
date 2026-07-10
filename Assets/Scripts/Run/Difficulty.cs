@@ -2,10 +2,10 @@ using System;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Generation
+namespace Run
 {
-    [CreateAssetMenu(menuName = "Generation/Difficulty Profile")]
-    public class DifficultyProfile : ScriptableObject
+    [CreateAssetMenu(menuName = "Run/Difficulty Profile")]
+    public class RunDifficultyProfile : ScriptableObject
     {
         public string label;
 
