@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Graphs.Missions;
 using Graphs.Rooms;
+using Run;
 
 namespace Editor
 {
@@ -16,7 +17,7 @@ namespace Editor
     public class GraphEditorWindow : EditorWindow
     {
         // Generation settings, mirroring the runtime generators.
-        private DifficultyProfile _profile;
+        private RunDifficultyProfile _profile;
         private int _level = 1;
         private int _totalLevels = 20; // the run length the player chose (10/20/30)
         private MissionType _forcedType = MissionType.Assassination;
@@ -133,7 +134,7 @@ namespace Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Generation", EditorStyles.boldLabel);
 
-            _profile = (DifficultyProfile)EditorGUILayout.ObjectField("Difficulty Profile", _profile, typeof(DifficultyProfile), false);
+            _profile = (RunDifficultyProfile)EditorGUILayout.ObjectField("Difficulty Profile", _profile, typeof(RunDifficultyProfile), false);
             _totalLevels = EditorGUILayout.IntPopup("Total Levels", _totalLevels, new[] { "10", "20", "30" }, new[] { 10, 20, 30 });
             _level = EditorGUILayout.IntSlider("Level", _level, MinLevel, _totalLevels);
             _randomType = EditorGUILayout.Toggle("Random Type", _randomType);
@@ -525,7 +526,7 @@ namespace Editor
     // A standalone copy of the mission generator used by the editor window. Mirrors MissionGenerator's logic.
     public class MissionGeneratorRuntime
     {
-        public DifficultyProfile Profile;
+        public RunDifficultyProfile Profile;
         public MissionType ForcedType = MissionType.Assassination;
         public bool RandomType = true;
         public int Seed;

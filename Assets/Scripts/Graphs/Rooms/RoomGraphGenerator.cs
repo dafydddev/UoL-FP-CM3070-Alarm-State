@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Generation;
 using Graphs.Missions;
+using Run;
 
 namespace Graphs.Rooms
 {
@@ -12,7 +13,7 @@ namespace Graphs.Rooms
         // one room per mission node, plus an entrance, optional locked keycard rooms, guard posts, connecting rooms, and exits.
 
         // Builds the room graph for a mission at the given profile, level, and chosen run length.
-        public static RoomGraph Generate(MissionGraph mission, DifficultyProfile profile, int level, int totalLevels)
+        public static RoomGraph Generate(MissionGraph mission, RunDifficultyProfile profile, int level, int totalLevels)
         {
             var graph = new RoomGraph { seed = mission.seed, level = level };
             var rng = new Random(Seeds.For(mission.seed, Seeds.Rooms, level));
