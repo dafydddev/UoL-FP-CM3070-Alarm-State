@@ -18,7 +18,7 @@ namespace Generation.Facility
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
-        [SerializeField] private DifficultyProfile profile;
+        [SerializeField] private RunDifficultyProfile profile;
 
         [SerializeField] private Tileset tileset;
 
@@ -47,10 +47,7 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview()
-        {
-            Generate(new RunContext(previewLevel, previewLevel));
-        }
+        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewLevel));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
@@ -59,9 +56,9 @@ namespace Generation.Facility
             ClearFacility();
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
-            var mission = MissionGenerator.Generate(profile, run.CurrentLevel, run.TotalLevels);
-            var rooms = RoomGraphGenerator.Generate(mission, profile, run.CurrentLevel, run.TotalLevels);
-            var roles = FacilityTiledLayoutGenerator.Generate(rooms, out var rects);
+            var mission = MissionGenerator.Generate(run.Profile, run.CurrentLevel, run.TotalLevels);
+            var rooms = RoomGraphGenerator.Generate(mission, run.Profile, run.CurrentLevel, run.TotalLevels);
+            var roles = TileLayoutGenerator.Generate(rooms, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
             var gridW = roles.GetLength(0);
