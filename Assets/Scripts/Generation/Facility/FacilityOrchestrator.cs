@@ -33,6 +33,7 @@ namespace Generation.Facility
         private MissionGenerator _missionGenerator;
 
         [SerializeField] private int previewLevel = 1;
+        [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
 
         private MissionGenerator MissionGenerator => _missionGenerator ??= GetComponent<MissionGenerator>();
 
@@ -47,7 +48,7 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewLevel));
+        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
