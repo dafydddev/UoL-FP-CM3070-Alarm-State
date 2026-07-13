@@ -31,31 +31,24 @@ namespace Generation.Tiles
     // as walls + floor and doorways are carved between connected rooms.
     public static class TileLayoutGenerator
     {
-        private const int RoomW = 12; // room width in tiles
-        private const int RoomH = 12; // room height in tiles
+        private const int RoomW = 11; // room width in tiles
+        private const int RoomH = 11; // room height in tiles
 
         // Convert an abstract cell coord to a tile origin; rooms overlap by 1 tile so walls are shared.
         private static int Ox(int cx) => cx * (RoomW - 1);
         private static int Oy(int cy) => cy * (RoomH - 1);
 
+        private const int MaxReliefRounds = 2; // graph subdivisions before accepting a degraded layout
+
         // Builds the structural grid and outputs each room's tile rectangle.
+        // Note: when a graph is too congested to embed on the grid, relief corridors are
+        // added to it (the graph is mutated), so callers see rooms and rects consistently.
         public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style,
             out Dictionary<string, RoomRect> roomRects)
         {
-            // Build parent/child lookups from the graph edges, tracking which rooms have a parent.
-            var children = new Dictionary<string, List<string>>();
-            var parent = new Dictionary<string, string>();
-            var inbound = new HashSet<string>();
-            foreach (var e in graph.edges)
-            {
-                if (!children.TryGetValue(e.fromId, out var list)) children[e.fromId] = list = new List<string>();
-                list.Add(e.toId);
-                parent[e.toId] = e.fromId;
-                inbound.Add(e.toId);
-            }
-
-            // The root is the room with no parent (fall back to the first room).
-            var root = graph.rooms.Find(r => !inbound.Contains(r.id))?.id ?? graph.rooms[0].id;
+            Dictionary<string, List<string>> children;
+            Dictionary<string, string> parent;
+            string root;
 
             // The strategy decides only which abstract cell each room occupies and which
             // pairs get a doorway — one distinct cell per room, doored pairs orthogonally
@@ -63,16 +56,31 @@ namespace Generation.Tiles
             var cell = new Dictionary<string, Vector2Int>();
             var connections = new List<(string a, string b)>();
 
-            switch (style)
+            BuildLookups();
+            for (var round = 0; ; round++)
             {
-                // Use the chosen strategy to place rooms (falls back to spine if none is chosen).
-                case TileLayoutStyle.RandomWalk:
-                    RandomWalkLayout.Place(graph, root, parent, children, cell, connections);
-                    break;
-                case TileLayoutStyle.Spine:
-                default:
+                cell.Clear();
+                connections.Clear();
+                var clean = style == TileLayoutStyle.RandomWalk
+                    ? RandomWalkLayout.Place(graph, root, children, cell, connections)
+                    : SpineLayout.Place(graph, root, parent, children, cell, connections);
+                if (clean) break;
+
+                if (round == MaxReliefRounds)
+                {
+                    // Even the relieved graph wouldn't embed. The spine always completes
+                    // (its greedy last resort may stack rooms), so the level still generates.
+                    if (style != TileLayoutStyle.RandomWalk) break;
+                    cell.Clear();
+                    connections.Clear();
                     SpineLayout.Place(graph, root, parent, children, cell, connections);
                     break;
+                }
+
+                // Too congested to embed: give crowded branches a corridor to escape
+                // through, then retry the placement on the relieved graph.
+                SubdivideCongested(graph, round);
+                BuildLookups();
             }
 
             // Normalise cell coords so the layout starts at (0, 0).
@@ -127,6 +135,60 @@ namespace Generation.Tiles
             }
 
             return grid;
+
+            // Build parent/child lookups from the graph edges, tracking which rooms have a
+            // parent. The root is the room with no parent (fall back to the first room).
+            void BuildLookups()
+            {
+                children = new Dictionary<string, List<string>>();
+                parent = new Dictionary<string, string>();
+                var inbound = new HashSet<string>();
+                foreach (var e in graph.edges)
+                {
+                    if (!children.TryGetValue(e.fromId, out var list)) children[e.fromId] = list = new List<string>();
+                    list.Add(e.toId);
+                    parent[e.toId] = e.fromId;
+                    inbound.Add(e.toId);
+                }
+
+                root = graph.rooms.Find(r => !inbound.Contains(r.id))?.id ?? graph.rooms[0].id;
+            }
+        }
+
+        // Emergency relief when a layout cannot be embedded: rooms at or above the degree
+        // threshold get every outgoing edge subdivided with a pass-through corridor, so
+        // their branches gain an arm to escape local congestion (subdivided enough, any
+        // tree fits the grid). Same degree-preserving splice SpliceCorridors uses; the
+        // lock stays on the segment entering the original target.
+        private static void SubdivideCongested(RoomGraph graph, int round)
+        {
+            var degree = new Dictionary<string, int>();
+            foreach (var r in graph.rooms) degree[r.id] = 0;
+            foreach (var e in graph.edges)
+            {
+                degree[e.fromId]++;
+                degree[e.toId]++;
+            }
+
+            // A cell has four orthogonal neighbours, so a degree-4 room has zero spare
+            // sides — relieve those first; if that wasn't enough, the next round also
+            // relieves rooms with only one spare side.
+            const int cellNeighbours = 4;
+            var threshold = round == 0 ? cellNeighbours : cellNeighbours - 1;
+            var relief = 0;
+            foreach (var edge in new List<RoomEdge>(graph.edges))
+            {
+                if (degree[edge.fromId] < threshold) continue;
+
+                var corridor = new RoomNode
+                    { id = $"room_relief_{round}_{relief++}", type = RoomType.Corridor };
+                graph.rooms.Add(corridor);
+                var idx = graph.edges.IndexOf(edge);
+                if (idx != -1) graph.edges.RemoveAt(idx);
+                graph.edges.Add(new RoomEdge { fromId = edge.fromId, toId = corridor.id });
+                graph.edges.Add(new RoomEdge
+                    { fromId = corridor.id, toId = edge.toId, locked = edge.locked, keyRoomId = edge.keyRoomId });
+            }
         }
 
         // Fills a rectangle of the grid with a role, clamped to the grid bounds.

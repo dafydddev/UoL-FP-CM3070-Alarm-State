@@ -6,9 +6,25 @@ namespace Generation.Tiles
 {
     // The original layout: the root-to-primary path laid left-to-right as a straight spine,
     // with each spine room's off-spine subtrees hung alternately above and below.
+    // Subtrees are placed with backtracking, so crowded branches reroute instead of
+    // stacking two rooms on the same cell; the old greedy overlap survives only as the
+    // last resort when no arrangement exists at all.
     internal static class SpineLayout
     {
-        public static void Place(RoomGraph graph, string root,
+        // Search budgets are worst-case time caps, not tuning targets: a placement that is
+        // going to succeed almost always does so in a tiny fraction of the cap, so the cap
+        // only bounds generation time on graphs that turn out not to fit the grid (those
+        // then get relief corridors). Sized per room so small levels don't over-search and
+        // large ones don't starve; the factors reproduce the values a 32,000-level sweep
+        // validated (zero stacked rooms) at typical level sizes.
+        private const int JointStepsPerRoom = 5000; // whole-level search: ~150k tries at ~30 rooms
+        private const int RescueStepsPerRoom = 400; // per-subtree rescue: an order of magnitude cheaper; failures fall through
+        private const int JointRetries = 4; // seeded reshuffles; each costs a full budget, diminishing returns beyond a few
+        private const int SubtreeRetries = 8; // rescue reshuffles are cheap, so a few more than the joint search
+
+        // Lays the level out; false means at least one subtree needed the greedy last
+        // resort and rooms may be stacked (the placement itself always completes).
+        public static bool Place(RoomGraph graph, string root,
             Dictionary<string, string> parent,
             Dictionary<string, List<string>> children,
             Dictionary<string, Vector2Int> cell,
@@ -19,42 +35,86 @@ namespace Generation.Tiles
                 .Find(r => r.type == RoomType.ObjectiveRoom && r.missionNodeId == "primary")?.id;
             var spine = PathTo(primary, parent, root) ?? new List<string> { root };
             var onSpine = new HashSet<string>(spine);
-            var used = new HashSet<Vector2Int>();
+            var byNeed = SubtreePlacer.BySubtreeSize(children); // biggest branches placed first
+            var rng = new System.Random(Seeds.For(graph.seed, Seeds.Tiles, graph.level));
+            var state = new SubtreePlacer.State { Cell = cell, Connections = connections, Rng = null };
             // Lay the spine left-to-right along y = 0, connecting each room to the previous.
             for (var i = 0; i < spine.Count; i++)
-            {
-                var p = new Vector2Int(i, 0);
-                cell[spine[i]] = p;
-                used.Add(p);
-                if (i > 0) connections.Add((spine[i - 1], spine[i]));
-            }
+                state.Add(spine[i], new Vector2Int(i, 0), i > 0 ? spine[i - 1] : null);
 
-            // Hang each spine room's off-spine children as subtrees, alternating above/below.
+            // Gather each spine room's off-spine children as hang points, alternating above/below.
+            var hangs = new List<(string parentId, string node, int dirY)>();
             foreach (var s in spine)
             {
-                if (!children.TryGetValue(s, out var kids)) continue;
+                if (!byNeed.TryGetValue(s, out var kids)) continue;
                 var side = 1;
                 foreach (var child in kids)
                 {
                     if (onSpine.Contains(child)) continue;
-                    PlaceSubtree(s, child, side, cell, used, connections, children);
+                    hangs.Add((s, child, side));
                     side = -side; // alternate sides for the next child
                 }
             }
+
+            // Place all subtrees as one joint search, so a subtree can yield a cell that a
+            // later one needs: the deterministic preference pass first (keeps the classic
+            // look), then seeded reshuffles (still deterministic per seed + level).
+            var jointBudget = JointStepsPerRoom * graph.rooms.Count;
+            state.Steps = jointBudget;
+            if (SubtreePlacer.TryPlaceForest(hangs, byNeed, state)) return true;
+            state.Rng = rng;
+            for (var retry = 0; retry < JointRetries; retry++)
+            {
+                state.Steps = jointBudget;
+                if (SubtreePlacer.TryPlaceForest(hangs, byNeed, state)) return true;
+            }
+
+            // Joint search found nothing: rescue subtrees one at a time so a single
+            // impossible branch doesn't degrade the rest of the level.
+            var rescueBudget = RescueStepsPerRoom * graph.rooms.Count;
+            var clean = true;
+            foreach (var (parentId, node, side) in hangs)
+                clean &= Hang(parentId, node, side, byNeed, state, rng, rescueBudget);
+            return clean;
         }
 
-        // Recursively places child room (and its descendants) in a free cell next to its parent.
-        private static void PlaceSubtree(string parentId, string node, int dirY,
-            Dictionary<string, Vector2Int> cell, HashSet<Vector2Int> used,
-            List<(string, string)> connections, Dictionary<string, List<string>> children)
+        // Hangs one subtree off a spine room: the preferred side first, the other side if
+        // the preferred one can't fit it, then seeded reshuffles, and only then the
+        // pre-backtracking greedy placement — which may stack rooms — so a level always
+        // generates. False reports that the greedy last resort was needed.
+        private static bool Hang(string parentId, string node, int side,
+            Dictionary<string, List<string>> children, SubtreePlacer.State state, System.Random rng, int budget)
         {
-            var pos = FindFree(cell[parentId], dirY, used);
-            cell[node] = pos;
-            used.Add(pos);
-            connections.Add((parentId, node));
+            state.Rng = null;
+            state.Steps = budget;
+            if (SubtreePlacer.TryPlace(parentId, node, side, children, state)) return true;
+            state.Steps = budget;
+            if (SubtreePlacer.TryPlace(parentId, node, -side, children, state)) return true;
+
+            state.Rng = rng; // crowded: let shuffled candidate orders explore other shapes
+            for (var retry = 0; retry < SubtreeRetries; retry++)
+            {
+                state.Steps = budget;
+                if (!SubtreePlacer.TryPlace(parentId, node, side, children, state)) continue;
+                state.Rng = null;
+                return true;
+            }
+
+            state.Rng = null; // later subtrees still get the deterministic preference pass
+            GreedyPlaceSubtree(parentId, node, side, children, state);
+            return false;
+        }
+
+        // Last resort: the original greedy placement, kept for the (measured ~never)
+        // case where no overlap-free arrangement exists within budget.
+        private static void GreedyPlaceSubtree(string parentId, string node, int dirY,
+            Dictionary<string, List<string>> children, SubtreePlacer.State state)
+        {
+            var pos = FindFree(state.Cell[parentId], dirY, state.Used);
+            state.Add(node, pos, parentId);
             if (!children.TryGetValue(node, out var kids)) return;
             foreach (var child in kids)
-                PlaceSubtree(node, child, dirY, cell, used, connections, children);
+                GreedyPlaceSubtree(node, child, dirY, children, state);
         }
 
         // Finds the first free neighbouring cell, preferring the branch direction, then sideways.
@@ -88,7 +148,8 @@ namespace Generation.Tiles
                 path.Add(cur);
                 if (cur == root) break;
                 if (!parent.TryGetValue(cur, out cur)) cur = null;
-                if (++guard > 100000) break; // safety against a malformed/cyclic graph
+                // A real path can't visit more rooms than have parents; longer means a cycle.
+                if (++guard > parent.Count) break;
             }
 
             path.Reverse();
