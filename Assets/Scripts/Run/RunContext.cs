@@ -9,13 +9,13 @@ namespace Run
         // Cleared by the consumer after reading.
         public static RunContext Pending;
 
-        public RunDifficultyProfile Profile { get; }
+        public RunDifficulty Profile { get; }
         public int CurrentLevel { get; private set; }
         public int TotalLevels { get; }
 
         private bool IsComplete => CurrentLevel >= TotalLevels;
 
-        public RunContext(RunDifficultyProfile profile, int startLevel, int totalLevels)
+        public RunContext(RunDifficulty profile, int startLevel, int totalLevels)
         {
             Profile = profile;
             CurrentLevel = startLevel;

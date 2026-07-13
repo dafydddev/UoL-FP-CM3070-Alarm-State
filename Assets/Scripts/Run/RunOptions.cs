@@ -7,7 +7,7 @@ namespace Run
     [CreateAssetMenu(menuName = "Run/Run Options")]
     public class RunOptions : ScriptableObject
     {
-        public RunDifficultyProfile[] profiles;
+        public RunDifficulty[] profiles;
         public int[] runLengths; // e.g. 10, 20, 30
     }
 }

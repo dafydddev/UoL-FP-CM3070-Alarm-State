@@ -19,7 +19,7 @@ namespace Graphs.Missions
         private System.Random _rng;
 
         // Generates a fresh mission graph, scaled by the given difficulty profile.
-        public MissionGraph Generate(RunDifficultyProfile profile, int level, int totalLevels)
+        public MissionGraph Generate(RunDifficulty profile, int level, int totalLevels)
         {
             // Resolve the seed, then mix in the level so the same seed still varies per level.
             var resolvedSeed = randomSeed ? UnityEngine.Random.Range(0, int.MaxValue) : seed;
