@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e8952a972d4e70bab72da0be946b52, type: 3}
+  m_Name: Terrain
+  m_EditorClassIdentifier: Assembly-CSharp::Generation.Terrain.TerrainTileset
+  grass:
+  - {fileID: 11400000, guid: 52cb67794a8ee4d4ab222bf889a64a65, type: 2}
+  trees:
+  - {fileID: 11400000, guid: 42692395140bd40428838762709172fc, type: 2}
+  deadTrees:
+  - {fileID: 11400000, guid: 3370b286345478b468a04919087ae3a8, type: 2}
+  rock:
+  - {fileID: 11400000, guid: 8961071b4626db84e98c094908603b05, type: 2}
+  shoreNone: {fileID: 11400000, guid: c738f06f7bd94b44ba7f8a7771150a7a, type: 2}
+  shoreN: {fileID: 11400000, guid: 95fc8b4e5b7e18642b085c655001e84d, type: 2}
+  shoreE: {fileID: 11400000, guid: 93e7cafaebea76247a0293cd679efb3b, type: 2}
+  shoreS: {fileID: 11400000, guid: 8d806aedfcb1af8498018abeda98f5dc, type: 2}
+  shoreW: {fileID: 11400000, guid: 97adbc471c8d79f48a89b84a472015d7, type: 2}
+  shoreNE: {fileID: 11400000, guid: a0784e8259d56c841ae1b8d43a55044a, type: 2}
+  shoreES: {fileID: 11400000, guid: e36e6e387c974a449b7da07748655454, type: 2}
+  shoreSW: {fileID: 11400000, guid: 7f30e6fc320e7d34abd3f1f5a027f599, type: 2}
+  shoreNW: {fileID: 11400000, guid: 010dd78ac9d3ea04a978a400ac9fa5cb, type: 2}
+  shoreNS: {fileID: 11400000, guid: 8f61cb8c662d65c4faf057f261305ad8, type: 2}
+  shoreEW: {fileID: 11400000, guid: 4308a804e90a34242972726882a35d3c, type: 2}
+  shoreNES: {fileID: 11400000, guid: c480d81b58abfe7468c3dd3c9efbd8e5, type: 2}
+  shoreESW: {fileID: 11400000, guid: 80de5fccd051b064a9d7efae49ff9bd5, type: 2}
+  shoreNSW: {fileID: 11400000, guid: 87a7a1758cadd584385f522cb1a8519b, type: 2}
+  shoreNEW: {fileID: 11400000, guid: 81245dd7334ed794a80aaf21b312349d, type: 2}
+  shoreNESW: {fileID: 11400000, guid: a3cb0a02d2e1c2642ab88a31ecf951a9, type: 2}
