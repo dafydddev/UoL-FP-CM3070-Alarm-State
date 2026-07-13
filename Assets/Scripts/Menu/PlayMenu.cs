@@ -1,4 +1,5 @@
-﻿using Run;
+﻿using Generation.Tiles;
+using Run;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,7 +16,15 @@ namespace Menu
 
         [SerializeField] private TMP_Dropdown difficultyDropdown;
         [SerializeField] private TMP_Dropdown levelsDropdown;
+        [SerializeField] private TMP_Dropdown layoutDropdown;
         [SerializeField] private Button startRunButton;
+
+        // Player-facing names for the layout styles the game offers, in dropdown order.
+        private static readonly (string label, TileLayoutStyle style)[] Layouts =
+        {
+            ("Direct", TileLayoutStyle.Spine),
+            ("Winding", TileLayoutStyle.RandomWalk),
+        };
 
         private void Start()
         {
@@ -36,6 +45,15 @@ namespace Menu
             }
 
             levelsDropdown.RefreshShownValue();
+
+            // One entry per layout style.
+            layoutDropdown.ClearOptions();
+            foreach (var (label, _) in Layouts)
+            {
+                layoutDropdown.options.Add(new TMP_Dropdown.OptionData(label));
+            }
+
+            layoutDropdown.RefreshShownValue();
             startRunButton.onClick.AddListener(Play);
         }
 
@@ -45,7 +63,8 @@ namespace Menu
             RunContext.Pending = new RunContext(
                 options.profiles[difficultyDropdown.value],
                 1,
-                options.runLengths[levelsDropdown.value]);
+                options.runLengths[levelsDropdown.value],
+                Layouts[layoutDropdown.value].style);
             SceneManager.LoadScene("Gameplay");
         }
     }

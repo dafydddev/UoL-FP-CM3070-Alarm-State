@@ -2,6 +2,7 @@ using System.Collections;
 using Effects;
 using Entities;
 using Generation.Facility;
+using Generation.Tiles;
 using Simulation;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Run
         [SerializeField, Min(1)] private int defaultStartLevel = 1;
         [SerializeField, Min(1)] private int defaultTotalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
+        [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
         [SerializeField] private ScreenWipeEffect wipeEffect;
 
         private FacilityOrchestrator _facility;
@@ -27,7 +29,7 @@ namespace Run
         private void Start()
         {
             GameLock.Clear();
-            _run = RunContext.Pending ?? new RunContext(@default, defaultStartLevel, defaultTotalLevels);
+            _run = RunContext.Pending ?? new RunContext(@default, defaultStartLevel, defaultTotalLevels, defaultLayoutStyle);
             RunContext.Pending = null;
             StartCoroutine(BuildLevel());
         }
