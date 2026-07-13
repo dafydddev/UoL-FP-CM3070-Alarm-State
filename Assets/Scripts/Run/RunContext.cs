@@ -1,4 +1,5 @@
 ﻿using Generation;
+using Generation.Tiles;
 
 namespace Run
 {
@@ -10,16 +11,19 @@ namespace Run
         public static RunContext Pending;
 
         public RunDifficulty Profile { get; }
+        public TileLayoutStyle LayoutStyle { get; }
         public int CurrentLevel { get; private set; }
         public int TotalLevels { get; }
 
         private bool IsComplete => CurrentLevel >= TotalLevels;
 
-        public RunContext(RunDifficulty profile, int startLevel, int totalLevels)
+        public RunContext(RunDifficulty profile, int startLevel, int totalLevels,
+            TileLayoutStyle layoutStyle = TileLayoutStyle.Spine)
         {
             Profile = profile;
             CurrentLevel = startLevel;
             TotalLevels = totalLevels;
+            LayoutStyle = layoutStyle;
         }
 
         public bool Advance()

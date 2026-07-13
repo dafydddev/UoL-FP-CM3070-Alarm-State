@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c952c68f2277a4f9df80c03e01d9de, type: 3}
   m_Name: Wall
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Layout.Tile
+  tileBase: {fileID: 11400000, guid: ba357789dd7544745b307d0f1f77b8da, type: 2}
   walkable: 0
-  tileBase: {fileID: 11400000, guid: 32d9b877af435f245b23a768a04ed6f7, type: 2}

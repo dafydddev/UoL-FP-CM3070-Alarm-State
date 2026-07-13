@@ -34,6 +34,7 @@ namespace Generation.Facility
         [SerializeField] private DistractionSpawner distractionSpawner;
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
+        [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
 
         private MissionGenerator _missionGenerator;
 
@@ -55,7 +56,7 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels));
+        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
@@ -66,7 +67,7 @@ namespace Generation.Facility
             // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = MissionGenerator.Generate(run.Profile, run.CurrentLevel, run.TotalLevels);
             var rooms = RoomGraphGenerator.Generate(mission, run.Profile, run.CurrentLevel, run.TotalLevels);
-            var roles = TileLayoutGenerator.Generate(rooms, out var rects);
+            var roles = TileLayoutGenerator.Generate(rooms, run.LayoutStyle, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
             var gridW = roles.GetLength(0);

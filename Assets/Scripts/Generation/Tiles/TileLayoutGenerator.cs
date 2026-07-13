@@ -26,9 +26,9 @@ namespace Generation.Tiles
         }
     }
 
-    // Turns a mission RoomGraph into a grid of structural roles: lays rooms out on an abstract
-    // cell grid (a straight "spine" to the primary objective with side branches), then marks each
-    // room as walls + floor and carves doorways between connected rooms.
+    // Turns a mission RoomGraph into a grid of structural roles: a placement strategy
+    // (chosen per run) lays rooms out on an abstract cell grid, then each room is marked
+    // as walls + floor and doorways are carved between connected rooms.
     public static class TileLayoutGenerator
     {
         private const int RoomW = 12; // room width in tiles
@@ -39,7 +39,8 @@ namespace Generation.Tiles
         private static int Oy(int cy) => cy * (RoomH - 1);
 
         // Builds the structural grid and outputs each room's tile rectangle.
-        public static CellRole[,] Generate(RoomGraph graph, out Dictionary<string, RoomRect> roomRects)
+        public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style,
+            out Dictionary<string, RoomRect> roomRects)
         {
             // Build parent/child lookups from the graph edges, tracking which rooms have a parent.
             var children = new Dictionary<string, List<string>>();
@@ -55,35 +56,23 @@ namespace Generation.Tiles
 
             // The root is the room with no parent (fall back to the first room).
             var root = graph.rooms.Find(r => !inbound.Contains(r.id))?.id ?? graph.rooms[0].id;
-            // The "spine" is the path from root to the primary objective room, laid out in a straight line.
-            var primary = graph.rooms
-                .Find(r => r.type == RoomType.ObjectiveRoom && r.missionNodeId == "primary")?.id;
-            var spine = PathTo(primary, parent, root) ?? new List<string> { root };
-            var onSpine = new HashSet<string>(spine);
-            // Abstract cell positions per room, the cells already taken, and the connections to door.
-            var cell = new Dictionary<string, Vector2Int>();
-            var used = new HashSet<Vector2Int>();
-            var connections = new List<(string a, string b)>();
-            // Lay the spine left-to-right along y = 0, connecting each room to the previous.
-            for (var i = 0; i < spine.Count; i++)
-            {
-                var p = new Vector2Int(i, 0);
-                cell[spine[i]] = p;
-                used.Add(p);
-                if (i > 0) connections.Add((spine[i - 1], spine[i]));
-            }
 
-            // Hang each spine room's off-spine children as subtrees, alternating above/below.
-            foreach (var s in spine)
+            // The strategy decides only which abstract cell each room occupies and which
+            // pairs get a doorway — one distinct cell per room, doored pairs orthogonally
+            // adjacent. Everything below enforces the shared rules regardless of strategy.
+            var cell = new Dictionary<string, Vector2Int>();
+            var connections = new List<(string a, string b)>();
+
+            switch (style)
             {
-                if (!children.TryGetValue(s, out var kids)) continue;
-                var side = 1;
-                foreach (var child in kids)
-                {
-                    if (onSpine.Contains(child)) continue;
-                    PlaceSubtree(s, child, side, cell, used, connections, children);
-                    side = -side; // alternate sides for the next child
-                }
+                // Use the chosen strategy to place rooms (falls back to spine if none is chosen).
+                case TileLayoutStyle.RandomWalk:
+                    RandomWalkLayout.Place(graph, root, parent, children, cell, connections);
+                    break;
+                case TileLayoutStyle.Spine:
+                default:
+                    SpineLayout.Place(graph, root, parent, children, cell, connections);
+                    break;
             }
 
             // Normalise cell coords so the layout starts at (0, 0).
@@ -138,59 +127,6 @@ namespace Generation.Tiles
             }
 
             return grid;
-        }
-
-        // Recursively places child room (and its descendants) in a free cell next to its parent.
-        private static void PlaceSubtree(string parentId, string node, int dirY,
-            Dictionary<string, Vector2Int> cell, HashSet<Vector2Int> used,
-            List<(string, string)> connections, Dictionary<string, List<string>> children)
-        {
-            var pos = FindFree(cell[parentId], dirY, used);
-            cell[node] = pos;
-            used.Add(pos);
-            connections.Add((parentId, node));
-            if (!children.TryGetValue(node, out var kids)) return;
-            foreach (var child in kids)
-                PlaceSubtree(node, child, dirY, cell, used, connections, children);
-        }
-
-        // Finds the first free neighbouring cell, preferring the branch direction, then sideways.
-        private static Vector2Int FindFree(Vector2Int from, int dirY, HashSet<Vector2Int> used)
-        {
-            var candidates = new[]
-            {
-                from + new Vector2Int(0, dirY), // preferred: away from the spine
-                from + new Vector2Int(1, 0),
-                from + new Vector2Int(-1, 0),
-                from + new Vector2Int(0, -dirY),
-            };
-            foreach (var c in candidates)
-            {
-                if (!used.Contains(c)) return c;
-            }
-
-            // All neighbours taken — fall back to the preferred cell (may overlap).
-            return from + new Vector2Int(0, dirY);
-        }
-
-        // Walks parent links from target back to root and returns the root-to-target path, or null.
-        private static List<string> PathTo(string target, Dictionary<string, string> parent, string root)
-        {
-            if (target == null) return null;
-            var path = new List<string>();
-            var cur = target;
-            var guard = 0;
-            while (cur != null)
-            {
-                path.Add(cur);
-                if (cur == root) break;
-                if (!parent.TryGetValue(cur, out cur)) cur = null;
-                if (++guard > 100000) break; // safety against a malformed/cyclic graph
-            }
-
-            path.Reverse();
-            // Only valid if we actually reached the root.
-            return path.Count > 0 && path[0] == root ? path : null;
         }
 
         // Fills a rectangle of the grid with a role, clamped to the grid bounds.
