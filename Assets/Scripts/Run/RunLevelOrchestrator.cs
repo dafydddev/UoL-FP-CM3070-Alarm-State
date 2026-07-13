@@ -11,12 +11,12 @@ namespace Run
     // Builds the starting level, then advances one level each time the player reaches an exit.
     // Difficulty scales with the level number, which the facility orchestrator handles.
     [RequireComponent(typeof(FacilityOrchestrator))]
-    public class LevelOrchestrator : MonoBehaviour
+    public class RunLevelOrchestrator : MonoBehaviour
     {
         [SerializeField, Min(1)] private int defaultStartLevel = 1;
         [SerializeField, Min(1)] private int defaultTotalLevels = 10;
-        [SerializeField] private RunDifficultyProfile defaultProfile; // used when entering the scene directly
-        [SerializeField] private ScreenWipe wipe;
+        [SerializeField] private RunDifficulty @default; // used when entering the scene directly
+        [SerializeField] private ScreenWipeEffect wipeEffect;
 
         private FacilityOrchestrator _facility;
 
@@ -27,7 +27,7 @@ namespace Run
         private void Start()
         {
             GameLock.Clear();
-            _run = RunContext.Pending ?? new RunContext(defaultProfile, defaultStartLevel, defaultTotalLevels);
+            _run = RunContext.Pending ?? new RunContext(@default, defaultStartLevel, defaultTotalLevels);
             RunContext.Pending = null;
             StartCoroutine(BuildLevel());
         }
@@ -48,9 +48,9 @@ namespace Run
             GameLock.Acquire();
             try
             {
-                if (wipe) yield return wipe.Close();
+                if (wipeEffect) yield return wipeEffect.Close();
                 FacilityOrchestrator.Generate(_run);
-                if (wipe) yield return wipe.Open();
+                if (wipeEffect) yield return wipeEffect.Open();
             }
             finally
             {

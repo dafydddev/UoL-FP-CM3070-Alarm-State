@@ -21,7 +21,7 @@ namespace Generation.Facility
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
-        [SerializeField] private RunDifficultyProfile profile;
+        [SerializeField] private RunDifficulty profile;
 
         [SerializeField] private Tileset tileset;
 

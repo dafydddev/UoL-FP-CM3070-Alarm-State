@@ -17,7 +17,7 @@ namespace Editor
     public class GraphEditorWindow : EditorWindow
     {
         // Generation settings, mirroring the runtime generators.
-        private RunDifficultyProfile _profile;
+        private RunDifficulty _runDifficulty;
         private int _level = 1;
         private int _totalLevels = 20; // the run length the player chose (10/20/30)
         private MissionType _forcedType = MissionType.Assassination;
@@ -134,7 +134,7 @@ namespace Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Generation", EditorStyles.boldLabel);
 
-            _profile = (RunDifficultyProfile)EditorGUILayout.ObjectField("Difficulty Profile", _profile, typeof(RunDifficultyProfile), false);
+            _runDifficulty = (RunDifficulty)EditorGUILayout.ObjectField("Difficulty Profile", _runDifficulty, typeof(RunDifficulty), false);
             _totalLevels = EditorGUILayout.IntPopup("Total Levels", _totalLevels, new[] { "10", "20", "30" }, new[] { 10, 20, 30 });
             _level = EditorGUILayout.IntSlider("Level", _level, MinLevel, _totalLevels);
             _randomType = EditorGUILayout.Toggle("Random Type", _randomType);
@@ -149,7 +149,7 @@ namespace Editor
                 _seed = EditorGUILayout.IntField("Seed", _seed);
             }
 
-            if (!_profile)
+            if (!_runDifficulty)
             {
                 EditorGUILayout.HelpBox("Assign a Difficulty Profile before generating.", MessageType.Warning);
             }
@@ -158,7 +158,7 @@ namespace Editor
                 // Run the (editor copy of the) mission generator, then expand into a room graph.
                 var gen = new MissionGeneratorRuntime
                 {
-                    Profile = _profile,
+                    Profile = _runDifficulty,
                     ForcedType = _forcedType,
                     RandomType = _randomType,
                     Seed = _seed,
@@ -166,7 +166,7 @@ namespace Editor
                 };
 
                 _missionGraph = gen.Generate(_level, _totalLevels);
-                _roomGraph = RoomGraphGenerator.Generate(_missionGraph, _profile, _level, _totalLevels);
+                _roomGraph = RoomGraphGenerator.Generate(_missionGraph, _runDifficulty, _level, _totalLevels);
                 _seed = _missionGraph.seed; // reflect the used seed back into the field
 
                 // Compute node positions for both diagrams.
@@ -526,7 +526,7 @@ namespace Editor
     // A standalone copy of the mission generator used by the editor window. Mirrors MissionGenerator's logic.
     public class MissionGeneratorRuntime
     {
-        public RunDifficultyProfile Profile;
+        public RunDifficulty Profile;
         public MissionType ForcedType = MissionType.Assassination;
         public bool RandomType = true;
         public int Seed;

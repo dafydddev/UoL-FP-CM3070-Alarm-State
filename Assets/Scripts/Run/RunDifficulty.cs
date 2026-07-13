@@ -5,7 +5,7 @@ using Random = System.Random;
 namespace Run
 {
     [CreateAssetMenu(menuName = "Run/Difficulty Profile")]
-    public class RunDifficultyProfile : ScriptableObject
+    public class RunDifficulty : ScriptableObject
     {
         public string label;
 
