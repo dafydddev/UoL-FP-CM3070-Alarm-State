@@ -1,4 +1,5 @@
-﻿using Generation.Tiles;
+﻿using Generation.Terrain;
+using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
 using Run;
@@ -12,9 +13,11 @@ namespace Generation.Facility
     // Top-level level builder. Runs the full generation pipeline in order:
     // mission -> room -> layout -> realise tiles -> paint -> spawn props (player, items, etc.).
     [RequireComponent(typeof(MissionGenerator))]
+    [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
         [SerializeField] private Tilemap tilemap;
+
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
@@ -29,13 +32,16 @@ namespace Generation.Facility
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
         [SerializeField] private DistractionSpawner distractionSpawner;
-
-        private MissionGenerator _missionGenerator;
-
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
 
+        private MissionGenerator _missionGenerator;
+
         private MissionGenerator MissionGenerator => _missionGenerator ??= GetComponent<MissionGenerator>();
+
+        // The exterior terrain generator lives on the same GameObject, like MissionGenerator.
+        private ExteriorGenerator _exteriorGenerator;
+        private ExteriorGenerator ExteriorGenerator => _exteriorGenerator ??= GetComponent<ExteriorGenerator>();
 
         // The context for the current level, rebuilt on every Generate.
         public WorldContext World { get; private set; }
@@ -44,6 +50,7 @@ namespace Generation.Facility
         private void ClearFacility()
         {
             if (tilemap) tilemap.ClearAllTiles();
+            ExteriorGenerator.Clear();
             ClearSpawners();
         }
 
@@ -81,6 +88,9 @@ namespace Generation.Facility
 
             // Tint rooms by role for readability.
             FacilityColourCoder.Apply(tilemap, rooms, rects);
+            
+            // Generate and paint the exterior terrain behind the facility using PCG noise.
+            ExteriorGenerator.Paint(roles, rooms.seed, rooms.level);
 
             // Populate the level: sim participants get the world, set dressing just the tilemap.
             playerSpawner?.Spawn(rooms, rects, World);

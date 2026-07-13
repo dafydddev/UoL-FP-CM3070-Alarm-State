@@ -24,7 +24,11 @@ namespace Entities
 
         public void OnEntered(Actor mover)
         {
-            if (mover is PlayerActor) Reached?.Invoke();
+            if (mover is PlayerActor)
+            {
+                Debug.Log("Player reached exit");
+                Reached?.Invoke();
+            }
         }
 
         private void OnDestroy()

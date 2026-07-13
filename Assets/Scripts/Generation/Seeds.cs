@@ -12,6 +12,7 @@ namespace Generation
         public const int Cover = 3;
         public const int Keys = 4;
         public const int Distraction = 5;
+        public const int Terrain = 6; 
 
         // Mixes the base seed with a subsystem id and an optional salt (e.g. the level number).
         public static int For(int seed, int subsystem, int salt = 0)
