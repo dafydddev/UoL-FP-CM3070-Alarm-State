@@ -6,24 +6,18 @@ namespace Generation.Tiles
 {
     // The original layout: the root-to-primary path laid left-to-right as a straight spine,
     // with each spine room's off-spine subtrees hung alternately above and below.
-    // Subtrees are placed with backtracking, so crowded branches reroute instead of
-    // stacking two rooms on the same cell; the old greedy overlap survives only as the
-    // last resort when no arrangement exists at all.
+    // Subtrees are placed with backtracking, so crowded branches reroute instead of stacking two rooms on the same cell.
+    // Using a greedy overlap is used as a last resort when no arrangement exists at all.
     internal static class SpineLayout
     {
-        // Search budgets are worst-case time caps, not tuning targets: a placement that is
-        // going to succeed almost always does so in a tiny fraction of the cap, so the cap
-        // only bounds generation time on graphs that turn out not to fit the grid (those
-        // then get relief corridors). Sized per room so small levels don't over-search and
-        // large ones don't starve; the factors reproduce the values a 32,000-level sweep
-        // validated (zero stacked rooms) at typical level sizes.
+        // The step budget is a worst-case time cap, not a tuning target.
+        // Sized per room; the factor reproduces the values a 32,000-level sweep validated (zero degraded layouts) at typical sizes.
         private const int JointStepsPerRoom = 5000; // whole-level search: ~150k tries at ~30 rooms
-        private const int RescueStepsPerRoom = 400; // per-subtree rescue: an order of magnitude cheaper; failures fall through
-        private const int JointRetries = 4; // seeded reshuffles; each costs a full budget, diminishing returns beyond a few
+        private const int RescueStepsPerRoom = 400; // per-subtree rescue
+        private const int JointRetries = 4; // seeded reshuffles
         private const int SubtreeRetries = 8; // rescue reshuffles are cheap, so a few more than the joint search
 
-        // Lays the level out; false means at least one subtree needed the greedy last
-        // resort and rooms may be stacked (the placement itself always completes).
+        // Lays the level out; false means at least one subtree needed the greedy last resort and rooms may be stacked
         public static bool Place(RoomGraph graph, string root,
             Dictionary<string, string> parent,
             Dictionary<string, List<string>> children,
@@ -56,9 +50,7 @@ namespace Generation.Tiles
                 }
             }
 
-            // Place all subtrees as one joint search, so a subtree can yield a cell that a
-            // later one needs: the deterministic preference pass first (keeps the classic
-            // look), then seeded reshuffles (still deterministic per seed + level).
+            // Place all subtrees as one joint search, so a subtree can yield a cell that a later one needs.
             var jointBudget = JointStepsPerRoom * graph.rooms.Count;
             state.Steps = jointBudget;
             if (SubtreePlacer.TryPlaceForest(hangs, byNeed, state)) return true;
@@ -69,8 +61,7 @@ namespace Generation.Tiles
                 if (SubtreePlacer.TryPlaceForest(hangs, byNeed, state)) return true;
             }
 
-            // Joint search found nothing: rescue subtrees one at a time so a single
-            // impossible branch doesn't degrade the rest of the level.
+            // Joint search found nothing: rescue subtrees one at a time so a single impossible branch doesn't degrade the rest of the level.
             var rescueBudget = RescueStepsPerRoom * graph.rooms.Count;
             var clean = true;
             foreach (var (parentId, node, side) in hangs)
@@ -78,10 +69,9 @@ namespace Generation.Tiles
             return clean;
         }
 
-        // Hangs one subtree off a spine room: the preferred side first, the other side if
-        // the preferred one can't fit it, then seeded reshuffles, and only then the
-        // pre-backtracking greedy placement — which may stack rooms — so a level always
-        // generates. False reports that the greedy last resort was needed.
+        // Hangs one subtree off a spine room: the preferred side first, the other side if the preferred one can't fit it,
+        // then seeded reshuffles, and only then the pre-backtracking greedy placement, so a level always generates.
+        // False reports that the greedy last resort was needed.
         private static bool Hang(string parentId, string node, int side,
             Dictionary<string, List<string>> children, SubtreePlacer.State state, System.Random rng, int budget)
         {
@@ -105,8 +95,7 @@ namespace Generation.Tiles
             return false;
         }
 
-        // Last resort: the original greedy placement, kept for the (measured ~never)
-        // case where no overlap-free arrangement exists within budget.
+        // Last resort: the original greedy placement, kept for the (measured ~never) case where no overlap-free arrangement exists within budget.
         private static void GreedyPlaceSubtree(string parentId, string node, int dirY,
             Dictionary<string, List<string>> children, SubtreePlacer.State state)
         {

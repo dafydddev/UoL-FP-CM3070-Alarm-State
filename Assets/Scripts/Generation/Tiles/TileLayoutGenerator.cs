@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Generation.Tiles
 {
-    // An axis-aligned room rectangle in tile coordinates, with handy derived bounds.
+    // An axis-aligned room rectangle in tile coordinates, with derived bounds.
     public readonly struct RoomRect
     {
         public readonly int X, Y;
@@ -26,9 +26,9 @@ namespace Generation.Tiles
         }
     }
 
-    // Turns a mission RoomGraph into a grid of structural roles: a placement strategy
-    // (chosen per run) lays rooms out on an abstract cell grid, then each room is marked
-    // as walls + floor and doorways are carved between connected rooms.
+    // Turns a mission RoomGraph into a grid of structural roles:
+    // a placement strategy lays rooms out on an abstract cell grid,
+    // then each room is marked as walls + floor and doorways are carved between connected rooms.
     public static class TileLayoutGenerator
     {
         private const int RoomW = 11; // room width in tiles
@@ -38,11 +38,14 @@ namespace Generation.Tiles
         private static int Ox(int cx) => cx * (RoomW - 1);
         private static int Oy(int cy) => cy * (RoomH - 1);
 
-        private const int MaxReliefRounds = 2; // graph subdivisions before accepting a degraded layout
+        // Relief is applied one room per round (at most 4 corridors each), so a congested level gains a handful of corridors.
+        // The walk gets few rounds — if wandering can't fit the graph cheaply, the spine takes over rather than growing a tangle,
+        // while the spine may relieve further, because its alternative to relief is stacking rooms, which is worse than extra corridors.
+        private const int WalkReliefRounds = 2;
+        private const int MaxReliefRounds = 8;
 
         // Builds the structural grid and outputs each room's tile rectangle.
-        // Note: when a graph is too congested to embed on the grid, relief corridors are
-        // added to it (the graph is mutated), so callers see rooms and rects consistently.
+        // Note: when a graph is too congested to embed on the grid, relief corridors are added to it so callers see rooms and rects consistently.
         public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style,
             out Dictionary<string, RoomRect> roomRects)
         {
@@ -50,36 +53,37 @@ namespace Generation.Tiles
             Dictionary<string, string> parent;
             string root;
 
-            // The strategy decides only which abstract cell each room occupies and which
-            // pairs get a doorway — one distinct cell per room, doored pairs orthogonally
-            // adjacent. Everything below enforces the shared rules regardless of strategy.
+            // The strategy decides only which abstract cell each room occupies and which pairs get a doorway:
+            // one distinct cell per room, doored pairs orthogonally adjacent.
+            // Everything below enforces the shared rules regardless of strategy.
             var cell = new Dictionary<string, Vector2Int>();
             var connections = new List<(string a, string b)>();
 
             BuildLookups();
-            for (var round = 0; ; round++)
+            var relieved = new HashSet<string>(); // rooms already given relief corridors
+            var useWalk = style == TileLayoutStyle.RandomWalk;
+            for (var round = 0;; round++)
             {
                 cell.Clear();
                 connections.Clear();
-                var clean = style == TileLayoutStyle.RandomWalk
+                var clean = useWalk
                     ? RandomWalkLayout.Place(graph, root, children, cell, connections)
                     : SpineLayout.Place(graph, root, parent, children, cell, connections);
                 if (clean) break;
 
-                if (round == MaxReliefRounds)
+                // The walk only gets cheap relief; past that the spine takes over inside this loop,
+                // keeping the no-stacking guarantee (unlike a one-shot fallback).
+                if (useWalk && round >= WalkReliefRounds)
                 {
-                    // Even the relieved graph wouldn't embed. The spine always completes
-                    // (its greedy last resort may stack rooms), so the level still generates.
-                    if (style != TileLayoutStyle.RandomWalk) break;
-                    cell.Clear();
-                    connections.Clear();
-                    SpineLayout.Place(graph, root, parent, children, cell, connections);
-                    break;
+                    useWalk = false;
+                    continue; // the spine may well embed this graph without further relief
                 }
 
-                // Too congested to embed: give crowded branches a corridor to escape
-                // through, then retry the placement on the relieved graph.
-                SubdivideCongested(graph, round);
+                // Too congested to embed: give the busiest room's branches a corridor to escape through, then retry.
+                // Only when the rounds run out (or nothing is left to relieve) accept a degraded layout.
+                // The spine always completes, its greedy last resort may stack rooms, so the level still generates.
+                if (round >= MaxReliefRounds || !SubdivideCongested(graph, relieved)) break;
+
                 BuildLookups();
             }
 
@@ -136,8 +140,8 @@ namespace Generation.Tiles
 
             return grid;
 
-            // Build parent/child lookups from the graph edges, tracking which rooms have a
-            // parent. The root is the room with no parent (fall back to the first room).
+            // Build parent/child lookups from the graph edges, tracking which rooms have a parent.
+            // The root is the room with no parent (fall back to the first room).
             void BuildLookups()
             {
                 children = new Dictionary<string, List<string>>();
@@ -155,33 +159,47 @@ namespace Generation.Tiles
             }
         }
 
-        // Emergency relief when a layout cannot be embedded: rooms at or above the degree
-        // threshold get every outgoing edge subdivided with a pass-through corridor, so
-        // their branches gain an arm to escape local congestion (subdivided enough, any
-        // tree fits the grid). Same degree-preserving splice SpliceCorridors uses; the
-        // lock stays on the segment entering the original target.
-        private static void SubdivideCongested(RoomGraph graph, int round)
+        // Emergency relief when a layout cannot be embedded, one room at a time.
+        // The busiest not-yet-relieved room gets each outgoing edge subdivided with a pass-through corridor.
+        // Its branches gain an elbow to escape local congestion subdivided enough, any tree fits the grid.
+        // Same degree-preserving splice SpliceCorridors uses; the lock stays on the segment entering the original target.
+        // Returns false when no congestion candidate remains.
+        private static bool SubdivideCongested(RoomGraph graph, HashSet<string> relieved)
         {
             var degree = new Dictionary<string, int>();
-            foreach (var r in graph.rooms) degree[r.id] = 0;
+            var outgoing = new Dictionary<string, int>();
+            foreach (var r in graph.rooms)
+            {
+                degree[r.id] = 0;
+                outgoing[r.id] = 0;
+            }
+
             foreach (var e in graph.edges)
             {
                 degree[e.fromId]++;
                 degree[e.toId]++;
+                outgoing[e.fromId]++;
             }
 
-            // A cell has four orthogonal neighbours, so a degree-4 room has zero spare
-            // sides — relieve those first; if that wasn't enough, the next round also
-            // relieves rooms with only one spare side.
-            const int cellNeighbours = 4;
-            var threshold = round == 0 ? cellNeighbours : cellNeighbours - 1;
+            // The busiest room: highest degree, then most branches; rooms-list order breaks ties, so the choice is deterministic.
+            // A cell has four orthogonal neighbours, so congestion needs at least three doors; below that there is nothing to relieve.
+            RoomNode target = null;
+            foreach (var r in graph.rooms)
+            {
+                if (relieved.Contains(r.id) || degree[r.id] < 3 || outgoing[r.id] == 0) continue;
+                if (target == null || degree[r.id] > degree[target.id] ||
+                    (degree[r.id] == degree[target.id] && outgoing[r.id] > outgoing[target.id]))
+                    target = r;
+            }
+
+            if (target == null) return false;
+
+            relieved.Add(target.id);
             var relief = 0;
             foreach (var edge in new List<RoomEdge>(graph.edges))
             {
-                if (degree[edge.fromId] < threshold) continue;
-
-                var corridor = new RoomNode
-                    { id = $"room_relief_{round}_{relief++}", type = RoomType.Corridor };
+                if (edge.fromId != target.id) continue;
+                var corridor = new RoomNode { id = $"room_relief_{target.id}_{relief++}", type = RoomType.Corridor };
                 graph.rooms.Add(corridor);
                 var idx = graph.edges.IndexOf(edge);
                 if (idx != -1) graph.edges.RemoveAt(idx);
@@ -189,6 +207,8 @@ namespace Generation.Tiles
                 graph.edges.Add(new RoomEdge
                     { fromId = corridor.id, toId = edge.toId, locked = edge.locked, keyRoomId = edge.keyRoomId });
             }
+
+            return true;
         }
 
         // Fills a rectangle of the grid with a role, clamped to the grid bounds.
