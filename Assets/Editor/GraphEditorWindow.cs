@@ -81,12 +81,19 @@ namespace Editor
         // Space reserved below the canvas for settings/meta/tabs/inspector.
         private const float BottomChromeHeight = 220f;
 
+        // How many down/up barycenter sweeps to run when ordering nodes within each level.
+        private const int OrderingPasses = 4;
+
         // Node box rendering.
         private const float NodeFillDarken = 0.25f; // how much to darken a node's colour for its fill
         private const float NodePadding = 4f;
         private const float TitleHeightRatio = 0.6f;
         private const float SubtitleTopRatio = 0.55f;
         private const float SubtitleHeightRatio = 0.4f;
+
+        // Halo ring drawn around the primary objective's node.
+        private const float HaloInflate = 4f;   // gap between the node box and its halo ring
+        private const float HaloThickness = 2f; // halo ring thickness
 
         // Arrow drawing.
         private const float DashLength = 6f;
@@ -261,13 +268,17 @@ namespace Editor
                     NodeType.Secondary => ColSecondary,
                     _ => Color.grey
                 };
-                DrawNode(pos * _zoom, node.id, node.text, node.label, col);
+                DrawNode(pos * _zoom, node.id, node.text, node.label, col, node.nodeType == NodeType.Primary);
             }
         }
 
         // Draws the room graph: connection arrows (dashed if locked), then coloured room nodes.
         private void DrawRoomGraph()
         {
+            // The room fulfilling the primary objective gets a halo; secondaries share its room
+            // type (ObjectiveRoom), so match on the mission node it came from instead.
+            var primaryId = _missionGraph.nodes.Find(n => n.nodeType == NodeType.Primary)?.id;
+
             foreach (var edge in _roomGraph.edges)
             {
                 if (!_roomPositions.TryGetValue(edge.fromId, out var fromPos)) continue;
@@ -292,7 +303,8 @@ namespace Editor
                 var label = room.missionNodeId != null
                     ? _missionGraph.nodes.Find(n => n.id == room.missionNodeId)?.text ?? room.type.ToString()
                     : room.type.ToString();
-                DrawNode(pos * _zoom, room.id, label, room.type.ToString(), col);
+                DrawNode(pos * _zoom, room.id, label, room.type.ToString(), col,
+                    room.missionNodeId != null && room.missionNodeId == primaryId);
             }
         }
 
@@ -340,7 +352,8 @@ namespace Editor
         }
 
         // Assigns each node an (x, y) position using a layered layout:
-        // a topological pass puts each node at a "level" = its longest dependency depth, then nodes are stacked per level.
+        // a topological pass puts each node at a "level" = its longest dependency depth, nodes within each
+        // level are ordered to reduce edge crossings (barycenter sweeps), and columns are vertically centred.
         private static void LayoutGraph(
             IEnumerable<string> ids,
             IEnumerable<(string from, string to)> edges,
@@ -351,20 +364,24 @@ namespace Editor
             var levels = new Dictionary<string, int>();
             var inDegree = new Dictionary<string, int>();
             var adj = new Dictionary<string, List<string>>();
+            var preds = new Dictionary<string, List<string>>();
 
             // Initialise adjacency and in-degree for every node.
             foreach (var id in idList)
             {
                 inDegree[id] = 0;
                 adj[id] = new List<string>();
+                preds[id] = new List<string>();
             }
 
             // Build the edge lists and in-degree counts.
             foreach (var (from, to) in edges)
             {
                 if (!adj.ContainsKey(from)) adj[from] = new List<string>();
+                if (!preds.ContainsKey(to)) preds[to] = new List<string>();
                 inDegree.TryAdd(to, 0);
                 adj[from].Add(to);
+                preds[to].Add(from);
                 inDegree[to]++;
             }
 
@@ -392,8 +409,8 @@ namespace Editor
             // Any node not reached (e.g. in a cycle) defaults to level 0.
             foreach (var id in idList) levels.TryAdd(id, 0);
 
-            // Group nodes by level.
-            var byLevel = new Dictionary<int, List<string>>();
+            // Group nodes by level, keeping levels in left-to-right order for the sweeps below.
+            var byLevel = new SortedDictionary<int, List<string>>();
             foreach (var id in idList)
             {
                 var l = levels[id];
@@ -401,13 +418,65 @@ namespace Editor
                 byLevel[l].Add(id);
             }
 
-            // Place each level in its own column, stacking its nodes vertically.
+            // Track each node's current row within its level so neighbours can be averaged.
+            var rows = new Dictionary<string, float>();
+            foreach (var group in byLevel.Values)
+                for (var i = 0; i < group.Count; i++)
+                    rows[group[i]] = i;
+
+            // Barycenter ordering: alternate downward sweeps (align each node with its predecessors)
+            // and upward sweeps (align with its successors) to reduce edge crossings.
+            for (var pass = 0; pass < OrderingPasses; pass++)
+            {
+                SortLevelsByBarycenter(byLevel.Values, preds, rows);
+                SortLevelsByBarycenter(byLevel.Values.Reverse(), adj, rows);
+            }
+
+            // Place each level in its own column, stacking its nodes vertically and
+            // centring shorter columns against the tallest one.
+            var tallest = 0;
+            foreach (var group in byLevel.Values) tallest = Mathf.Max(tallest, group.Count);
+
             foreach (var (level, group) in byLevel)
             {
                 var x = CanvasOffsetX + level * LevelSpacingX + NodeW * 0.5f;
+                var yStart = CanvasOffsetY + NodeH * 0.5f + (tallest - group.Count) * LevelSpacingY * 0.5f;
                 for (var i = 0; i < group.Count; i++)
-                    positions[group[i]] = new Vector2(x, CanvasOffsetY + i * LevelSpacingY + NodeH * 0.5f);
+                    positions[group[i]] = new Vector2(x, yStart + i * LevelSpacingY);
             }
+        }
+
+        // One barycenter sweep: reorders every level so each node sits near the average row of its
+        // linked neighbours (predecessors or successors, depending on the sweep direction).
+        // Nodes with no neighbours keep their current row; OrderBy is stable, so ties keep their order.
+        private static void SortLevelsByBarycenter(
+            IEnumerable<List<string>> levelGroups,
+            Dictionary<string, List<string>> neighbours,
+            Dictionary<string, float> rows)
+        {
+            foreach (var group in levelGroups)
+            {
+                var ordered = group.OrderBy(id => Barycenter(id, neighbours, rows)).ToList();
+                group.Clear();
+                group.AddRange(ordered);
+                for (var i = 0; i < group.Count; i++) rows[group[i]] = i;
+            }
+        }
+
+        // Average row of a node's neighbours, or its own row when it has none to follow.
+        private static float Barycenter(string id, Dictionary<string, List<string>> neighbours, Dictionary<string, float> rows)
+        {
+            if (!neighbours.TryGetValue(id, out var linked) || linked.Count == 0) return rows[id];
+            var sum = 0f;
+            var count = 0;
+            foreach (var n in linked)
+            {
+                if (!rows.TryGetValue(n, out var r)) continue;
+                sum += r;
+                count++;
+            }
+
+            return count > 0 ? sum / count : rows[id];
         }
 
         // Computes the scroll-view content size needed to fit all nodes of the active tab.
@@ -426,7 +495,8 @@ namespace Editor
         }
 
         // Draws a single node box (title + subtitle) and handles click-to-select/deselect.
-        private void DrawNode(Vector2 pos, string id, string text, string subtitle, Color col)
+        // highlight adds a halo ring around the box, marking the primary objective.
+        private void DrawNode(Vector2 pos, string id, string text, string subtitle, Color col, bool highlight = false)
         {
             var w = NodeW * _zoom;
             var h = NodeH * _zoom;
@@ -437,6 +507,13 @@ namespace Editor
 
             EditorGUI.DrawRect(rect, bg);
             DrawBorder(rect, isSelected ? Color.white : col, isSelected ? 2f : 1f); // highlight when selected
+
+            if (highlight)
+            {
+                var inflate = HaloInflate * _zoom;
+                var halo = new Rect(rect.x - inflate, rect.y - inflate, rect.width + inflate * 2f, rect.height + inflate * 2f);
+                DrawBorder(halo, col, HaloThickness);
+            }
 
             var labelStyle = new GUIStyle(EditorStyles.label)
             {
