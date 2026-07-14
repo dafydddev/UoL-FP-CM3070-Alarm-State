@@ -10,7 +10,7 @@ namespace Menu
     {
         [SerializeField] private InputActionReference pauseAction;
         [SerializeField] private Button pauseButton;
-        [SerializeField] private Button mainButton;
+        [SerializeField] private Button mainMenuButton;
 
         private bool _isPaused;
 
@@ -19,7 +19,7 @@ namespace Menu
             pauseAction.action.performed += OnPausePressed;
             pauseAction.action.Enable();
             pauseButton.onClick.AddListener(OnPausePressed);
-            mainButton.onClick.AddListener(MainMenu);
+            mainMenuButton.onClick.AddListener(MainMenu);
         }
 
         private void OnDisable()
@@ -27,7 +27,7 @@ namespace Menu
             pauseAction.action.performed -= OnPausePressed;
             pauseAction.action.Disable();
             pauseButton.onClick.RemoveListener(OnPausePressed);
-            mainButton.onClick.RemoveListener(MainMenu);
+            mainMenuButton.onClick.RemoveListener(MainMenu);
         }
 
         private void OnPausePressed(InputAction.CallbackContext context) => OnPausePressed();
@@ -50,14 +50,14 @@ namespace Menu
         {
             _isPaused = true;
             GameLock.Acquire();
-            defaultPanel.gameObject.SetActive(true);
+            ShowPanel(defaultPanel);
         }
 
         private void Resume()
         {
             _isPaused = false;
             GameLock.Release();
-            defaultPanel.gameObject.SetActive(false);
+            HideAll();
         }
         
         

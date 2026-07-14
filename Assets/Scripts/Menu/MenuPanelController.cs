@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Menu
 {
@@ -43,12 +42,13 @@ namespace Menu
             _currentPanel = panel;
         }
 
-        private void HideAll()
+        protected void HideAll()
         {
             // Early exit when there are no menu panels
             if (menuPanels == null || menuPanels.Length == 0) return;
             // Loop through the panels and set them all to inactive
             foreach (var panel in menuPanels) panel.SetActive(false);
+            _currentPanel = null;
         }
     }
 }
