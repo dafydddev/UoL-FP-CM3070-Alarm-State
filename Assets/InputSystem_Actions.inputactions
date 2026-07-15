@@ -59,6 +59,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Move To",
+                    "type": "Button",
+                    "id": "f1255291-0459-447d-af1a-b1f55b5beff0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Point",
+                    "type": "Value",
+                    "id": "c1ee57ca-ce6c-4791-a110-381d508da801",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -218,12 +236,23 @@
                 },
                 {
                     "name": "",
-                    "id": "9a03544f-3b4d-44f4-85c1-fb3c34d1257c",
+                    "id": "de3f8dcd-1a0e-4970-a7ef-bb07dbd8a646",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Interact",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Move To",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "03e25144-f43d-48c9-ba01-bb08db1817fc",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

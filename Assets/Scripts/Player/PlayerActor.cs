@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Simulation;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace Player
@@ -11,12 +12,22 @@ namespace Player
         [SerializeField] private InputActionReference downAction;
         [SerializeField] private InputActionReference leftAction;
         [SerializeField] private InputActionReference rightAction;
+        [SerializeField] private InputActionReference moveToAction;
+        [SerializeField] private InputActionReference pointAction;
         [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
+        [SerializeField] private LineRenderer routePreview;
 
         private Vector2Int _cell, _prevCell;
         private readonly List<Vector2Int> _pressed = new();
         private Vector2Int _owner, _pending;
         private float _holdTime;
+
+        // Route queued by a click, consumed one cell per tick so guards keep pace.
+        private readonly Queue<Vector2Int> _route = new();
+        private Vector2Int _routeGoal;
+        private UnityEngine.Camera _camera;
+
+        private void Awake() => _camera = UnityEngine.Camera.main;
 
         protected override void OnEnable()
         {
@@ -25,6 +36,8 @@ namespace Player
             downAction.action.Enable();
             leftAction.action.Enable();
             rightAction.action.Enable();
+            moveToAction.action.Enable();
+            pointAction.action.Enable();
         }
 
         protected override void OnDisable()
@@ -34,6 +47,8 @@ namespace Player
             downAction.action.Disable();
             leftAction.action.Disable();
             rightAction.action.Disable();
+            moveToAction.action.Disable();
+            pointAction.action.Disable();
         }
 
         public override void Init(WorldContext world)
@@ -49,11 +64,13 @@ namespace Player
             if (World == null) return;
             if (GameLock.Locked) return;
             ReadInput();
+            ReadClick();
             var tilemap = World.Tilemap;
             transform.position = Vector3.Lerp(
                 tilemap.GetCellCenterWorld((Vector3Int)_prevCell),
                 tilemap.GetCellCenterWorld((Vector3Int)_cell),
                 Mathf.Clamp01(World.Clock.Alpha));
+            DrawRoutePreview();
         }
 
         protected override void Act()
@@ -67,13 +84,34 @@ namespace Player
                 _pending = Vector2Int.zero;
             }
             else if (_owner != Vector2Int.zero && _holdTime >= repeatDelay) dir = _owner;
-            else return;
+            else
+            {
+                FollowRoute();
+                return;
+            }
+
+            _route.Clear(); // direct input overrides a queued click order
 
             var target = _cell + dir;
             if (!World.Entry.CanEnter(target, this)) return;
 
             _cell = target;
             World.Entry.HandleEntered(target, this);
+        }
+
+        // Takes the next step of a queued route, replanning if the world changed underneath it.
+        private void FollowRoute()
+        {
+            if (_route.Count == 0) return;
+
+            var next = _route.Peek();
+            if (World.Entry.CanEnter(next, this))
+            {
+                _route.Dequeue();
+                _cell = next;
+                World.Entry.HandleEntered(next, this);
+            }
+            else PlanRoute(_routeGoal); // something now blocks the step — route around it or stop
         }
 
         private void ReadInput()
@@ -91,6 +129,44 @@ namespace Player
                 _holdTime = 0f;
             }
             else _holdTime += Time.deltaTime;
+        }
+
+        // Turns a click on the grid into a queued route.
+        // Clicks on UI, walls, or unreachable cells are ignored.
+        private void ReadClick()
+        {
+            if (!moveToAction.action.WasPressedThisFrame()) return;
+            if (!_camera) return;
+            var eventSystem = EventSystem.current;
+            if (eventSystem && eventSystem.IsPointerOverGameObject()) return;
+
+            var world = _camera.ScreenToWorldPoint(pointAction.action.ReadValue<Vector2>());
+            PlanRoute((Vector2Int)World.Tilemap.WorldToCell(world));
+        }
+
+        private void PlanRoute(Vector2Int goal)
+        {
+            _route.Clear();
+            var cells = World.Navigator.Pathfinder.FindPath(_cell, goal, this);
+            if (cells == null) return;
+
+            _routeGoal = goal;
+            for (var i = 1; i < cells.Count; i++) _route.Enqueue(cells[i]); // cells[0] is where we stand
+        }
+
+        // Redraws the preview line from the player through the remaining route cells.
+        private void DrawRoutePreview()
+        {
+            if (!routePreview) return;
+
+            routePreview.positionCount = _route.Count == 0 ? 0 : _route.Count + 2;
+            if (_route.Count == 0) return;
+
+            routePreview.SetPosition(0, transform.position);
+            routePreview.SetPosition(1, World.Tilemap.GetCellCenterWorld((Vector3Int)_cell));
+            var i = 2;
+            foreach (var cell in _route)
+                routePreview.SetPosition(i++, World.Tilemap.GetCellCenterWorld((Vector3Int)cell));
         }
 
         private void Track(Vector2Int dir, bool held)
