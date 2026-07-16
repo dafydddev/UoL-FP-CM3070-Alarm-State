@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Camera;
-using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
 using Simulation;
@@ -24,6 +23,7 @@ namespace Spawners
             // Hand the player its world before anything ticks.
             var actor = _player.GetComponent<Actor>();
             actor.Init(world);
+            world.BindPlayer(actor); // so other sim participants (e.g. guards) can find the player
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
         }
     }
