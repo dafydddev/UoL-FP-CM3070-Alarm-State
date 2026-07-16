@@ -16,6 +16,12 @@ namespace Simulation
         public EntryRules Entry { get; }
         public Navigator Navigator { get; }
 
+        // The player of this level, bound by the player spawner right after it spawns.
+        // Null until then (and in previews that spawn no player).
+        public Actor Player { get; private set; }
+
+        public void BindPlayer(Actor player) => Player = player;
+
         public WorldContext(Tilemap tilemap, Scheduler scheduler, SimulationClock clock, FacilityGrid grid)
         {
             Tilemap = tilemap;

@@ -32,6 +32,7 @@ namespace Generation.Facility
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
         [SerializeField] private DistractionSpawner distractionSpawner;
+        [SerializeField] private GuardSpawner guardSpawner;
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
         [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
@@ -101,6 +102,7 @@ namespace Generation.Facility
             exitSpawner?.Spawn(rooms, rects, World);
             coverSpawner?.Spawn(rooms, rects, tilemap);
             distractionSpawner?.Spawn(rooms, rects, World);
+            guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
         }
 
         // Destroys everything spawned under each spawner from the previous level.
@@ -113,6 +115,7 @@ namespace Generation.Facility
             objectiveSpawner?.ClearChildren();
             coverSpawner?.ClearChildren();
             distractionSpawner?.ClearChildren();
+            guardSpawner?.ClearChildren();
         }
     }
 }

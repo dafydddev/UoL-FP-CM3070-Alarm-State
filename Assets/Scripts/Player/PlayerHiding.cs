@@ -15,7 +15,8 @@ namespace Player
         private int _covers;
 
         // Hidden as long as the player is inside at least one cover zone.
-        private bool IsHidden => _covers > 0;
+        // Public so guard vision can respect cover.
+        public bool IsHidden => _covers > 0;
 
         // Called when entering a cover zone. (Argument is unused; kept for caller convenience.)
         public void Enter(Object _)

@@ -1,4 +1,5 @@
-﻿using Generation.Cells;
+﻿using System;
+using Generation.Cells;
 using Player;
 using Simulation;
 using UnityEngine;
@@ -7,7 +8,13 @@ namespace Entities
 {
     public class DistractionItem : MonoBehaviour, IEnterHandler
     {
+        // Fires when a distraction lands in the world, so guards can hear it.
+        public static event Action<DistractionItem> Dropped;
+
         public string distractionId;
+
+        // The cell this item currently sits on (meaningful while placed in the world).
+        public Vector2Int Cell => _cell;
 
         private Vector2Int _cell;
         private WorldContext _world;
@@ -35,6 +42,16 @@ namespace Entities
             transform.position = _world.Tilemap.GetCellCenterWorld((Vector3Int)_cell);
             _world.Occupancy.Place(_cell, gameObject);
             gameObject.SetActive(true);
+            Dropped?.Invoke(this);
+        }
+
+        // Removes the distraction from the world once a guard has investigated it.
+        // Safe to call if the player already picked it back up.
+        public void Consume()
+        {
+            if (!gameObject.activeSelf) return;
+            if (_world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
+            gameObject.SetActive(false);
         }
 
         private void OnDestroy()
