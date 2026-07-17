@@ -1,4 +1,5 @@
-﻿using Generation.Terrain;
+﻿using Camera;
+using Generation.Terrain;
 using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
@@ -23,6 +24,7 @@ namespace Generation.Facility
 
         [SerializeField] private RunDifficulty profile;
 
+        [SerializeField] private MinimapFramer minimap;
         [SerializeField] private Tileset tileset;
 
         [SerializeField] private PlayerSpawner playerSpawner;
@@ -103,6 +105,8 @@ namespace Generation.Facility
             coverSpawner?.Spawn(rooms, rects, tilemap);
             distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
+            
+            minimap?.Fit();
         }
 
         // Destroys everything spawned under each spawner from the previous level.
