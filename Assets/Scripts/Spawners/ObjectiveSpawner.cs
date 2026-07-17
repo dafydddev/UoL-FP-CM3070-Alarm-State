@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Entities.Objectives;
-using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
 using UnityEngine;
@@ -14,10 +13,10 @@ namespace Spawners
     {
         [SerializeField] private GameObject objectivePrefab;
 
-        // Places an objective in each ObjectiveRoom, tagged with that room's id.
+        // Places an objective in each objective room, tinted with that room's role colour.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
         {
-            foreach (var room in graph.rooms.Where(r => r.type == RoomType.ObjectiveRoom))
+            foreach (var room in graph.rooms.Where(r => r.type.IsObjective()))
             {
                 // Skip rooms we have no rectangle for.
                 if (!rects.TryGetValue(room.id, out var rect)) continue;
@@ -27,6 +26,10 @@ namespace Spawners
                 // Ensure it has an Objective component and link it to its room id (used by the tracker).
                 var objective = go.GetComponent<Objective>();
                 objective.id = room.id;
+                // Tint to the room's role colour so the primary objective stands out.
+                var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
+                if (spriteRend && RoomColour.TryFor(room.type, out var colour))
+                    spriteRend.color = colour;
                 go.name = $"Objective_{room.id}";
             }
         }
