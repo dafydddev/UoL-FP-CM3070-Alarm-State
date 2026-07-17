@@ -7,11 +7,19 @@ namespace Graphs.Rooms
     public enum RoomType
     {
         Entrance,
-        ObjectiveRoom,
+        PrimaryObjectiveRoom,   // the mission's terminal objective
+        SecondaryObjectiveRoom, // an optional side objective
         KeycardRoom,
         GuardPost,
         Corridor,
         Exit
+    }
+
+    public static class RoomTypeExtensions
+    {
+        // Both objective rooms, for the places where primary/secondary doesn't matter.
+        public static bool IsObjective(this RoomType type) =>
+            type is RoomType.PrimaryObjectiveRoom or RoomType.SecondaryObjectiveRoom;
     }
     
     // A single room in the layout graph, linked back to the mission node it represents.

@@ -23,7 +23,7 @@ namespace Graphs.Rooms
             ConnectEntrance(builder, missionRooms);
             ConnectDependencies(builder, mission, missionRooms, profile, rng, level, totalLevels);
             InsertGuardPosts(builder, profile, rng, level, totalLevels);
-            ScatterExtraExits(builder, mission, profile, rng, level, totalLevels);
+            ScatterExtraExits(builder, profile, rng, level, totalLevels);
             SpliceCorridors(builder);
 
             return builder.Graph;
@@ -45,7 +45,7 @@ namespace Graphs.Rooms
         {
             var entrance = roomGraphBuilder.AddRoom("room_entrance", RoomType.Entrance);
             if (missionRooms.TryGetValue("entry", out var entryRoom)) roomGraphBuilder.AddEdge(entrance.id, entryRoom.id);
-            roomGraphBuilder.AddEdge(entrance.id, roomGraphBuilder.AddRoom("room_exit_0", RoomType.Exit).id);
+            roomGraphBuilder.AddEdge(entrance.id, roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
         }
 
         // 3. Turn mission dependencies into edges (preserving the graph's topology);
@@ -64,7 +64,7 @@ namespace Graphs.Rooms
                     if (!missionRooms.TryGetValue(depId, out var fromRoom)) continue;
 
                     string keyRoomId = null;
-                    if (toRoom.type == RoomType.ObjectiveRoom && rng.NextDouble() < lockChance)
+                    if (toRoom.type.IsObjective() && rng.NextDouble() < lockChance)
                     {
                         var key = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("key"), RoomType.KeycardRoom);
                         roomGraphBuilder.Attach(fromRoom.id, key.id); // key reachable off the source, before the door it opens
@@ -83,9 +83,9 @@ namespace Graphs.Rooms
         {
             var guardChance = profile.GuardChance(level, totalLevels, rng);
             foreach (var candidate in roomGraphBuilder.Graph.rooms.FindAll(r =>
-                         r.type is RoomType.ObjectiveRoom or RoomType.KeycardRoom))
+                         r.type.IsObjective() || r.type == RoomType.KeycardRoom))
             {
-                if (candidate.type != RoomType.ObjectiveRoom && rng.NextDouble() >= guardChance) continue;
+                if (!candidate.type.IsObjective() && rng.NextDouble() >= guardChance) continue;
 
                 var guard = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("guard"), RoomType.GuardPost);
                 foreach (var inbound in roomGraphBuilder.Graph.edges.FindAll(e => e.toId == candidate.id))
@@ -96,22 +96,17 @@ namespace Graphs.Rooms
             }
         }
 
-        // 5. Extra exits scattered across non-critical rooms — Fisher–Yates picks distinct hosts,
+        // 5. Extra exits scattered across corridors and optional side objectives — never the
+        // critical path, which room types identify directly. Fisher–Yates picks distinct hosts,
         // one exit each — routed through Attach so a full host relays rather than overflowing.
-        private static void ScatterExtraExits(RoomGraphBuilder roomGraphBuilder, MissionGraph mission,
-            RunDifficulty profile, Random rng, int level, int totalLevels)
+        private static void ScatterExtraExits(RoomGraphBuilder roomGraphBuilder, RunDifficulty profile,
+            Random rng, int level, int totalLevels)
         {
             var extraExitCount = profile.ExtraExitCount(level, totalLevels, rng);
             if (extraExitCount <= 0) return;
 
-            var criticalIds = new HashSet<string>(
-                mission.nodes
-                    .Where(n => n.nodeType is NodeType.Entry or NodeType.Prerequisite or NodeType.Primary)
-                    .Select(n => n.id));
-
             var exitCandidates = roomGraphBuilder.Graph.rooms
-                .Where(r => r.type is RoomType.Corridor or RoomType.ObjectiveRoom)
-                .Where(r => r.missionNodeId == null || !criticalIds.Contains(r.missionNodeId))
+                .Where(r => r.type is RoomType.Corridor or RoomType.SecondaryObjectiveRoom)
                 .ToList();
 
             for (var i = exitCandidates.Count - 1; i > 0; i--)
@@ -151,8 +146,8 @@ namespace Graphs.Rooms
         private static RoomType MissionRoleToRoomRole(NodeType nodeType) => nodeType switch
         {
             NodeType.Entry => RoomType.Entrance,
-            NodeType.Primary => RoomType.ObjectiveRoom,
-            NodeType.Secondary => RoomType.ObjectiveRoom,
+            NodeType.Primary => RoomType.PrimaryObjectiveRoom,
+            NodeType.Secondary => RoomType.SecondaryObjectiveRoom,
             NodeType.Prerequisite => RoomType.GuardPost,
             _ => RoomType.Corridor
         };
@@ -169,13 +164,18 @@ namespace Graphs.Rooms
             private readonly Dictionary<string, string>
                 _relayTail = new(); // room → the corridor relay carrying its overflow
 
-            private int _counter;
+            private readonly Dictionary<string, int> _roleCounters = new(); // per-role id sequence
 
             public RoomGraphBuilder(int seed, int level) => Graph = new RoomGraph { seed = seed, level = level };
 
             public RoomGraph Graph { get; }
 
-            public string NextId(string role) => $"room_{role}_{_counter++}";
+            public string NextId(string role)
+            {
+                var n = _roleCounters.GetValueOrDefault(role);
+                _roleCounters[role] = n + 1;
+                return $"room_{role}_{n}";
+            }
 
             public RoomNode AddRoom(string id, RoomType type, string missionNodeId = null)
             {

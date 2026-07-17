@@ -25,7 +25,7 @@ namespace Spawners
 
             // Eligible rooms: corridors, objective rooms, and guard posts that have a rectangle.
             var candidates = graph.rooms
-                .Where(r => r.type is RoomType.Corridor or RoomType.ObjectiveRoom or RoomType.GuardPost)
+                .Where(r => r.type.IsObjective() || r.type is RoomType.Corridor or RoomType.GuardPost)
                 .Where(r => rects.ContainsKey(r.id))
                 .ToList();
 
