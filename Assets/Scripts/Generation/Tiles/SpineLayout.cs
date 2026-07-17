@@ -25,8 +25,7 @@ namespace Generation.Tiles
             List<(string a, string b)> connections)
         {
             // The "spine" is the path from root to the primary objective room, laid out in a straight line.
-            var primary = graph.rooms
-                .Find(r => r.type == RoomType.ObjectiveRoom && r.missionNodeId == "primary")?.id;
+            var primary = graph.rooms.Find(r => r.type == RoomType.PrimaryObjectiveRoom)?.id;
             var spine = PathTo(primary, parent, root) ?? new List<string> { root };
             var onSpine = new HashSet<string>(spine);
             var byNeed = SubtreePlacer.BySubtreeSize(children); // biggest branches placed first
