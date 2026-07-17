@@ -105,12 +105,6 @@ namespace Editor
         private static readonly Color ColPrereq = new(0.66f, 0.33f, 0.97f); // purple
         private static readonly Color ColPrimary = new(0.94f, 0.27f, 0.27f); // red
         private static readonly Color ColSecondary = new(0.13f, 0.77f, 0.37f); // green
-        private static readonly Color ColEntrance = new(0.23f, 0.51f, 0.96f); // blue
-        private static readonly Color ColExit = new(0.98f, 0.45f, 0.09f); // orange
-        private static readonly Color ColObjective = new(0.94f, 0.27f, 0.27f); // red
-        private static readonly Color ColKeycard = new(0.92f, 0.70f, 0.03f); // gold
-        private static readonly Color ColGuardPost = new(0.93f, 0.28f, 0.60f); // pink
-        private static readonly Color ColCorridor = new(0.42f, 0.45f, 0.50f); // grey
         private static readonly Color ColEdge = new(0.28f, 0.33f, 0.41f); // slate
         private static readonly Color ColEdgeLocked = new(0.92f, 0.70f, 0.03f); // gold
         private static readonly Color ColBackground = new(0.08f, 0.09f, 0.11f);
@@ -275,10 +269,6 @@ namespace Editor
         // Draws the room graph: connection arrows (dashed if locked), then coloured room nodes.
         private void DrawRoomGraph()
         {
-            // The room fulfilling the primary objective gets a halo; secondaries share its room
-            // type (ObjectiveRoom), so match on the mission node it came from instead.
-            var primaryId = _missionGraph.nodes.Find(n => n.nodeType == NodeType.Primary)?.id;
-
             foreach (var edge in _roomGraph.edges)
             {
                 if (!_roomPositions.TryGetValue(edge.fromId, out var fromPos)) continue;
@@ -289,22 +279,14 @@ namespace Editor
             foreach (var room in _roomGraph.rooms)
             {
                 if (!_roomPositions.TryGetValue(room.id, out var pos)) continue;
-                var col = room.type switch
-                {
-                    RoomType.Entrance => ColEntrance,
-                    RoomType.Exit => ColExit,
-                    RoomType.ObjectiveRoom => ColObjective,
-                    RoomType.KeycardRoom => ColKeycard,
-                    RoomType.GuardPost => ColGuardPost,
-                    RoomType.Corridor => ColCorridor,
-                    _ => Color.grey
-                };
+                // Rooms draw in the same colours the game tints them, from the shared table.
+                var col = RoomColour.TryFor(room.type, out var roleColour) ? roleColour : Color.grey;
                 // Show the underlying mission text where there is one, else just the type.
                 var label = room.missionNodeId != null
                     ? _missionGraph.nodes.Find(n => n.id == room.missionNodeId)?.text ?? room.type.ToString()
                     : room.type.ToString();
                 DrawNode(pos * _zoom, room.id, label, room.type.ToString(), col,
-                    room.missionNodeId != null && room.missionNodeId == primaryId);
+                    room.type == RoomType.PrimaryObjectiveRoom);
             }
         }
 
@@ -432,8 +414,8 @@ namespace Editor
                 SortLevelsByBarycenter(byLevel.Values.Reverse(), adj, rows);
             }
 
-            // Place each level in its own column, stacking its nodes vertically and
-            // centring shorter columns against the tallest one.
+            // Place each level in its own column,
+            // stacking its nodes vertically and centring shorter columns against the tallest one.
             var tallest = 0;
             foreach (var group in byLevel.Values) tallest = Mathf.Max(tallest, group.Count);
 
@@ -495,7 +477,7 @@ namespace Editor
         }
 
         // Draws a single node box (title + subtitle) and handles click-to-select/deselect.
-        // highlight adds a halo ring around the box, marking the primary objective.
+        // Highlight adds a halo ring around the box, marking the primary objective.
         private void DrawNode(Vector2 pos, string id, string text, string subtitle, Color col, bool highlight = false)
         {
             var w = NodeW * _zoom;

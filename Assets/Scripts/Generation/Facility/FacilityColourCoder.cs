@@ -10,17 +10,6 @@ namespace Generation.Facility
     // generated layout is readable at a glance during testing/debugging.
     public class FacilityColourCoder : MonoBehaviour
     {
-        // The colour used for each room role. Rooms with a role not listed here are left untinted.
-        private static readonly Dictionary<RoomType, Color> RoleColours = new()
-        {
-            [RoomType.Entrance] = new Color(0.40f, 0.80f, 0.40f), // green
-            [RoomType.Exit] = new Color(0.30f, 0.60f, 1.00f), // blue
-            [RoomType.ObjectiveRoom] = new Color(1.00f, 0.45f, 0.45f), // red
-            [RoomType.KeycardRoom] = new Color(1.00f, 0.85f, 0.30f), // amber
-            [RoomType.GuardPost] = new Color(0.80f, 0.50f, 0.90f), // purple
-            [RoomType.Corridor] = new Color(0.75f, 0.75f, 0.75f), // grey
-        };
-
         // Colours every room in the graph that has both a known rectangle and a known role.
         public static void Apply(Tilemap tilemap, RoomGraph graph, Dictionary<string, RoomRect> rects)
         {
@@ -28,7 +17,7 @@ namespace Generation.Facility
             {
                 // Skip rooms we have no rectangle for, or whose role has no assigned colour.
                 if (!rects.TryGetValue(room.id, out var rect)) continue;
-                if (!RoleColours.TryGetValue(room.type, out var colour)) continue;
+                if (!RoomColour.TryFor(room.type, out var colour)) continue;
                 TintRect(tilemap, rect, colour);
             }
         }
