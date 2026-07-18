@@ -100,9 +100,9 @@ namespace Generation.Facility
             playerSpawner?.Spawn(rooms, rects, World);
             keycardSpawner?.Spawn(rooms, rects, World);
             lockedDoorSpawner?.Spawn(rooms, rects, World);
-            objectiveSpawner?.Spawn(rooms, rects, tilemap);
+            objectiveSpawner?.Spawn(rooms, rects, World);
             exitSpawner?.Spawn(rooms, rects, World);
-            coverSpawner?.Spawn(rooms, rects, tilemap);
+            coverSpawner?.Spawn(rooms, rects, World);
             distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             
