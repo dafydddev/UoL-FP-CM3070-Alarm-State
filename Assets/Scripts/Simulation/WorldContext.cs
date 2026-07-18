@@ -16,8 +16,10 @@ namespace Simulation
         public EntryRules Entry { get; }
         public Navigator Navigator { get; }
 
-        // The player of this level, bound by the player spawner right after it spawns.
-        // Null until then (and in previews that spawn no player).
+        // Mission state for this level (e.g. whether the primary objective has been completed).
+        public MissionProgress Mission { get; }
+
+        // The player of this level, bound by the player spawner right after they spawn.
         public Actor Player { get; private set; }
 
         public void BindPlayer(Actor player) => Player = player;
@@ -31,6 +33,7 @@ namespace Simulation
             Occupancy = new OccupancyMap();
             Entry = new EntryRules(grid, Occupancy);
             Navigator = new Navigator(tilemap, Entry);
+            Mission = new MissionProgress();
         }
     }
 }

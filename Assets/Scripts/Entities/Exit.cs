@@ -24,17 +24,15 @@ namespace Entities
 
         public void OnEntered(Actor mover)
         {
-            if (mover is PlayerActor)
-            {
-                Debug.Log("Player reached exit");
-                Reached?.Invoke();
-            }
+            if (mover is not PlayerActor) return;
+            // The exit stays locked until the primary objective is completed.
+            if (!_world.Mission.PrimaryComplete) return;
+            Reached?.Invoke();
         }
 
         private void OnDestroy()
         {
-            if (_world != null && _world.Occupancy.At(_cell) == gameObject)
-                _world.Occupancy.Remove(_cell);
+            if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
         }
     }
 }
