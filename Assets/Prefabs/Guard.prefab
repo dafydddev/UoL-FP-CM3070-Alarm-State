@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2847214369973379371}
   - component: {fileID: 5317523817731763392}
   - component: {fileID: 2640932806277639875}
+  - component: {fileID: 2640932806277639876}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Untagged
@@ -128,3 +129,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &2640932806277639876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4981256181485324473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3011c4744df5184f9b4a8bdeb799700, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guards.GuardVisionOverlay
+  show: 1
+  calmColor: {r: 1, g: 1, b: 0, a: 0.050980393}
+  alertColor: {r: 1, g: 0, b: 0, a: 0.101960786}
+  cellFill: 0.9
+  sortingOrder: 1
