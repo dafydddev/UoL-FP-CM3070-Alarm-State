@@ -203,6 +203,30 @@ namespace Guards
             }
         }
 
+        // Every cell this guard can currently see (range + cone + line of sight).
+        // Reports the world size of one grid cell so an overlay can size its markers to the tiles.
+        // Yields nothing until the guard has been initialised.
+        public void CollectVisibleCells(List<Vector3> into, out Vector2 cellWorldSize)
+        {
+            into.Clear();
+            cellWorldSize = Vector2.one;
+            if (Motor == null) return;
+            var origin = World.Navigator.CellToWorld(Motor.Cell);
+            cellWorldSize = new Vector2(
+                World.Navigator.CellToWorld(Motor.Cell + Vector2Int.right).x - origin.x,
+                World.Navigator.CellToWorld(Motor.Cell + Vector2Int.up).y - origin.y);
+
+            var range = senses.ViewRangeCells;
+            for (var dx = -range; dx <= range; dx++)
+            {
+                for (var dy = -range; dy <= range; dy++)
+                {
+                    var cell = Motor.Cell + new Vector2Int(dx, dy);
+                    if (senses.CanSee(World, Motor, cell)) into.Add(World.Navigator.CellToWorld(cell));
+                }
+            }
+        }
+
         // Raised by the arrest action once it has held the player long enough.
         public static void RaisePlayerCaught()
         {
