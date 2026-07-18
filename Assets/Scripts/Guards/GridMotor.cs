@@ -100,6 +100,7 @@ namespace Guards
                 Cell = next;
                 _ticksSinceMove = 0;
                 _world.Entry.HandleEntered(next, _owner);
+                _world.Entry.HandleExited(PrevCell, _owner);
                 return;
             }
 
