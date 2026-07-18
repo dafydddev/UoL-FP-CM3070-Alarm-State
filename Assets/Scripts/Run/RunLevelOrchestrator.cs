@@ -3,8 +3,10 @@ using Effects;
 using Entities;
 using Generation.Facility;
 using Generation.Tiles;
+using Player;
 using Simulation;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Run
 {
@@ -34,14 +36,30 @@ namespace Run
             StartCoroutine(BuildLevel());
         }
 
-        private void OnEnable() => Exit.Reached += NextLevel;
-        private void OnDisable() => Exit.Reached -= NextLevel;
+        private void OnEnable()
+        {
+            Exit.Reached += NextLevel;
+            PlayerHealth.OnHealthChanged += OnHealthChanged;
+        }
+
+        private void OnDisable()
+        {
+            Exit.Reached -= NextLevel;
+            PlayerHealth.OnHealthChanged -= OnHealthChanged;
+        }
 
         private void NextLevel()
         {
             // run complete; nothing past the final level
             if (!_run.Advance()) return;
             StartCoroutine(BuildLevel());
+        }
+
+        // Losing the last heart ends the run. PlayerHealth fires this at most once at zero,
+        // so the run can't be ended twice by arrests landing in the same burst of ticks.
+        private void OnHealthChanged(int current, int _)
+        {
+            if (current == 0) StartCoroutine(EndRun());
         }
 
         // Freeze the sim, wipe to black, rebuild, reveal, then release our hold.
@@ -58,6 +76,16 @@ namespace Run
             {
                 GameLock.Release();
             }
+        }
+
+        // The failed run: freeze the sim, wipe to black, then hand back to the menu.
+        // The hold is deliberately never released — the menu doesn't tick the sim,
+        // and re-entering the gameplay scene clears leaked holds (see GameLock.Clear).
+        private IEnumerator EndRun()
+        {
+            GameLock.Acquire();
+            if (wipeEffect) yield return wipeEffect.Close();
+            SceneManager.LoadScene("Main Menu");
         }
     }
 }
