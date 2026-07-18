@@ -87,7 +87,6 @@ namespace Guards
         {
             if (Motor == null) return;
 
-            Memory.TickCooldowns();
             senses.Sense(World, Motor, Memory);
 
             Think(Snapshot());
@@ -114,7 +113,7 @@ namespace Guards
             return WorldState.Empty
                 .With(Fact.SeesPlayer, Memory.SeesPlayer)
                 .With(Fact.AtPlayer, atPlayer)
-                .With(Fact.PlayerCaught, Memory.RecentlyCaughtPlayer)
+                .With(Fact.PlayerCaught, false)
                 .With(Fact.HasLead, Memory.HasLead)
                 .With(Fact.OnPatrol, false);
         }

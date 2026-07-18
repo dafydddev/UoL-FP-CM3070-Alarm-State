@@ -11,8 +11,8 @@ namespace Guards
         PlayerLastSeen
     }
 
-    // The guard's working memory: what its senses last established about the player,
-    // the single most important lead worth investigating, and short-lived cooldowns.
+    // The guard's working memory:
+    // what its senses last established about the player, and the single most important lead worth investigating.
     // Senses write here; the agent reads it to build the planner's world snapshot.
     public class GuardMemory
     {
@@ -24,10 +24,6 @@ namespace Guards
         public Vector2Int LeadCell { get; private set; }
         private LeadKind LeadKind { get; set; }
         public DistractionItem LeadItem { get; private set; } // set when the lead is a distraction
-
-        // True for a short while after an arrest, so the catch goal doesn't refire every tick.
-        public bool RecentlyCaughtPlayer => _arrestCooldown > 0;
-        private int _arrestCooldown;
 
         public void NotePlayerSeen(Vector2Int cell)
         {
@@ -72,14 +68,6 @@ namespace Guards
         {
             HasLead = false;
             LeadItem = null;
-        }
-
-        public void BeginArrestCooldown(int ticks) => _arrestCooldown = ticks;
-
-        // Called once per agent tick to age time-based memory.
-        public void TickCooldowns()
-        {
-            if (_arrestCooldown > 0) _arrestCooldown--;
         }
     }
 }
