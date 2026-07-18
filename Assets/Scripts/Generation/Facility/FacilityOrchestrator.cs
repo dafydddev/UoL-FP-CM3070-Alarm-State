@@ -3,6 +3,7 @@ using Generation.Terrain;
 using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
+using Hacking;
 using Run;
 using Simulation;
 using Spawners;
@@ -12,7 +13,7 @@ using UnityEngine.Tilemaps;
 namespace Generation.Facility
 {
     // Top-level level builder. Runs the full generation pipeline in order:
-    // mission -> room -> layout -> realise tiles -> paint -> spawn props (player, items, etc.).
+    // mission -> room -> layout -> tiles -> paint -> spawn entites (player, items, etc.).
     [RequireComponent(typeof(MissionGenerator))]
     [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
@@ -25,6 +26,7 @@ namespace Generation.Facility
         [SerializeField] private RunDifficulty profile;
 
         [SerializeField] private MinimapFramer minimap;
+        [SerializeField] private HackingMinigame hackingMinigame;
         [SerializeField] private Tileset tileset;
 
         [SerializeField] private PlayerSpawner playerSpawner;
@@ -35,6 +37,7 @@ namespace Generation.Facility
         [SerializeField] private CoverSpawner coverSpawner;
         [SerializeField] private DistractionSpawner distractionSpawner;
         [SerializeField] private GuardSpawner guardSpawner;
+        
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
         [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
@@ -105,7 +108,10 @@ namespace Generation.Facility
             coverSpawner?.Spawn(rooms, rects, World);
             distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
-            
+
+            // Hand the hacking screen the run state, so its boards scale with the level.
+            hackingMinigame?.Prepare(run);
+            // Scale the mini-map for the generated level.
             minimap?.Fit();
         }
 
