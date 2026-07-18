@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
 using UnityEngine.Tilemaps;

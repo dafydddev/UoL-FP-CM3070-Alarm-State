@@ -1,4 +1,3 @@
-using System;
 using Generation.Facility;
 using Simulation;
 using UnityEngine;

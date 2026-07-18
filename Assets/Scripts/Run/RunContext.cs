@@ -1,5 +1,4 @@
-﻿using Generation;
-using Generation.Tiles;
+﻿using Generation.Tiles;
 
 namespace Run
 {
