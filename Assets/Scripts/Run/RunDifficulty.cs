@@ -26,6 +26,13 @@ namespace Run
         public Range lockChance;
         public Range guardChance;
 
+        // Hacking minigame balance: board cells per side, how much the solution wanders,
+        // dead-end branch count, and the odds each tile starts twisted out of place.
+        public Range hackingBoardSize;
+        public Range hackingComplexity;
+        public Range hackingDecoyPaths;
+        public Range hackingScrambleChance;
+
         private static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));
 
@@ -64,6 +71,38 @@ namespace Run
             var p = Progress(level, totalLevels);
             var min = CurrentMin(guardChance, p);
             var max = Mathf.Max(CurrentMax(guardChance, p), min);
+            return min + (float)rng.NextDouble() * (max - min);
+        }
+
+        public int HackingBoardSize(int level, int totalLevels, Random rng)
+        {
+            var p = Progress(level, totalLevels);
+            var min = CurrentMin(hackingBoardSize, p);
+            var max = Mathf.Max(CurrentMax(hackingBoardSize, p), min);
+            return rng.Next(Mathf.RoundToInt(min), Mathf.RoundToInt(max) + 1);
+        }
+
+        public float HackingComplexity(int level, int totalLevels, Random rng)
+        {
+            var p = Progress(level, totalLevels);
+            var min = CurrentMin(hackingComplexity, p);
+            var max = Mathf.Max(CurrentMax(hackingComplexity, p), min);
+            return min + (float)rng.NextDouble() * (max - min);
+        }
+
+        public int HackingDecoyPathCount(int level, int totalLevels, Random rng)
+        {
+            var p = Progress(level, totalLevels);
+            var min = CurrentMin(hackingDecoyPaths, p);
+            var max = Mathf.Max(CurrentMax(hackingDecoyPaths, p), min);
+            return rng.Next(Mathf.RoundToInt(min), Mathf.RoundToInt(max) + 1);
+        }
+
+        public float HackingScrambleChance(int level, int totalLevels, Random rng)
+        {
+            var p = Progress(level, totalLevels);
+            var min = CurrentMin(hackingScrambleChance, p);
+            var max = Mathf.Max(CurrentMax(hackingScrambleChance, p), min);
             return min + (float)rng.NextDouble() * (max - min);
         }
     }
