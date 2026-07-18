@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Entities.Objectives;
+using Generation;
 using Generation.Tiles;
 using Graphs.Rooms;
 using Simulation;
@@ -17,6 +18,9 @@ namespace Spawners
         // Places an objective in each objective room, tinted with that room's role colour.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
+            // Seed each objective's hacking puzzle from the graph so boards are repeatable per level.
+            var rng = new System.Random(Seeds.For(graph.seed, Seeds.Hacking, graph.level));
+
             foreach (var room in graph.rooms.Where(r => r.type.IsObjective()))
             {
                 // Skip rooms we have no rectangle for.
@@ -28,6 +32,7 @@ namespace Spawners
                 var objective = go.GetComponent<Objective>();
                 objective.id = room.id;
                 objective.isPrimary = room.type == RoomType.PrimaryObjectiveRoom;
+                objective.hackSeed = rng.Next();
                 objective.Init(world);
                 // Tint to the room's role colour so the primary objective stands out.
                 var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
