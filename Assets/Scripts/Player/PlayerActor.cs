@@ -14,6 +14,7 @@ namespace Player
         [SerializeField] private InputActionReference rightAction;
         [SerializeField] private InputActionReference moveToAction;
         [SerializeField] private InputActionReference pointAction;
+        [SerializeField] private InputActionReference useAction;
         [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
         [SerializeField] private LineRenderer routePreview;
 
@@ -38,6 +39,7 @@ namespace Player
             rightAction.action.Enable();
             moveToAction.action.Enable();
             pointAction.action.Enable();
+            useAction.action.Enable();
         }
 
         protected override void OnDisable()
@@ -49,6 +51,7 @@ namespace Player
             rightAction.action.Disable();
             moveToAction.action.Disable();
             pointAction.action.Disable();
+            useAction.action.Disable();
         }
 
         public override void Init(WorldContext world)
@@ -65,6 +68,7 @@ namespace Player
             if (GameLock.Locked) return;
             ReadInput();
             ReadClick();
+            ReadUse();
             var tilemap = World.Tilemap;
             transform.position = Vector3.Lerp(
                 tilemap.GetCellCenterWorld((Vector3Int)_prevCell),
@@ -97,6 +101,7 @@ namespace Player
 
             _cell = target;
             World.Entry.HandleEntered(target, this);
+            World.Entry.HandleExited(_prevCell, this);
         }
 
         // Takes the next step of a queued route, replanning if the world changed underneath it.
@@ -110,6 +115,7 @@ namespace Player
                 _route.Dequeue();
                 _cell = next;
                 World.Entry.HandleEntered(next, this);
+                World.Entry.HandleExited(_prevCell, this);
             }
             else PlanRoute(_routeGoal); // something now blocks the step — route around it or stop
         }
@@ -142,6 +148,13 @@ namespace Player
 
             var world = _camera.ScreenToWorldPoint(pointAction.action.ReadValue<Vector2>());
             PlanRoute((Vector2Int)World.Tilemap.WorldToCell(world));
+        }
+
+        // Presses the use key to interact with whatever the player is standing on.
+        private void ReadUse()
+        {
+            if (!useAction.action.WasPressedThisFrame()) return;
+            World.Entry.HandleUsed(_cell, this);
         }
 
         private void PlanRoute(Vector2Int goal)

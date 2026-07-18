@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7148349010203908285}
   - component: {fileID: 4196619975231172531}
   - component: {fileID: 1424040589631600358}
+  - component: {fileID: -7480907366736090817}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -114,6 +115,7 @@ MonoBehaviour:
   rightAction: {fileID: 7534374900712896568, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   moveToAction: {fileID: -7337193881872488525, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   pointAction: {fileID: 1308948322186195691, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   repeatDelay: 0.2
   routePreview: {fileID: 4208098087324233613}
 --- !u!114 &1424040589631600358
@@ -129,6 +131,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
   useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+--- !u!114 &-7480907366736090817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505076589466554815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8eb068a7874f1b8f35c92d8b0806f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHiding
 --- !u!1 &6943639982872606610
 GameObject:
   m_ObjectHideFlags: 0
