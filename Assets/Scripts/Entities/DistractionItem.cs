@@ -35,14 +35,19 @@ namespace Entities
             gameObject.SetActive(false);
         }
         
-        // Places the distraction on the cell nearest the given world position
-        public void Drop(Vector3 worldPos)
+        // Places the distraction on the cell nearest the given world position.
+        // Returns false without placing it if that cell is already occupied.
+        public bool Drop(Vector3 worldPos)
         {
-            _cell = (Vector2Int)_world.Tilemap.WorldToCell(worldPos);
+            var cell = (Vector2Int)_world.Tilemap.WorldToCell(worldPos);
+            if (_world.Occupancy.At(cell)) return false;
+
+            _cell = cell;
             transform.position = _world.Tilemap.GetCellCenterWorld((Vector3Int)_cell);
             _world.Occupancy.Place(_cell, gameObject);
             gameObject.SetActive(true);
             Dropped?.Invoke(this);
+            return true;
         }
 
         // Removes the distraction from the world once a guard has investigated it.
