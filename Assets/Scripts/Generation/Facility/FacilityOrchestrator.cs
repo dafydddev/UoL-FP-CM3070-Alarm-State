@@ -4,6 +4,7 @@ using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
 using Hacking;
+using MiniMap;
 using Run;
 using Simulation;
 using Spawners;
