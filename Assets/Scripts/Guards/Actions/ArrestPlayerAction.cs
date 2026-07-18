@@ -3,12 +3,10 @@ using Guards.Goap;
 namespace Guards.Actions
 {
     // Holds the caught player for a moment, then raises the arrest.
-    // A cooldown in memory marks the catch as recent, so the chase goal stands down for a while,
-    // instead of re-arresting every tick (the legacy code faked this with a timed failure).
+    // The player's iFrames (invincibility frames) decide which arrests actually cost a heart.
     public sealed class ArrestPlayerAction : GoapAction
     {
-        private const int HoldTicks = 3;
-        private const int CooldownTicks = 30;
+        private const int HoldTicks = 6;
 
         private int _hold;
 
@@ -26,14 +24,13 @@ namespace Guards.Actions
 
         public override ActionStatus Run(GuardAgent agent)
         {
-            // The player slipped out of reach — fall back to the plan's chase step via a replan.
+            // The player slipped out of reach, fall back to the plan's chase step via a replan.
             if (!agent.Memory.SeesPlayer || !GuardAgent.IsAdjacent(agent.Motor.Cell, agent.Memory.PlayerCell))
                 return ActionStatus.Failed;
 
             if (--_hold > 0) return ActionStatus.Running;
 
             GuardAgent.RaisePlayerCaught();
-            agent.Memory.BeginArrestCooldown(CooldownTicks);
             return ActionStatus.Succeeded;
         }
     }
