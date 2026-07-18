@@ -17,26 +17,64 @@ namespace Guards
         [SerializeField, Min(0)] private int pointBlankCells = 1;
         [SerializeField, Min(0)] private int hearingRangeCells = 9;
 
+        // On losing sight, follow the player's momentum: investigate a point projected this many cells
+        // ahead of where they were last seen, rather than the stale spot itself. Off = the old last-seen behaviour.
+        [SerializeField] private bool projectLostLeadForward = true;
+        [SerializeField, Min(1)] private int leadProjectionCells = 3;
+
         public int HearingRangeCells => hearingRangeCells;
+        public int ViewRangeCells => viewRangeCells;
 
         public void Sense(WorldContext world, GridMotor motor, GuardMemory memory)
         {
             var player = world.Player;
             if (!player)
             {
-                memory.NotePlayerLost();
+                if (memory.SeesPlayer) memory.NotePlayerLost(memory.PlayerCell);
                 return;
             }
 
             var playerCell = (Vector2Int)world.Tilemap.WorldToCell(player.transform.position);
             if (CanSeePlayer(world, motor, memory, player, playerCell)) memory.NotePlayerSeen(playerCell);
-            else memory.NotePlayerLost();
+            else if (memory.SeesPlayer) memory.NotePlayerLost(LostLeadCell(world, memory));
+        }
+
+        // Where to send a guard that has just lost the player: normally the last-seen cell, but with
+        // projection on, a point a few cells further along the player's heading — so the guard heads
+        // where they were likely running to instead of pulling up short at the spot they vanished from.
+        private Vector2Int LostLeadCell(WorldContext world, GuardMemory memory)
+        {
+            if (!projectLostLeadForward || memory.PlayerHeading == Vector2Int.zero) return memory.PlayerCell;
+
+            // Walk forward along the heading, stopping at the last open cell before any wall.
+            var lead = memory.PlayerCell;
+            var probe = memory.PlayerCell;
+            for (var i = 0; i < leadProjectionCells; i++)
+            {
+                probe += memory.PlayerHeading;
+                var tile = world.Grid.At(probe);
+                if (!tile || tile.BlocksEntry(null)) break;
+                lead = probe;
+            }
+
+            return lead;
         }
 
         private bool CanSeePlayer(WorldContext world, GridMotor motor, GuardMemory memory,
             Actor player, Vector2Int playerCell)
         {
-            var offset = playerCell - motor.Cell;
+            if (!CanSee(world, motor, playerCell)) return false;
+
+            // Cover hides the player from being spotted, but doesn't break a gaze already fixed on them.
+            var hidden = player.TryGetComponent(out PlayerHiding hiding) && hiding.IsHidden;
+            return !hidden || memory.SeesPlayer;
+        }
+
+        // The guard's field of view:
+        // - a cell is visible when it's in range, inside the facing cone, and not screened by terrain.
+        public bool CanSee(WorldContext world, GridMotor motor, Vector2Int cell)
+        {
+            var offset = cell - motor.Cell;
             var distance = Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
             if (distance > viewRangeCells) return false;
 
@@ -44,15 +82,11 @@ namespace Guards
             if (distance > pointBlankCells &&
                 Vector2.Angle(motor.Facing, offset) > viewAngleDegrees * 0.5f) return false;
 
-            if (!HasLineOfSight(world, motor.Cell, playerCell)) return false;
-
-            // Cover hides the player from being spotted, but doesn't break a gaze already fixed on them.
-            var hidden = player.TryGetComponent(out PlayerHiding hiding) && hiding.IsHidden;
-            return !hidden || memory.SeesPlayer;
+            return HasLineOfSight(world, motor.Cell, cell);
         }
 
-        // Walks the Bresenham line between the two cells; sight is blocked by any
-        // unwalkable terrain in between (doors are occupants, so doorways stay see-through).
+        // Walks the Bresenham line between the two cells;
+        // sight is blocked by any unwalkable terrain in between (doors are occupants, so doorways stay see-through).
         private static bool HasLineOfSight(WorldContext world, Vector2Int from, Vector2Int to)
         {
             int dx = Mathf.Abs(to.x - from.x), dy = -Mathf.Abs(to.y - from.y);
