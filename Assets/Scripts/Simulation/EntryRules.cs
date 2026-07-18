@@ -34,5 +34,18 @@ namespace Simulation
             var occupant = _occupancy.At(cell);
             if (occupant && occupant.TryGetComponent(out IEnterHandler handler)) handler.OnEntered(mover);
         }
+        
+        public void HandleExited(Vector2Int cell, Actor mover)
+        {
+            var occupant = _occupancy.At(cell);
+            if (occupant && occupant.TryGetComponent(out IExitHandler handler)) handler.OnExited(mover);
+        }
+
+        // Runs the use reaction of any occupant on the cell.
+        public void HandleUsed(Vector2Int cell, Actor user)
+        {
+            var occupant = _occupancy.At(cell);
+            if (occupant && occupant.TryGetComponent(out IUseHandler handler)) handler.OnUsed(user);
+        }
     }
 }
