@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Entities;
 using Generation;
-using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
+using Simulation;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Spawners
 {
     // Scatters cover objects around the facility, placing each against a room's interior wall.
-    public class CoverSpawner : PropSpawner
+    public class CoverSpawner : EntitySpawner
     {
         public GameObject coverPrefab;
         public int count = 6;
@@ -18,8 +18,10 @@ namespace Spawners
         private const int MaxAttempts = 8;
 
         // Places up to count cover objects in randomly chosen eligible rooms.
-        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
+        public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
+            var tilemap = world.Tilemap;
+
             // Seed from the graph so cover placement is repeatable per level.
             var rng = new System.Random(Seeds.For(graph.seed, Seeds.Cover, graph.level));
 
@@ -44,6 +46,7 @@ namespace Spawners
                 var cell = WallCell(rect, rng);
                 var pos = tilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
                 var go = Instantiate(coverPrefab, pos, Quaternion.identity, transform);
+                go.GetComponent<CoverItem>().Init(world);
                 go.name = $"Cover_{candidates[i].id}";
             }
         }
