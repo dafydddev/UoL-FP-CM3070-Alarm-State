@@ -54,8 +54,8 @@ namespace Player
             if (_distractions.Count == 0) return;
             var last = _distractions.Count - 1;
             var item = _distractions[last];
+            if (!item.Drop(transform.position)) return; // cell occupied; keep it in hand
             _distractions.RemoveAt(last);
-            item.Drop(transform.position);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Entities;
 using Generation;
-using Generation.Facility;
 using Generation.Tiles;
 using Graphs.Rooms;
 using Simulation;
@@ -37,10 +36,8 @@ namespace Spawners
                 var tile = world.Grid.At(cell);
                 if (!tile || tile.BlocksEntry(null)) continue;
                 if (world.Occupancy.At(cell)) continue;
-
                 var pos = world.Tilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
                 var go = Instantiate(distractionPrefab, pos, Quaternion.identity, transform);
-
                 var item = go.GetComponent<DistractionItem>();
                 item.distractionId = $"distraction_{placed}";
                 item.Init(world);
@@ -49,9 +46,10 @@ namespace Spawners
             }
         }
 
-        // Bridson's Poisson disk sampling over [0,width] x [0,height]: returns points no closer than
-        // radius apart, in roughly O(n). A background grid of cellSize = radius/sqrt(2) holds at most
-        // one sample per cell, so proximity checks only touch a fixed neighbourhood.
+        // Bridson's Poisson disk sampling over [0,width] x [0,height]:
+        // returns points no closer than radius apart, in roughly O(n).
+        // A background grid of cellSize = radius/sqrt(2) holds at most one sample per cell,
+        // so proximity checks only touch a fixed neighbourhood.
         private static List<Vector2> PoissonSample(int width, int height, float radius, System.Random rng)
         {
             var samples = new List<Vector2>();
@@ -62,14 +60,17 @@ namespace Spawners
             var rows = Mathf.CeilToInt(height / cellSize);
             var grid = new int[cols, rows];
             for (var x = 0; x < cols; x++)
-            for (var y = 0; y < rows; y++)
-                grid[x, y] = -1; // -1 marks an empty background cell
+            {
+                for (var y = 0; y < rows; y++)
+                {
+                    grid[x, y] = -1; // -1 marks an empty background cell
+                }
+            }
 
             var active = new List<int>();
 
             // Seed the process with one random point.
-            AddSample(new Vector2((float)rng.NextDouble() * width, (float)rng.NextDouble() * height),
-                samples, active, grid, cellSize);
+            AddSample(new Vector2((float)rng.NextDouble() * width, (float)rng.NextDouble() * height), samples, active, grid, cellSize);
 
             while (active.Count > 0)
             {
@@ -108,10 +109,9 @@ namespace Spawners
             grid[(int)(p.x / cellSize), (int)(p.y / cellSize)] = index;
         }
 
-        // True if no existing sample lies within radius of the candidate. Only the 5x5 block of
-        // background cells around the candidate can hold a close enough point, so that is all we scan.
-        private static bool FarEnough(Vector2 candidate, List<Vector2> samples, int[,] grid, float cellSize,
-            int cols, int rows, float radius)
+        // True if no existing sample lies within radius of the candidate.
+        // Only the 5x5 block of background cells around the candidate can hold a close enough point, so that is all we scan.
+        private static bool FarEnough(Vector2 candidate, List<Vector2> samples, int[,] grid, float cellSize, int cols, int rows, float radius)
         {
             var cx = (int)(candidate.x / cellSize);
             var cy = (int)(candidate.y / cellSize);
