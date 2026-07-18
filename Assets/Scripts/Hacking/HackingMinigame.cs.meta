@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 1ebac72f91abca14baf447004519bc2c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - panel: {instanceID: 0}
+  - boardLayout: {instanceID: 0}
+  - tileButtonPrefab: {instanceID: 0}
+  - abortButton: {instanceID: 0}
+  - startMarker: {instanceID: 0}
+  - endMarker: {instanceID: 0}
+  - straightSprite: {fileID: -610601079, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  - elbowSprite: {fileID: 1654468739, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  - teeSprite: {fileID: 365530833, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  - crossSprite: {fileID: -1279062106, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
