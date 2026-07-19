@@ -3,12 +3,13 @@ using UnityEngine;
 
 namespace Guards
 {
-    // What kind of lead a guard is holding; higher values matter more,
-    // so a last-seen player position displaces a noticed distraction but not vice versa.
+    // What kind of lead a guard is holding; higher values matter more, so a last-seen player position
+    // displaces a noticed distraction but not vice versa, and a sounding alarm displaces both.
     public enum LeadKind
     {
         Distraction,
-        PlayerLastSeen
+        PlayerLastSeen,
+        Alarm
     }
 
     // The guard's working memory:
@@ -25,18 +26,41 @@ namespace Guards
         private LeadKind LeadKind { get; set; }
         public DistractionItem LeadItem { get; private set; } // set when the lead is a distraction
 
+        // The current lead is a player trail the guard is following for itself, not a distraction.
+        public bool LeadIsPlayerTrail => HasLead && LeadKind == LeadKind.PlayerLastSeen;
+
+        // The alarm is raised only after a first-hand trail has run out. A fresh sighting re-arms.
+        private bool _trailLost;
+        private bool _alarmSought;
+        public bool WantsToRaiseAlarm => _trailLost && !_alarmSought;
+        public void MarkTrailLost() => _trailLost = true;
+        public void MarkAlarmSought() => _alarmSought = true;
+
+        // A guard answers a given contact once: it sweeps its stretch, then stops being pulled and returns to patrol.
+        // A contact that moves (a fresh sighting) no longer matches, re-arming it.
+        private bool _alarmAnswered;
+        private Vector2Int _answeredContact;
+        public bool HasAnsweredAlarm(Vector2Int contact) => _alarmAnswered && _answeredContact == contact;
+        public void MarkAlarmAnswered(Vector2Int contact) { _alarmAnswered = true; _answeredContact = contact; }
+        public void ResetAlarmResponse() => _alarmAnswered = false;
+
         public void NotePlayerSeen(Vector2Int cell)
         {
-            // Two consecutive sightings reveal which way the player is moving;
-            // a fresh sighting starts with an unknown heading until they take a step in view.
-            if (!SeesPlayer) PlayerHeading = Vector2Int.zero;
+            // Two consecutive sightings reveal which way the player is moving.
+            // A fresh sighting starts with an unknown heading until they take a step in view.
+            if (!SeesPlayer)
+            {
+                PlayerHeading = Vector2Int.zero;
+                _trailLost = false;   // a fresh sighting restarts the trail
+                _alarmSought = false; // and re-arms the alarm
+            }
             else if (cell != PlayerCell) PlayerHeading = Heading(PlayerCell, cell);
             SeesPlayer = true;
             PlayerCell = cell;
         }
 
-        // Losing sight turns a position into a lead to investigate. The senses decide where that is:
-        // the last-seen cell, or a point projected ahead along PlayerHeading (see GuardSenses).
+        // Losing sight turns a position into a lead to investigate.
+        // The senses decide where that is the last-seen cell, or a point projected ahead along PlayerHeading.
         public void NotePlayerLost(Vector2Int leadCell)
         {
             if (!SeesPlayer) return;

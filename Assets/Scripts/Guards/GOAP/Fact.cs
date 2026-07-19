@@ -9,6 +9,8 @@ namespace Guards.Goap
         AtPlayer,
         PlayerCaught,
         HasLead,
-        OnPatrol
+        OnPatrol,
+        AlarmRaised,
+        WantsToRaiseAlarm
     }
 }

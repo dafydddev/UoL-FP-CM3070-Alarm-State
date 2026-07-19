@@ -38,6 +38,7 @@ namespace Generation.Facility
         [SerializeField] private CoverSpawner coverSpawner;
         [SerializeField] private DistractionSpawner distractionSpawner;
         [SerializeField] private GuardSpawner guardSpawner;
+        [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
         
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
@@ -70,6 +71,9 @@ namespace Generation.Facility
         {
             // Remove anything spawned by a previous run.
             ClearFacility();
+
+            // Clear any alarm left latched by the previous level (resets the HUD).
+            AlarmState.Reset();
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = MissionGenerator.Generate(run.Profile, run.CurrentLevel, run.TotalLevels);
@@ -109,6 +113,7 @@ namespace Generation.Facility
             coverSpawner?.Spawn(rooms, rects, World);
             distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
+            alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
 
             // Hand the hacking screen the run state, so its boards scale with the level.
             hackingMinigame?.Prepare(run);
@@ -127,6 +132,7 @@ namespace Generation.Facility
             coverSpawner?.ClearChildren();
             distractionSpawner?.ClearChildren();
             guardSpawner?.ClearChildren();
+            alarmSwitchSpawner?.ClearChildren();
         }
     }
 }
