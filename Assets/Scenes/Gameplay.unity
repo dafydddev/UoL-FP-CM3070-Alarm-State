@@ -3892,7 +3892,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Generation.LevelController
   defaultStartLevel: 20
   defaultTotalLevels: 20
-  default: {fileID: 11400000, guid: 4dbcffe389577bd4ab41d4ef1e68dbb8, type: 2}
+  default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0
   wipeEffect: {fileID: 331585042}
 --- !u!114 &1820973510

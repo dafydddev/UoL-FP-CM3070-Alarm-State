@@ -33,12 +33,14 @@ namespace Entities
         public bool BlocksEntry(Actor mover)
         {
             if (_open) return false;
+            if (mover && mover is not PlayerActor) return false; // guards can always pass; the player needs the key
             return !(mover && mover.TryGetComponent(out PlayerInventory inventory) && inventory.HasKey(keyId));
         }
 
+        // Only the player opens the door for good,a guard passing through leaves it locked.
         public void OnEntered(Actor mover)
         {
-            if (_open) return;
+            if (_open || mover is not PlayerActor) return;
             _open = true;
             if (_sprite && openSprite) _sprite.sprite = openSprite;
         }
