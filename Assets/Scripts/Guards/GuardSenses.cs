@@ -1,4 +1,5 @@
 using System;
+using Entities;
 using Player;
 using Simulation;
 using UnityEngine;
@@ -6,8 +7,8 @@ using UnityEngine;
 namespace Guards
 {
     // The guard's eyes and ears, tuned per guard in the inspector.
-    // Vision works entirely on the grid: range, a facing cone (with a point-blank bubble),
-    // and Bresenham line of sight through the terrain — no physics involved.
+    // Vision works entirely on the grid, rather than physics.
+    // Guards have a sense range, a facing cone (with a point-blank bubble), and Bresenham line of sight.
     // Sense() runs once per tick and writes what it establishes into GuardMemory.
     [Serializable]
     public class GuardSenses
@@ -39,8 +40,8 @@ namespace Guards
             else if (memory.SeesPlayer) memory.NotePlayerLost(LostLeadCell(world, memory));
         }
 
-        // Where to send a guard that has just lost the player: normally the last-seen cell, but with
-        // projection on, a point a few cells further along the player's heading — so the guard heads
+        // Where to send a guard that has just lost the player: normally the last-seen cell,
+        // but with projection on, a point a few cells further along the player's heading — so the guard heads
         // where they were likely running to instead of pulling up short at the spot they vanished from.
         private Vector2Int LostLeadCell(WorldContext world, GuardMemory memory)
         {
@@ -70,8 +71,8 @@ namespace Guards
             return !hidden || memory.SeesPlayer;
         }
 
-        // The guard's field of view:
-        // - a cell is visible when it's in range, inside the facing cone, and not screened by terrain.
+        // The guard's field of view.
+        // A cell is visible when it's in range, inside the facing cone, and not screened by terrain.
         public bool CanSee(WorldContext world, GridMotor motor, Vector2Int cell)
         {
             var offset = cell - motor.Cell;
@@ -85,8 +86,8 @@ namespace Guards
             return HasLineOfSight(world, motor.Cell, cell);
         }
 
-        // Walks the Bresenham line between the two cells;
-        // sight is blocked by any unwalkable terrain in between (doors are occupants, so doorways stay see-through).
+        // Walks the Bresenham line between the two cells.
+        // Sight is blocked by any unwalkable terrain in between and closed locked doors.
         private static bool HasLineOfSight(WorldContext world, Vector2Int from, Vector2Int to)
         {
             int dx = Mathf.Abs(to.x - from.x), dy = -Mathf.Abs(to.y - from.y);
@@ -113,6 +114,9 @@ namespace Guards
 
                 var tile = world.Grid.At(cell);
                 if (!tile || tile.BlocksEntry(null)) return false;
+
+                var occupant = world.Occupancy.At(cell);
+                if (occupant && occupant.TryGetComponent(out LockedDoor door) && door.BlocksSight) return false;
             }
 
             return true;

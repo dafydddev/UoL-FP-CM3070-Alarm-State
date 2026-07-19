@@ -16,6 +16,9 @@ namespace Entities
         private bool _open;
         private WorldContext _world;
 
+        // A closed locked door screens the view behind it; a keyholder opening it clears the way.
+        public bool BlocksSight => !_open;
+
         // Called by the spawner after Instantiate.
         public void Init(WorldContext world, int seed)
         {
