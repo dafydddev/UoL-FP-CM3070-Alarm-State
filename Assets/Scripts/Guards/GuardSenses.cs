@@ -18,13 +18,23 @@ namespace Guards
         [SerializeField, Min(0)] private int pointBlankCells = 1;
         [SerializeField, Min(0)] private int hearingRangeCells = 9;
 
-        // On losing sight, follow the player's momentum: investigate a point projected this many cells
-        // ahead of where they were last seen, rather than the stale spot itself. Off = the old last-seen behaviour.
+        // On losing sight, follow the player's momentum:
+        // investigate a point projected this many cells ahead of where they were last seen.
         [SerializeField] private bool projectLostLeadForward = true;
         [SerializeField, Min(1)] private int leadProjectionCells = 3;
 
         public int HearingRangeCells => hearingRangeCells;
         public int ViewRangeCells => viewRangeCells;
+
+        // True when the alarm is sounding and the nearest switch is within earshot,
+        public bool HearsAlarm(WorldContext world, GridMotor motor)
+        {
+            if (!world.Alarm.Active) return false;
+            var alarmSwitch = world.Alarm.NearestSwitch(motor.Cell);
+            if (alarmSwitch == null) return false;
+            var offset = alarmSwitch.Cell - motor.Cell;
+            return Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y)) <= hearingRangeCells;
+        }
 
         public void Sense(WorldContext world, GridMotor motor, GuardMemory memory)
         {
@@ -61,8 +71,7 @@ namespace Guards
             return lead;
         }
 
-        private bool CanSeePlayer(WorldContext world, GridMotor motor, GuardMemory memory,
-            Actor player, Vector2Int playerCell)
+        private bool CanSeePlayer(WorldContext world, GridMotor motor, GuardMemory memory, Actor player, Vector2Int playerCell)
         {
             if (!CanSee(world, motor, playerCell)) return false;
 

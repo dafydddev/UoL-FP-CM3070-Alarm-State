@@ -57,6 +57,7 @@ namespace Guards.Actions
             if (_linger-- > 0) return ActionStatus.Running;
 
             if (memory.LeadItem) memory.LeadItem.Consume();
+            else if (memory.LeadIsPlayerTrail) memory.MarkTrailLost(); // trail followed to its end, nothing found
             memory.ClearLead();
             return ActionStatus.Succeeded;
         }

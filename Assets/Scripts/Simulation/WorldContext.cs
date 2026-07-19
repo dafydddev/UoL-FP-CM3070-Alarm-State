@@ -19,6 +19,9 @@ namespace Simulation
         // Mission state for this level (e.g. whether the primary objective has been completed).
         public MissionProgress Mission { get; }
 
+        // Alarm state for this level: whether it is sounding and the escape line it is broadcasting.
+        public AlarmState Alarm { get; }
+
         // The player of this level, bound by the player spawner right after they spawn.
         public Actor Player { get; private set; }
 
@@ -34,6 +37,7 @@ namespace Simulation
             Entry = new EntryRules(grid, Occupancy);
             Navigator = new Navigator(tilemap, Entry);
             Mission = new MissionProgress();
+            Alarm = new AlarmState();
         }
     }
 }

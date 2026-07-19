@@ -30,12 +30,15 @@ namespace Guards
         // Goals in one shared, immutable table: what matters more, when it applies, what it wants.
         private static readonly GoapGoal[] Goals =
         {
-            new("Chase", 3,
+            new("Chase", 4,
                 WorldState.Empty.With(Fact.SeesPlayer, true),
                 WorldState.Empty.With(Fact.PlayerCaught, true)),
-            new("Investigate", 2,
+            new("Investigate", 3,
                 WorldState.Empty.With(Fact.HasLead, true),
                 WorldState.Empty.With(Fact.HasLead, false)),
+            new("RaiseAlarm", 2,
+                WorldState.Empty.With(Fact.WantsToRaiseAlarm, true).With(Fact.AlarmRaised, false),
+                WorldState.Empty.With(Fact.AlarmRaised, true)),
             PatrolGoal
         };
 
@@ -45,6 +48,9 @@ namespace Guards
         public GridMotor Motor { get; private set; }
         public GuardMemory Memory { get; } = new();
 
+        // Narrow window onto the level's alarm for the guard's actions (Actor.World is protected).
+        public AlarmState Alarm => World?.Alarm;
+
         // Shown by the debug label so the AI's thinking is visible at a glance.
         public string CurrentGoalName => _goal?.Name ?? "Idle";
 
@@ -52,6 +58,10 @@ namespace Guards
         private GoapGoal _goal;
         private List<GoapAction> _plan;
         private int _planIndex;
+
+        // A stable per-guard number fixing this guard's slot in the alarm sweep, so responders string out
+        // along the escape line (different distances ahead, different sides) instead of bunching on one cell.
+        private int _sweepSlot;
 
         // Called by the spawner after Instantiate, with the patrol route derived from the room graph.
         public void Init(WorldContext world, IReadOnlyList<Vector2Int> patrolRoute)
@@ -61,13 +71,15 @@ namespace Guards
             var cell = (Vector2Int)world.Tilemap.WorldToCell(transform.position);
             transform.position = world.Navigator.CellToWorld(cell);
             Motor = new GridMotor(this, world, cell);
+            _sweepSlot = Mathf.Abs(GetInstanceID());
 
             _actions = new GoapAction[]
             {
                 new PatrolAction(patrolRoute),
                 new ChasePlayerAction(),
                 new ArrestPlayerAction(),
-                new InvestigateLeadAction()
+                new InvestigateLeadAction(),
+                new RaiseAlarmAction()
             };
         }
 
@@ -88,6 +100,8 @@ namespace Guards
             if (Motor == null) return;
 
             senses.Sense(World, Motor, Memory);
+            BroadcastSighting();
+            HearAlarm();
 
             Think(Snapshot());
 
@@ -115,13 +129,80 @@ namespace Guards
                 .With(Fact.AtPlayer, atPlayer)
                 .With(Fact.PlayerCaught, false)
                 .With(Fact.HasLead, Memory.HasLead)
-                .With(Fact.OnPatrol, false);
+                .With(Fact.OnPatrol, false)
+                .With(Fact.AlarmRaised, World.Alarm.Active)
+                .With(Fact.WantsToRaiseAlarm, Memory.WantsToRaiseAlarm);
         }
+
+        // A guard that sees the player while the alarm sounds keeps the contact on their live position and heading,
+        // so responders re-sweep where the player actually is and where they are going.
+        private void BroadcastSighting()
+        {
+            if (World.Alarm.Active && Memory.SeesPlayer)
+                World.Alarm.UpdateContact(Memory.PlayerCell, Memory.PlayerHeading);
+        }
+
+        // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps its
+        // own slot along the escape line, so responders string out across where the player likely fled.
+        // Each answers a given contact once: on reaching its slot it stops being pulled and drifts back to patrol.
+        // A contact that has moved re-arms it, causing all the guards to scramble again.
+        private void HearAlarm()
+        {
+            var alarm = World.Alarm;
+            if (!alarm.Active)
+            {
+                Memory.ResetAlarmResponse();
+                return;
+            }
+
+            if (Memory.SeesPlayer || Memory.LeadIsPlayerTrail) return;
+            if (!senses.HearsAlarm(World, Motor)) return;
+            if (Memory.HasAnsweredAlarm(alarm.ContactCell)) return;
+
+            var slot = SweepCell(alarm.ContactCell, alarm.ContactHeading);
+            if (IsNear(Motor.Cell, slot))
+            {
+                Memory.MarkAlarmAnswered(alarm.ContactCell);
+                return;
+            }
+
+            Memory.OfferLead(slot, LeadKind.Alarm);
+        }
+
+        // This guard's stretch of the escape line: the contact projected a per-guard distance along the
+        // heading (stopping at a wall) and stepped to a per-guard side, so guards spread along and across it.
+        private Vector2Int SweepCell(Vector2Int contact, Vector2Int heading)
+        {
+            if (heading == Vector2Int.zero) return contact; // no heading: search the last-seen cell itself
+
+            var along = _sweepSlot % 5 * 2; // 0,2,4,6,8 cells ahead
+            var cell = contact;
+            for (var i = 0; i < along; i++)
+            {
+                var next = cell + heading;
+                if (!Walkable(next)) break;
+                cell = next;
+            }
+
+            var lateral = _sweepSlot / 5 % 3 - 1; // one guard on the line, others a step to each side
+            var side = new Vector2Int(-heading.y, heading.x) * lateral;
+            return Walkable(cell + side) ? cell + side : cell;
+        }
+
+        private bool Walkable(Vector2Int cell)
+        {
+            var tile = World.Grid.At(cell);
+            return tile && !tile.BlocksEntry(null);
+        }
+
+        // Within one cell (including diagonals) of the target.
+        private static bool IsNear(Vector2Int a, Vector2Int b) =>
+            Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y)) <= 1;
 
         // Picks the most important goal that applies and isn't already achieved.
         // Keeps the current plan when the winner hasn't changed; otherwise plans fresh.
-        // A goal that can't be planned for falls through to the next — that is the failure recovery:
-        // the guard always degrades to something it can do.
+        // A goal that can't be planned for falls through to the next,
+        // that is the failure recovery: the guard always degrades to something it can do.
         private void Think(WorldState snapshot)
         {
             GoapGoal best = null;
@@ -221,7 +302,11 @@ namespace Guards
                 for (var dy = -range; dy <= range; dy++)
                 {
                     var cell = Motor.Cell + new Vector2Int(dx, dy);
-                    if (senses.CanSee(World, Motor, cell)) into.Add(World.Navigator.CellToWorld(cell));
+                    if (!senses.CanSee(World, Motor, cell)) continue;
+                    // Paint the ground the guard can watch, not the walls that stop its view.
+                    var tile = World.Grid.At(cell);
+                    if (!tile || tile.BlocksEntry(null)) continue;
+                    into.Add(World.Navigator.CellToWorld(cell));
                 }
             }
         }
