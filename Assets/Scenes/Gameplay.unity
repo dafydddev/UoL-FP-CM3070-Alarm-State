@@ -1772,6 +1772,56 @@ Transform:
   - {fileID: 1361007042}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &951844359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 951844361}
+  - component: {fileID: 951844360}
+  m_Layer: 0
+  m_Name: Guard Vision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &951844360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951844359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d04dd52f44c16a4b9027e720404184c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guards.GuardVisionField
+  show: 1
+  calmColor: {r: 1, g: 0.95, b: 0.4, a: 0.16}
+  alertColor: {r: 1, g: 0.25, b: 0.2, a: 0.28}
+  cellFill: 0.9
+  sortingOrder: 1
+  refreshFallbackSeconds: 0.5
+--- !u!4 &951844361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951844359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &955917972
 GameObject:
   m_ObjectHideFlags: 0
@@ -2388,6 +2438,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136053646}
   m_CullTransparentMesh: 1
+--- !u!1 &1145773225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1145773226}
+  - component: {fileID: 1145773227}
+  m_Layer: 0
+  m_Name: Alarm Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1145773226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145773225}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1179021764}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1145773227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145773225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda9d886d4311524ba4f326faa5d4533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Spawners.AlarmSwitchSpawner
+  alarmSwitchPrefab: {fileID: 2908489365984486593, guid: a48c90a3b667cb446ad658a28ffd9757, type: 3}
 --- !u!1 &1160085580
 GameObject:
   m_ObjectHideFlags: 0
@@ -2545,6 +2640,7 @@ Transform:
   - {fileID: 680662514}
   - {fileID: 1732406703}
   - {fileID: 1171211251}
+  - {fileID: 1145773226}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1249475571 stripped
@@ -3860,6 +3956,7 @@ MonoBehaviour:
   coverSpawner: {fileID: 988849500}
   distractionSpawner: {fileID: 1732406704}
   guardSpawner: {fileID: 1171211252}
+  alarmSwitchSpawner: {fileID: 1145773227}
   previewLevel: 20
   previewTotalLevels: 20
   previewLayoutStyle: 0
@@ -4469,4 +4566,5 @@ SceneRoots:
   - {fileID: 957134665}
   - {fileID: 1953602492}
   - {fileID: 331585043}
+  - {fileID: 951844361}
   - {fileID: 45881139}
