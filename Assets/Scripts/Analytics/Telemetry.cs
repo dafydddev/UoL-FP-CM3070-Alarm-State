@@ -38,6 +38,8 @@ namespace Analytics
 
         public static void LevelFailed(RunContext run) => Record("levelFailed", run);
 
+        public static void AlarmRaised(RunContext run) => Record("alarmRaised", run);
+
         // Every level event carries the same snapshot of the run.
         // Once the SDK has shut down (quit, or leaving play mode) it drops the event on the floor itself.
         private static void Record(string name, RunContext run)
