@@ -1,4 +1,5 @@
 using System.Collections;
+using Analytics;
 using Effects;
 using Entities;
 using Generation.Facility;
@@ -50,6 +51,8 @@ namespace Run
 
         private void NextLevel()
         {
+            // Record against the level just finished, before Advance moves the counter on.
+            Telemetry.LevelCompleted(_run);
             // run complete; nothing past the final level
             if (!_run.Advance()) return;
             StartCoroutine(BuildLevel());
@@ -70,6 +73,7 @@ namespace Run
             {
                 if (wipeEffect) yield return wipeEffect.Close();
                 FacilityOrchestrator.Generate(_run);
+                Telemetry.LevelStarted(_run);
                 if (wipeEffect) yield return wipeEffect.Open();
             }
             finally
@@ -83,6 +87,7 @@ namespace Run
         // and re-entering the gameplay scene clears leaked holds (see GameLock.Clear).
         private IEnumerator EndRun()
         {
+            Telemetry.LevelFailed(_run);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             SceneManager.LoadScene("Main Menu");
