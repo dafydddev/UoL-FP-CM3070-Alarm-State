@@ -41,12 +41,20 @@ namespace Run
         {
             Exit.Reached += NextLevel;
             PlayerHealth.OnHealthChanged += OnHealthChanged;
+            AlarmState.ActiveChanged += OnAlarmChanged;
         }
 
         private void OnDisable()
         {
             Exit.Reached -= NextLevel;
             PlayerHealth.OnHealthChanged -= OnHealthChanged;
+            AlarmState.ActiveChanged -= OnAlarmChanged;
+        }
+
+        // Records each raise against the current run (the off and per-level reset edges carry no data).
+        private void OnAlarmChanged(bool active)
+        {
+            if (active && _run != null) Telemetry.AlarmRaised(_run);
         }
 
         private void NextLevel()
