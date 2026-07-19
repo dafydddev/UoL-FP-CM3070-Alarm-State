@@ -45,6 +45,9 @@ namespace Guards
         // Fires when any guard arrests the player (same idiom as Exit.Reached).
         public static event Action PlayerCaught;
 
+        // Every live guard, so scene-level systems (e.g. the vision field) can iterate them.
+        public static readonly List<GuardAgent> Active = new();
+
         public GridMotor Motor { get; private set; }
         public GuardMemory Memory { get; } = new();
 
@@ -86,12 +89,14 @@ namespace Guards
         protected override void OnEnable()
         {
             base.OnEnable();
+            Active.Add(this);
             DistractionItem.Dropped += OnDistractionDropped;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
+            Active.Remove(this);
             DistractionItem.Dropped -= OnDistractionDropped;
         }
 
