@@ -158,7 +158,6 @@ namespace Guards
             }
 
             if (Memory.SeesPlayer || Memory.LeadIsPlayerTrail) return;
-            if (!senses.HearsAlarm(World, Motor)) return;
             if (Memory.HasAnsweredAlarm(alarm.ContactCell)) return;
 
             var slot = SweepCell(alarm.ContactCell, alarm.ContactHeading);
@@ -168,6 +167,7 @@ namespace Guards
                 return;
             }
 
+            if (!senses.HearsAlarm(World, Motor)) return;
             Memory.OfferLead(slot, LeadKind.Alarm);
         }
 
