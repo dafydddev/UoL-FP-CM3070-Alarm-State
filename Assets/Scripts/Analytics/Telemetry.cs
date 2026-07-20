@@ -38,6 +38,8 @@ namespace Analytics
 
         public static void LevelFailed(RunContext run) => Record("levelFailed", run);
 
+        public static void RunCompleted(RunContext run) => Record("runCompleted", run);
+
         public static void AlarmRaised(RunContext run) => Record("alarmRaised", run);
 
         // Every level event carries the same snapshot of the run.
