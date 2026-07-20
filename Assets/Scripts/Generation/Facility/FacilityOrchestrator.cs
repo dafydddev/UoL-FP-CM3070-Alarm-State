@@ -28,7 +28,7 @@ namespace Generation.Facility
 
         [Header("Subsystems")]
         [SerializeField] private RunDifficulty profile;
-        [SerializeField] private MinimapFramer minimap;
+        [SerializeField] private MinimapHud minimap;
         [SerializeField] private HackingMinigame hackingMinigame;
         [SerializeField] private Tileset tileset;
 

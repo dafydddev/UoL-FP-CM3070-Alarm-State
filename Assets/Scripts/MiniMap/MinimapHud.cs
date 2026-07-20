@@ -6,7 +6,7 @@ namespace MiniMap
     // Fits the minimap camera to the generated facility.
     // The camera, render texture, and UI are authored in the scene;
     // only the framing is computed at runtime because the facility size varies.
-    public class MinimapFramer : MonoBehaviour
+    public class MinimapHud : MonoBehaviour
     {
         [SerializeField] private UnityEngine.Camera minimapCamera;
         [SerializeField] private Tilemap tilemap;
