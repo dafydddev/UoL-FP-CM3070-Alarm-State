@@ -21,7 +21,8 @@ namespace Hacking
             PipeDirection.North, PipeDirection.East, PipeDirection.South, PipeDirection.West
         };
 
-        public static PipeBoard Generate(System.Random rng, int size, float complexity, int decoyPaths, float scrambleChance)
+        public static PipeBoard Generate(System.Random rng, int size, float complexity, int decoyPaths,
+            float scrambleChance)
         {
             size = Mathf.Max(size, MinSize);
             var start = new Vector2Int(0, rng.Next(size));
@@ -65,7 +66,8 @@ namespace Hacking
 
         // Self-avoiding walk from start to end, backtracking out of dead ends so it always arrives.
         // Complexity is the chance each step wanders instead of heading for the end node, so harder boards carry longer, twistier circuits.
-        private static List<Vector2Int> CarveSolution(System.Random rng, int size, Vector2Int start, Vector2Int end, float complexity)
+        private static List<Vector2Int> CarveSolution(System.Random rng, int size, Vector2Int start, Vector2Int end,
+            float complexity)
         {
             var steps = StepsPerCell * size * size;
             var path = new List<Vector2Int> { start };
@@ -93,8 +95,8 @@ namespace Hacking
             }
         }
 
-        // Candidate sides for the next carve step: shuffled,
-        // then — when this step isn't wandering — stable-sorted so sides that close the distance to the end come first.
+        // Candidate sides for the next carve step,
+        // shuffled then stable-sorted so sides that close the distance to the end come first.
         private static PipeDirection[] Candidates(System.Random rng, Vector2Int cell, Vector2Int end, float complexity)
         {
             var sides = (PipeDirection[])Sides.Clone();
@@ -142,14 +144,16 @@ namespace Hacking
         // Dead-end branches hung off random solution cells.
         // Each one opens an extra side on its host then wanders a few cells before stopping,
         // so it reads as a live route until the player chases it.
-        private static void AddDecoys(System.Random rng, PipeDirection[,] ends, List<Vector2Int> solution, int size, int count)
+        private static void AddDecoys(System.Random rng, PipeDirection[,] ends, List<Vector2Int> solution, int size,
+            int count)
         {
             for (var i = 0; i < count; i++)
             {
                 // Hunt for a solution cell with an untouched neighbour to branch into.
                 for (var attempt = 0; attempt < MaxAttempts; attempt++)
                 {
-                    var host = solution[rng.Next(solution.Count)];
+                    // Never the start cell: it keeps its two sides so a rotation can always shut the feed.
+                    var host = solution[rng.Next(1, solution.Count)];
                     var side = Sides[rng.Next(Sides.Length)];
                     var cell = host + side.Offset();
                     if (!Untouched(cell)) continue;
@@ -250,6 +254,20 @@ namespace Hacking
             {
                 var tile = board.At(solution[rng.Next(solution.Count)]);
                 tile.Rotation = (tile.Rotation + rng.Next(1, 4)) & 3;
+            }
+
+            // Should the twists run out, shut the feed instead.
+            // Power cannot enter a start tile where the west face is closed, so the board cannot open solved.
+            if (board.TryTraceCircuit(out _)) CloseFeed(board);
+        }
+
+        // Turns the start tile until the side the feed enters by is shut.
+        private static void CloseFeed(PipeBoard board)
+        {
+            var tile = board.At(board.StartCell);
+            for (var turn = 0; turn < 4 && (tile.Connections & PipeDirection.West) != 0; turn++)
+            {
+                tile.Rotate();
             }
         }
     }
