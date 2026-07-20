@@ -19,17 +19,20 @@ namespace Generation.Facility
     [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
+        [Header("Tile Map")]
         [SerializeField] private Tilemap tilemap;
 
+        [Header("Simulation")]
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
+        [Header("Subsystems")]
         [SerializeField] private RunDifficulty profile;
-
         [SerializeField] private MinimapFramer minimap;
         [SerializeField] private HackingMinigame hackingMinigame;
         [SerializeField] private Tileset tileset;
 
+        [Header("Spawners")]
         [SerializeField] private PlayerSpawner playerSpawner;
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
@@ -40,6 +43,7 @@ namespace Generation.Facility
         [SerializeField] private GuardSpawner guardSpawner;
         [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
         
+        [Header("Preview Level in Editor")]
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
         [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
