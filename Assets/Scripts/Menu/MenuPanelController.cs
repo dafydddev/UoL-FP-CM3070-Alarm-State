@@ -30,19 +30,19 @@ namespace Menu
         }
 
 
-        public void ShowPanel(MenuPanel panel)
+        protected void ShowPanel(MenuPanel panel)
         {
             // Early exit when there is no panel, or it is already the current panel
             if (!panel || panel == _currentPanel) return;
             // Hide all the other panels
-            HideAll();
+            HideAllMenuPanels();
             // Set the panel to be active
             panel.SetActive(true);
             // Set the panel as the active one
             _currentPanel = panel;
         }
 
-        protected void HideAll()
+        protected void HideAllMenuPanels()
         {
             // Early exit when there are no menu panels
             if (menuPanels == null || menuPanels.Length == 0) return;

@@ -1,3 +1,4 @@
+using MiniMap;
 using Simulation;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,10 +9,18 @@ namespace Menu
 {
     public class PauseMenu : MenuPanelController
     {
+        [Header("Pause Action")]
         [SerializeField] private InputActionReference pauseAction;
+        
+        [Header("Pause Menu Panels")]
         [SerializeField] private Button pauseButton;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
+        
+        [Header("HUDs")]
+        [SerializeField] private HealthHud healthHud;
+        [SerializeField] private KeycardHud keycardHud;
+        [SerializeField] private MinimapHud minimapHud;
 
         private bool _isPaused;
 
@@ -42,7 +51,6 @@ namespace Menu
                 Resume();
                 return;
             }
-
             // Outside the tick loop, so check the lock ourselves.
             // Only guards pausing — while paused we hold the lock, so Locked is always true.
             if (GameLock.Locked) return;
@@ -54,6 +62,7 @@ namespace Menu
             _isPaused = true;
             GameLock.Acquire();
             ShowPanel(defaultPanel);
+            ToggleHudVisibility();
             pauseButton.gameObject.SetActive(false);
         }
 
@@ -61,11 +70,18 @@ namespace Menu
         {
             _isPaused = false;
             GameLock.Release();
-            HideAll();
+            HideAllMenuPanels();
+            ToggleHudVisibility();
             pauseButton.gameObject.SetActive(true);
         }
-        
-        
+
+        private void ToggleHudVisibility()
+        {
+            healthHud.gameObject.SetActive(!_isPaused);
+            keycardHud.gameObject.SetActive(!_isPaused);
+            minimapHud.gameObject.SetActive(!_isPaused);
+        }
+
         private static void MainMenu()
         {
             SceneManager.LoadScene("Main Menu");
