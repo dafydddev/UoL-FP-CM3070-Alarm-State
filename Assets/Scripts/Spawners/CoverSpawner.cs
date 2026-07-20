@@ -32,11 +32,7 @@ namespace Spawners
                 .ToList();
 
             // Fisher yates shuffle so the chosen rooms vary.
-            for (var i = candidates.Count - 1; i > 0; i--)
-            {
-                var j = rng.Next(i + 1);
-                (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
-            }
+            Shuffle.InPlace(candidates, rng);
 
             // Spawn one cover object per room, up to the requested count.
             var n = Mathf.Min(count, candidates.Count);
