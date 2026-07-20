@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Entities.Keycards;
@@ -13,6 +14,10 @@ namespace Spawners
     {
         [SerializeField] private GameObject keycardPrefab;
 
+        // Fires once per level with the keys actually placed and the seed that colours them.
+        // Static so the scene's HUD can rebuild its slots without holding a reference to the spawner.
+        public static event Action<IReadOnlyList<string>, int> KeysSpawned;
+
         // Spawns a keycard in each room that acts as a key source for a locked edge.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
@@ -21,6 +26,9 @@ namespace Spawners
                 .Where(e => e.locked && e.keyRoomId != null)
                 .Select(e => e.keyRoomId)
                 .Distinct();
+
+            // Only the keys that actually reach the floor are announced, so the HUD never shows an unobtainable slot.
+            var placed = new List<string>();
 
             foreach (var keyId in keyRoomIds)
             {
@@ -40,7 +48,11 @@ namespace Spawners
                 var spriteRend = go.GetComponent<SpriteRenderer>();
                 if (spriteRend) spriteRend.color = KeyColour.For(keyId, graph.seed);
                 go.name = $"Keycard_{keyId}";
+                placed.Add(keyId);
             }
+
+            // Fires even when the level locked nothing, so the HUD clears the previous level's slots.
+            KeysSpawned?.Invoke(placed, graph.seed);
         }
     }
 }

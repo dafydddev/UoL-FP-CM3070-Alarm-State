@@ -12,7 +12,11 @@ namespace Player
         [SerializeField] private InputActionReference useAction;
 
         public event Action OnInventoryReset;
-        public event Action<string> OnKeycardCollected;
+
+        // Fires with the key's id whenever a keycard is picked up.
+        // Static so the scene's HUD can listen without a reference to the spawned player.
+        public static event Action<string> OnKeycardCollected;
+
         public event Action<string> OnDistractionCollected;
 
         private readonly HashSet<string> _keys = new();
