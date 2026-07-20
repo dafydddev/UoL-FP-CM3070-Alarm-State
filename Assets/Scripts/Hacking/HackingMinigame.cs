@@ -15,10 +15,12 @@ namespace Hacking
     // The puzzle itself is pure state (PipeBoard); this drives the surrounding UI.
     public class HackingMinigame : MonoBehaviour
     {
+        [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
         [SerializeField] private GridLayoutGroup boardLayout;
         [SerializeField] private PipeTileButton tileButtonPrefab;
 
+        [Header("Input Actions")]
         // The same bindings that drive the character and the pause menu.
         // While the panel is open they drive the hacking instead.
         [SerializeField] private InputActionReference upAction;
@@ -30,10 +32,12 @@ namespace Hacking
         [SerializeField] private InputActionReference clickAction;
         [SerializeField] private InputActionReference pointAction;
 
+        [Header("Start and End Markers")]
         // Markers sat just outside the board showing where the circuit enters and leaves.
         [SerializeField] private RectTransform startMarker;
         [SerializeField] private RectTransform endMarker;
 
+        [Header("Pipe Sprites")]
         // One sprite per pipe shape, authored in the unrotated orientations PipeTypeExtensions.Ends describes.
         [SerializeField] private Sprite capSprite;
         [SerializeField] private Sprite straightSprite;
@@ -41,6 +45,7 @@ namespace Hacking
         [SerializeField] private Sprite teeSprite;
         [SerializeField] private Sprite crossSprite;
 
+        [Header("Pipe Colours")]
         [SerializeField] private Color pipeColour = Color.white;
         [SerializeField] private Color selectedColour = Color.yellow;
         [SerializeField] private Color poweredColour = Color.cyan;

@@ -17,6 +17,7 @@ namespace Run
     [RequireComponent(typeof(FacilityOrchestrator))]
     public class RunLevelOrchestrator : MonoBehaviour
     {
+        [Header("Run Options")]
         [SerializeField, Min(1)] private int defaultStartLevel = 1;
         [SerializeField, Min(1)] private int defaultTotalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly

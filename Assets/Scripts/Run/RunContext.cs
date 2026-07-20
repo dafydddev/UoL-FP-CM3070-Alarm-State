@@ -15,7 +15,7 @@ namespace Run
         public int TotalLevels { get; }
 
         // True once the final level has been cleared; the orchestrator ends the run on it.
-        public bool IsComplete => CurrentLevel >= TotalLevels;
+        private bool IsComplete => CurrentLevel >= TotalLevels;
 
         public RunContext(RunDifficulty profile, int startLevel, int totalLevels,
             TileLayoutStyle layoutStyle = TileLayoutStyle.Spine)

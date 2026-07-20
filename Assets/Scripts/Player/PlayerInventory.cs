@@ -12,7 +12,6 @@ namespace Player
         [SerializeField] private InputActionReference useAction;
 
         public event Action OnInventoryReset;
-
         public event Action<string> OnKeycardCollected;
         public event Action<string> OnDistractionCollected;
 

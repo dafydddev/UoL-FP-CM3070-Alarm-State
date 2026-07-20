@@ -8,6 +8,7 @@ namespace Player
 {
     public class PlayerActor : Actor
     {
+        [Header("Input Actions")]
         [SerializeField] private InputActionReference upAction;
         [SerializeField] private InputActionReference downAction;
         [SerializeField] private InputActionReference leftAction;
@@ -15,6 +16,8 @@ namespace Player
         [SerializeField] private InputActionReference moveToAction;
         [SerializeField] private InputActionReference pointAction;
         [SerializeField] private InputActionReference useAction;
+        
+        [Header("Movement Settings")]
         [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
         [SerializeField] private LineRenderer routePreview;
 
