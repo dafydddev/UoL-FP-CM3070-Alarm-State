@@ -6,13 +6,15 @@ using UnityEngine;
 
 namespace Entities
 {
-    public class DistractionItem : MonoBehaviour, IEnterHandler
+    public class DistractionItem : MonoBehaviour, IEnterHandler, IInventoryItem
     {
         // Every distraction currently lying dropped in the world.
         // A dropped distraction keeps sounding until something takes it out of the world.
         private static readonly List<DistractionItem> Sounding = new();
 
         public string distractionId;
+
+        public string ItemId => distractionId;
 
         // The cell this item currently sits on (meaningful while placed in the world).
         public Vector2Int Cell { get; private set; }
@@ -30,18 +32,17 @@ namespace Entities
         public void OnEntered(Actor mover)
         {
             if (!mover.TryGetComponent(out PlayerInventory inventory)) return;
-            inventory.CollectDistraction(this);
+            inventory.Collect(this);
             _world.Occupancy.Remove(Cell);
             gameObject.SetActive(false);
         }
-        
-        // Places the distraction on the cell nearest the given world position.
-        // Returns false without placing it if that cell is already occupied.
-        public bool Drop(Vector3 worldPos)
-        {
-            var cell = (Vector2Int)_world.Tilemap.WorldToCell(worldPos);
-            if (_world.Occupancy.At(cell)) return false;
 
+        // Using a distraction drops it on the cell nearest the user, where it starts sounding.
+        // Returns false without placing it if that cell is already occupied.
+        public bool Use(Vector3 userPosition)
+        {
+            var cell = (Vector2Int)_world.Tilemap.WorldToCell(userPosition);
+            if (_world.Occupancy.At(cell)) return false;
             Cell = cell;
             transform.position = _world.Tilemap.GetCellCenterWorld((Vector3Int)Cell);
             _world.Occupancy.Place(Cell, gameObject);

@@ -25,13 +25,13 @@ namespace Menu
         private void OnEnable()
         {
             KeycardSpawner.KeysSpawned += Rebuild;
-            PlayerInventory.OnKeycardCollected += Fill;
+            PlayerKeyring.OnKeycardCollected += Fill;
         }
 
         private void OnDisable()
         {
             KeycardSpawner.KeysSpawned -= Rebuild;
-            PlayerInventory.OnKeycardCollected -= Fill;
+            PlayerKeyring.OnKeycardCollected -= Fill;
         }
 
         // A fresh level replaces the whole row, one faded slot per key it placed.
@@ -70,7 +70,7 @@ namespace Menu
 
         private static Color Fade(Color colour, float alpha) => new(colour.r, colour.g, colour.b, alpha);
 
-        // The facility orchestrator's Generate Preview rebuilds levels outside play mode, where Destroy won't run.
+        // Generate Preview rebuilds levels outside play mode, where Destroy won't run.
         private static void Discard(GameObject go)
         {
             if (Application.isPlaying) Destroy(go);
