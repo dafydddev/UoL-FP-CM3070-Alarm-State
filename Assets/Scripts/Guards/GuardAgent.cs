@@ -90,14 +90,12 @@ namespace Guards
         {
             base.OnEnable();
             Active.Add(this);
-            DistractionItem.Dropped += OnDistractionDropped;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             Active.Remove(this);
-            DistractionItem.Dropped -= OnDistractionDropped;
         }
 
         protected override void Act()
@@ -107,7 +105,7 @@ namespace Guards
             senses.Sense(World, Motor, Memory);
             BroadcastSighting();
             HearAlarm();
-
+            HearNoise();
             Think(Snapshot());
 
             // Calm guards amble; anything more urgent quickens the step.
@@ -147,9 +145,8 @@ namespace Guards
                 World.Alarm.UpdateContact(Memory.PlayerCell, Memory.PlayerHeading);
         }
 
-        // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps its
-        // own slot along the escape line, so responders string out across where the player likely fled.
-        // Each answers a given contact once: on reaching its slot it stops being pulled and drifts back to patrol.
+        // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps the escape line,
+        // so responders string out across where the player likely fled.
         // A contact that has moved re-arms it, causing all the guards to scramble again.
         private void HearAlarm()
         {
@@ -326,14 +323,15 @@ namespace Guards
         public static bool IsAdjacent(Vector2Int a, Vector2Int b) =>
             Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) <= 1;
 
-        // A dropped distraction is a noise: any guard within earshot remembers it as a lead.
-        private void OnDistractionDropped(DistractionItem item)
+        // A dropped distraction sounds until a guard reaches it and pockets it, so this runs every tick.
+        // Whatever is audible right now becomes the lead, and keeps being re-offered until it falls silent.
+        // Being the lowest lead kind, it can never displace a player trail or an alarm.
+        // A guard with something better to do ignores the noise, then is pulled back to it once that resolves.
+        private void HearNoise()
         {
-            if (Motor == null) return;
-            var offset = item.Cell - Motor.Cell;
-            var distance = Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
-            if (distance > senses.HearingRangeCells) return;
-            Memory.OfferLead(item.Cell, LeadKind.Distraction, item);
+            var noise = DistractionItem.NearestWithin(Motor.Cell, senses.HearingRangeCells);
+            if (!noise) return;
+            Memory.OfferLead(noise.Cell, LeadKind.Distraction, noise);
         }
     }
 }
