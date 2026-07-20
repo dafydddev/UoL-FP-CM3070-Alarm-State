@@ -4,10 +4,8 @@ using UnityEngine;
 namespace Entities.Keycards
 {
     // Maps a key id to a stable, distinct colour so a keycard and the door it opens are shown in the same hue.
-    // Key ids carry their level ordinal ("room_key_0", "room_key_1";
-    // each advances the hue by the golden-ratio conjugate, producing well-distributed colours,
-    // without requiring knowledge of all keys in the level.
-    // The seed rotates the whole wheel so different levels still vary.
+    // Key ids carry their level ordinal ("room_key_0", "room_key_1" each advances the hue by the golden-ratio,
+    // producing well-distributed colours, without requiring knowledge of all keys in the level.
     // Same id and seed always yield the same colour, empty/null ids default to white.
     public static class KeyColour
     {
