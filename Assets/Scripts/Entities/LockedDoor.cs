@@ -34,7 +34,7 @@ namespace Entities
         {
             if (_open) return false;
             if (mover && mover is not PlayerActor) return false; // guards can always pass; the player needs the key
-            return !(mover && mover.TryGetComponent(out PlayerInventory inventory) && inventory.HasKey(keyId));
+            return !(mover && mover.TryGetComponent(out PlayerKeyring keyring) && keyring.HasKey(keyId));
         }
 
         // Only the player opens the door for good,a guard passing through leaves it locked.
@@ -47,8 +47,7 @@ namespace Entities
 
         private void OnDestroy()
         {
-            if (_world != null && _world.Occupancy.At(_cell) == gameObject)
-                _world.Occupancy.Remove(_cell);
+            if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
         }
     }
 }
