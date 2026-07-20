@@ -196,6 +196,124 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Spawners.LockedDoorSpawner
   lockedDoorPrefab: {fileID: 8242212775548730328, guid: 3bd2cd23681d2ad4398e40f5306416e8, type: 3}
+--- !u!1 &147464652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 147464653}
+  - component: {fileID: 147464655}
+  - component: {fileID: 147464654}
+  - component: {fileID: 147464657}
+  - component: {fileID: 147464656}
+  m_Layer: 5
+  m_Name: Keycard HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &147464653
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147464652}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1953602492}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -150, y: -30}
+  m_SizeDelta: {x: 80, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &147464654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147464652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c3fbe4de3c4cdea4b2af69def9cf45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.KeycardHud
+  keycardIcon: {fileID: -247738774, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  iconSize: {x: 16, y: 16}
+  missingAlpha: 0.25
+--- !u!114 &147464655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147464652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &147464656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147464652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.9019608}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &147464657
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147464652}
+  m_CullTransparentMesh: 1
 --- !u!1 &150073133
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,7 +1036,7 @@ RectTransform:
   m_GameObject: {fileID: 612921579}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 955917976}
@@ -1938,9 +2056,9 @@ RectTransform:
   - {fileID: 612921580}
   m_Father: {fileID: 1953602492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -25, y: -25}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 280, y: -30}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &957134663
@@ -3031,9 +3149,9 @@ RectTransform:
   - {fileID: 822816772}
   m_Father: {fileID: 1953602492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 75, y: -50}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -250, y: -30}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1451773395
@@ -3067,7 +3185,7 @@ GameObject:
   - component: {fileID: 1578414555}
   - component: {fileID: 1578414557}
   m_Layer: 5
-  m_Name: Mini Map
+  m_Name: Mini Map HUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3087,9 +3205,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1953602492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 100, y: 100}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -250, y: 80}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1578414555
@@ -3957,7 +4075,7 @@ MonoBehaviour:
   distractionSpawner: {fileID: 1732406704}
   guardSpawner: {fileID: 1171211252}
   alarmSwitchSpawner: {fileID: 1145773227}
-  previewLevel: 1
+  previewLevel: 20
   previewTotalLevels: 20
   previewLayoutStyle: 0
 --- !u!4 &1820973508
@@ -3987,7 +4105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e62f1af35cc6c4345b87e968abbce624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.LevelController
-  defaultStartLevel: 1
+  defaultStartLevel: 20
   defaultTotalLevels: 20
   default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0
@@ -4175,10 +4293,11 @@ RectTransform:
   m_Children:
   - {fileID: 758010713}
   - {fileID: 2048129852}
-  - {fileID: 955917976}
-  - {fileID: 1578414554}
   - {fileID: 1054716611}
+  - {fileID: 955917976}
   - {fileID: 1451773394}
+  - {fileID: 147464653}
+  - {fileID: 1578414554}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
