@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 5039574974275116670}
   - component: {fileID: 7148349010203908285}
   - component: {fileID: 4196619975231172531}
-  - component: {fileID: 1424040589631600358}
-  - component: {fileID: -7480907366736090817}
   - component: {fileID: -6701982576211232758}
+  - component: {fileID: -7480907366736090817}
+  - component: {fileID: 1424040589631600358}
+  - component: {fileID: -2571231643377655764}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -119,31 +120,6 @@ MonoBehaviour:
   useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   repeatDelay: 0.2
   routePreview: {fileID: 4208098087324233613}
---- !u!114 &1424040589631600358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5505076589466554815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 988bb9c7b1b140dca19f9ed062d9fe97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
-  useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
---- !u!114 &-7480907366736090817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5505076589466554815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a8eb068a7874f1b8f35c92d8b0806f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHiding
 --- !u!114 &-6701982576211232758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,6 +133,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHealth
   maxHearts: 3
+  iFrameSeconds: 3
+--- !u!114 &-7480907366736090817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505076589466554815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8eb068a7874f1b8f35c92d8b0806f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHiding
+--- !u!114 &1424040589631600358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505076589466554815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 988bb9c7b1b140dca19f9ed062d9fe97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
+  useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+--- !u!114 &-2571231643377655764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505076589466554815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16da80f463f3f3c418dbc120f311c65e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerKeyring
 --- !u!1 &6943639982872606610
 GameObject:
   m_ObjectHideFlags: 0
