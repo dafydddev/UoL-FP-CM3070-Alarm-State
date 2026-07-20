@@ -3957,7 +3957,7 @@ MonoBehaviour:
   distractionSpawner: {fileID: 1732406704}
   guardSpawner: {fileID: 1171211252}
   alarmSwitchSpawner: {fileID: 1145773227}
-  previewLevel: 20
+  previewLevel: 1
   previewTotalLevels: 20
   previewLayoutStyle: 0
 --- !u!4 &1820973508
@@ -3987,7 +3987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e62f1af35cc6c4345b87e968abbce624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.LevelController
-  defaultStartLevel: 20
+  defaultStartLevel: 1
   defaultTotalLevels: 20
   default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0

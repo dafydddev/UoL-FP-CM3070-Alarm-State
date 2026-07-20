@@ -61,8 +61,13 @@ namespace Run
         {
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run);
-            // run complete; nothing past the final level
-            if (!_run.Advance()) return;
+            // Nothing past the final level: clearing it ends the run a winner.
+            if (!_run.Advance())
+            {
+                StartCoroutine(CompleteRun());
+                return;
+            }
+
             StartCoroutine(BuildLevel());
         }
 
@@ -88,6 +93,16 @@ namespace Run
             {
                 GameLock.Release();
             }
+        }
+
+        // The cleared run: the same exit as a failed one, so the hold and wipe behave identically.
+        // Stage 5 will commit the run's unlocks here, where a failed run discards them.
+        private IEnumerator CompleteRun()
+        {
+            Telemetry.RunCompleted(_run);
+            GameLock.Acquire();
+            if (wipeEffect) yield return wipeEffect.Close();
+            SceneManager.LoadScene("Main Menu");
         }
 
         // The failed run: freeze the sim, wipe to black, then hand back to the menu.
