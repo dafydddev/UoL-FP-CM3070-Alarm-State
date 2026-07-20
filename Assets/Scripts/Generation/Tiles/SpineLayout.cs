@@ -33,7 +33,9 @@ namespace Generation.Tiles
             var state = new SubtreePlacer.State { Cell = cell, Connections = connections, Rng = null };
             // Lay the spine left-to-right along y = 0, connecting each room to the previous.
             for (var i = 0; i < spine.Count; i++)
+            {
                 state.Add(spine[i], new Vector2Int(i, 0), i > 0 ? spine[i - 1] : null);
+            }
 
             // Gather each spine room's off-spine children as hang points, alternating above/below.
             var hangs = new List<(string parentId, string node, int dirY)>();
@@ -64,7 +66,9 @@ namespace Generation.Tiles
             var rescueBudget = RescueStepsPerRoom * graph.rooms.Count;
             var clean = true;
             foreach (var (parentId, node, side) in hangs)
+            {
                 clean &= Hang(parentId, node, side, byNeed, state, rng, rescueBudget);
+            }
             return clean;
         }
 
@@ -102,7 +106,9 @@ namespace Generation.Tiles
             state.Add(node, pos, parentId);
             if (!children.TryGetValue(node, out var kids)) return;
             foreach (var child in kids)
+            {
                 GreedyPlaceSubtree(node, child, dirY, children, state);
+            }
         }
 
         // Finds the first free neighbouring cell, preferring the branch direction, then sideways.
