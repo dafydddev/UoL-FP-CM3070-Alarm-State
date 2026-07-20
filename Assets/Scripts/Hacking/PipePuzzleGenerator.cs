@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Generation;
 using UnityEngine;
 
 namespace Hacking
@@ -99,13 +100,7 @@ namespace Hacking
         // shuffled then stable-sorted so sides that close the distance to the end come first.
         private static PipeDirection[] Candidates(System.Random rng, Vector2Int cell, Vector2Int end, float complexity)
         {
-            var sides = (PipeDirection[])Sides.Clone();
-            for (var i = sides.Length - 1; i > 0; i--)
-            {
-                var j = rng.Next(i + 1);
-                (sides[i], sides[j]) = (sides[j], sides[i]);
-            }
-
+            var sides = Shuffle.Copy(Sides, rng);
             if (rng.NextDouble() < complexity) return sides; // wander: keep the shuffle
             return sides.OrderBy(s => Distance(cell + s.Offset(), end)).ToArray();
         }

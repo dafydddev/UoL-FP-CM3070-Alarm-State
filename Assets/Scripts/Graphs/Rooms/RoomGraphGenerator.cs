@@ -109,11 +109,7 @@ namespace Graphs.Rooms
                 .Where(r => r.type is RoomType.Corridor or RoomType.SecondaryObjectiveRoom)
                 .ToList();
 
-            for (var i = exitCandidates.Count - 1; i > 0; i--)
-            {
-                var j = rng.Next(i + 1);
-                (exitCandidates[i], exitCandidates[j]) = (exitCandidates[j], exitCandidates[i]);
-            }
+            Shuffle.InPlace(exitCandidates, rng);
 
             var additionalCount = Math.Min(extraExitCount, exitCandidates.Count);
             for (var i = 0; i < additionalCount; i++)
