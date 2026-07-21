@@ -6730,6 +6730,9 @@ MonoBehaviour:
   m_MultiSelect: 0
   m_Options:
     m_Options:
+    - m_Text: 640x360
+      m_Image: {fileID: 0}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: 854x480
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -13217,15 +13220,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 350fe3b943a04064fab0e1905e4253c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Effects.BlueprintSchematic
-  textureWidth: 1024
+  pixelSize: 2
   roomCount: 14
   minRoomSize: 0.05
   maxRoomSize: 0.18
   roomSpacing: 0.02
   lineColor: {r: 1, g: 1, b: 1, a: 1}
-  gridOpacity: 0.05
-  planOpacity: 0.1
-  gridSpacing: 24
+  gridOpacity: 0.025
+  planOpacity: 0.05
+  gridSpacing: 20
   drift: {x: 0.012, y: 0.008}
 --- !u!114 &2064990010
 MonoBehaviour:

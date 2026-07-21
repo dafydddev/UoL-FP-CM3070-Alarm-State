@@ -10,10 +10,13 @@ namespace Effects
     [RequireComponent(typeof(RawImage))]
     public class BlueprintSchematic : MonoBehaviour
     {
+        // Room and corridor lines, in schematic pixels.
+        private const int LineThickness = 1;
+
         [Header("Resolution")]
-        // Target width of the generated texture; height follows the screen aspect.
-        [SerializeField]
-        private int textureWidth = 1024;
+        // Canvas units per schematic pixel. The canvas base is 640x360, so 1 draws the plan on the UI grid.
+        [SerializeField, Range(1, 8)]
+        private int pixelSize = 1;
 
         [Header("Layout")]
         // How many rooms to try to place.
@@ -35,41 +38,53 @@ namespace Effects
         // Opacity of the room and corridor lines.
         [SerializeField, Range(0f, 1f)] private float planOpacity = 0.45f;
 
-        // Spacing of the fine background grid, in texture pixels.
-        [SerializeField] private int gridSpacing = 24;
+        // Spacing of the fine background grid, in schematic pixels.
+        // Snapped at build time to a spacing that divides the texture, so the grid keeps its rhythm across the wrap seam.
+        [SerializeField] private int gridSpacing = 20;
 
         [Header("Motion")]
-        // Texture-widths drifted per second; the plan wraps as it scrolls.
+        // Schematic pixels drifted per second; the plan wraps as it scrolls.
+        // Per-pixel rather than per-texture, so the drift keeps its speed and its angle.
         [SerializeField]
-        private Vector2 drift = new(0.012f, 0.008f);
+        private Vector2 driftSpeed = new(8f, 3f);
 
         private RawImage _image;
+        private RectTransform _rect;
         private Vector2 _scroll;
+        private Vector2Int _size;
 
         private void Awake()
         {
             _image = GetComponent<RawImage>();
+            _rect = (RectTransform)transform;
             _image.color = Color.white;
             _image.uvRect = new Rect(0f, 0f, 1f, 1f);
-            _image.texture = BuildSchematic();
+        }
+
+        // Forcing the update first means the plan is always built against 640x360 rather than whatever frame one held.
+        private void Start()
+        {
+            Canvas.ForceUpdateCanvases();
+            _size = Vector2Int.Max(Vector2Int.one, Vector2Int.RoundToInt(_rect.rect.size / pixelSize));
+            _image.texture = BuildSchematic(_size.x, _size.y);
         }
 
         private void Update()
         {
             // Scroll the UV rect; Repeat wrapping makes the drift loop seamlessly.
-            _scroll += drift * Time.unscaledDeltaTime;
-            var uv = _image.uvRect;
-            uv.position = _scroll;
-            _image.uvRect = uv;
+            _scroll += driftSpeed * Time.unscaledDeltaTime;
+            _scroll.x %= _size.x; // wrapped, or the accumulator loses precision over a long sit on the menu
+            _scroll.y %= _size.y;
+            _image.uvRect = new Rect(_scroll.x / _size.x, _scroll.y / _size.y, 1f, 1f);
         }
 
-        private Texture2D BuildSchematic()
+        private void OnDestroy()
         {
-            // Snap both dimensions to whole grid cells so the background grid tiles cleanly.
-            var width = Mathf.CeilToInt(textureWidth / (float)gridSpacing) * gridSpacing;
-            var aspectHeight = textureWidth * (float)Screen.height / Screen.width;
-            var height = Mathf.CeilToInt(aspectHeight / gridSpacing) * gridSpacing;
+            if (_image && _image.texture) Destroy(_image.texture);
+        }
 
+        private Texture2D BuildSchematic(int width, int height)
+        {
             var tex = new Texture2D(width, height, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
@@ -82,24 +97,27 @@ namespace Effects
             var grid = new Color(lineColor.r, lineColor.g, lineColor.b, gridOpacity);
             var plan = new Color(lineColor.r, lineColor.g, lineColor.b, planOpacity);
 
+            // A spacing that divides both dimensions,
+            // so the cells stay square and the row either side of the wrap seam matches the rest of the grid.
+            var step = NearestDivisor(Gcd(width, height), gridSpacing);
+
             // Faint background grid, drawn first so the heavier plan lines sit on top.
-            for (var x = 0; x < width; x += gridSpacing) VLine(pixels, width, height, x, 0, height - 1, 1, grid);
-            for (var y = 0; y < height; y += gridSpacing) HLine(pixels, width, height, y, 0, width - 1, 1, grid);
+            for (var x = 0; x < width; x += step) VLine(pixels, width, height, x, 0, height - 1, 1, grid);
+            for (var y = 0; y < height; y += step) HLine(pixels, width, height, y, 0, width - 1, 1, grid);
 
             // Place rooms at random sizes and positions by rejection sampling,
             // so the layout varies every time and never settles into a repeating lattice.
             // Rooms stay clear of the texture edges, so the drifting plan still tiles seamlessly.
             var rooms = new List<RectInt>();
-            var margin = gridSpacing;
             var pad = Mathf.RoundToInt(roomSpacing * width);
 
             for (var attempt = 0; attempt < roomCount * 30 && rooms.Count < roomCount; attempt++)
             {
                 var rw = Mathf.RoundToInt(Random.Range(minRoomSize, maxRoomSize) * width);
                 var rh = Mathf.RoundToInt(Random.Range(minRoomSize, maxRoomSize) * height);
-                if (rw > width - 2 * margin || rh > height - 2 * margin) continue;
-                var rx = Random.Range(margin, width - margin - rw + 1);
-                var ry = Random.Range(margin, height - margin - rh + 1);
+                if (rw > width - 2 * step || rh > height - 2 * step) continue;
+                var rx = Random.Range(step, width - step - rw + 1);
+                var ry = Random.Range(step, height - step - rh + 1);
                 var candidate = new RectInt(rx, ry, rw, rh);
                 var clear = rooms.All(room => !Overlaps(candidate, room, pad));
                 if (!clear) continue;
@@ -108,7 +126,9 @@ namespace Effects
 
             // Draw the room walls.
             foreach (var room in rooms)
-                RectOutline(pixels, width, height, room.xMin, room.yMin, room.xMax, room.yMax, 2, plan);
+            {
+                RectOutline(pixels, width, height, room.xMin, room.yMin, room.xMax, room.yMax, LineThickness, plan);
+            }
 
             // Connect each room to its nearest earlier room.
             // Corridors are clipped to room walls, so they meet the outlines instead of driving into the centres.
@@ -125,12 +145,32 @@ namespace Effects
                     nearest = rooms[j];
                 }
 
-                Corridor(pixels, width, height, a, Centre(nearest), rooms, plan);
+                Corridor(pixels, width, height, a, Centre(nearest), rooms, LineThickness, plan);
             }
 
             tex.SetPixels(pixels);
             tex.Apply();
             return tex;
+        }
+
+        // Nearest divisor of length to the desired spacing.
+        private static int NearestDivisor(int length, int desired)
+        {
+            desired = Mathf.Max(1, desired);
+            var best = 0;
+            for (var d = 1; d <= length; d++)
+            {
+                if (length % d != 0) continue;
+                if (best == 0 || Mathf.Abs(d - desired) < Mathf.Abs(best - desired)) best = d;
+            }
+
+            return best >= desired / 2 && best <= desired * 2 ? best : desired;
+        }
+
+        private static int Gcd(int a, int b)
+        {
+            while (b != 0) (a, b) = (b, a % b);
+            return a;
         }
 
         // True if two rectangles overlap once expanded by pad.
@@ -151,10 +191,10 @@ namespace Effects
         // An L-shaped corridor from a to b, skipping any pixel inside a room,
         // so it stops at the walls rather than running through to the centres.
         private static void Corridor(Color[] px, int w, int h, Vector2Int a, Vector2Int b, List<RectInt> rooms,
-            Color col)
+            int t, Color col)
         {
-            HRun(px, w, h, a.y, Mathf.Min(a.x, b.x), Mathf.Max(a.x, b.x), 2, rooms, col);
-            VRun(px, w, h, b.x, Mathf.Min(a.y, b.y), Mathf.Max(a.y, b.y), 2, rooms, col);
+            HRun(px, w, h, a.y, Mathf.Min(a.x, b.x), Mathf.Max(a.x, b.x), t, rooms, col);
+            VRun(px, w, h, b.x, Mathf.Min(a.y, b.y), Mathf.Max(a.y, b.y), t, rooms, col);
         }
 
         // Horizontal corridor run that skips pixels inside rooms.
