@@ -41,6 +41,16 @@ namespace Player
             if (_iFrames > 0f) _iFrames -= Time.deltaTime;
         }
 
+        // Restores a single heart, never past the maximum.
+        // Returns false when there is nothing to restore, so a pickup can decline to spend itself.
+        public bool Heal()
+        {
+            if (!IsAlive || Current >= maxHearts) return false;
+            Current++;
+            OnHealthChanged?.Invoke(Current, maxHearts);
+            return true;
+        }
+
         // An arrest inside the iFrame window costs nothing; the guards keep trying regardless.
         private void OnPlayerCaught()
         {
