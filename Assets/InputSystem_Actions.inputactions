@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Inventory",
+                    "type": "Button",
+                    "id": "d53ecca1-e83a-462c-8a21-1d1c54336eb6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Move Up",
                     "type": "Button",
                     "id": "12f2d9d7-edcf-404e-9f0e-6b3f57edf9ae",
@@ -385,6 +394,17 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Move Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cc62e789-7305-43c0-9c44-a1db81ab7934",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Inventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
