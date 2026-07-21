@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Guards.Actions
 {
-    // Once its own player-trail has run out,
-    // the guard walks to the nearest alarm switch and trips it, broadcasting the player's last-seen cell and heading.
-    // Either outcome marks the guard done with the alarm so it won't keep raising it,
-    // and it falls back to Patrol when there is no reachable switch; a fresh sighting re-arms it.
+    // Once its own player-trail has run out, the guard walks to the nearest alarm switch and trips it.
+    // This broadcasts the player's last-seen cell and heading.
+    // Either outcome marks the guard done with the alarm so it won't keep raising it.
+    // Falls back to Patrol when there is no reachable switch. A fresh sighting of the player re-arms the guard.
     public sealed class RaiseAlarmAction : GoapAction
     {
         private IAlarmSwitch _target;
@@ -20,10 +20,9 @@ namespace Guards.Actions
 
         public override void OnEnter(GuardAgent agent)
         {
-            _target = agent.Alarm?.NearestSwitch(agent.Motor.Cell);
             _contactCell = agent.Memory.PlayerCell; // where the player was last seen
             _contactHeading = agent.Memory.PlayerHeading; // and which way they were going
-            if (_target != null) agent.Motor.SetGoal(_target.Cell);
+            Target(agent);
         }
 
         public override ActionStatus Run(GuardAgent agent)
@@ -34,11 +33,7 @@ namespace Guards.Actions
                 return ActionStatus.Succeeded;
             }
 
-            if (_target == null || agent.Motor.Blocked)
-            {
-                agent.Memory.MarkAlarmSought();
-                return ActionStatus.Failed;
-            }
+            if (_target == null) return GiveUp(agent);
 
             if (GuardAgent.IsAdjacent(agent.Motor.Cell, _target.Cell))
             {
@@ -48,11 +43,25 @@ namespace Guards.Actions
                 return ActionStatus.Succeeded;
             }
 
-            // Re-route if the walk stalled short of the switch; a dead route means it's unreachable now.
-            if (agent.Motor.HasRoute || agent.Motor.SetGoal(_target.Cell)) return ActionStatus.Running;
+            if (agent.Motor.HasRoute && !agent.Motor.Blocked) return ActionStatus.Running; // still walking
+
+            // The way shut mid-walk, or the walk stalled short of the switch.
+            // One switch going out of reach doesn't mean the alarm can't be raised, so try again from here.
+            return Target(agent) ? ActionStatus.Running : GiveUp(agent);
+        }
+
+        // Routes to the nearest switch. False when this guard can reach none.
+        private bool Target(GuardAgent agent)
+        {
+            _target = agent.Alarm?.NearestSwitch(agent.Motor.Cell, agent.Pathfinder, agent);
+            return _target != null && agent.Motor.SetGoal(_target.Cell);
+        }
+
+        // Nowhere to raise it: mark the guard done so it stops trying and drops back to patrol.
+        private static ActionStatus GiveUp(GuardAgent agent)
+        {
             agent.Memory.MarkAlarmSought();
             return ActionStatus.Failed;
-
         }
     }
 }

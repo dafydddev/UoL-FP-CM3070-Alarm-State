@@ -26,15 +26,9 @@ namespace Guards
         public int HearingRangeCells => hearingRangeCells;
         public int ViewRangeCells => viewRangeCells;
 
-        // True when the alarm is sounding and the nearest switch is within earshot,
-        public bool HearsAlarm(WorldContext world, GridMotor motor)
-        {
-            if (!world.Alarm.Active) return false;
-            var alarmSwitch = world.Alarm.NearestSwitch(motor.Cell);
-            if (alarmSwitch == null) return false;
-            var offset = alarmSwitch.Cell - motor.Cell;
-            return Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y)) <= hearingRangeCells;
-        }
+        // True when the alarm is sounding and a switch is within earshot.
+        public bool HearsAlarm(WorldContext world, GridMotor motor) =>
+            world.Alarm.Active && world.Alarm.AnySwitchWithin(motor.Cell, hearingRangeCells);
 
         public void Sense(WorldContext world, GridMotor motor, GuardMemory memory)
         {
