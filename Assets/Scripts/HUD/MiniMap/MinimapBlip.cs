@@ -1,7 +1,7 @@
 using Simulation;
 using UnityEngine;
 
-namespace MiniMap
+namespace HUD.MiniMap
 {
     // Keeps the player's minimap blip readable.
     // The minimap camera is zoomed to frame the whole facility (see MinimapFramer).
