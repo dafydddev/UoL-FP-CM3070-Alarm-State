@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Navigation;
 using UnityEngine;
 
 namespace Simulation
@@ -27,25 +28,54 @@ namespace Simulation
 
         private readonly List<IAlarmSwitch> _switches = new();
 
+        // Scratch list for ranking switches, reused so weighing them up doesn't allocate on every guard's tick.
+        private readonly List<(IAlarmSwitch alarmSwitch, int lowerBound)> _ranked = new();
+
         // Switches register themselves at spawn so guards can find the nearest one.
         public void Register(IAlarmSwitch alarmSwitch)
         {
             if (alarmSwitch != null && !_switches.Contains(alarmSwitch)) _switches.Add(alarmSwitch);
         }
 
-        // The switch nearest a cell (Chebyshev, matching how guards measure earshot), or null if none.
+        // Whether a switch stands within a straight-line range of a cell, for range checks like earshot.
         // Skips destroyed switches as a MonoBehaviour lifetime guard.
-        public IAlarmSwitch NearestSwitch(Vector2Int from)
+        public bool AnySwitchWithin(Vector2Int from, int cells)
         {
-            IAlarmSwitch best = null;
-            var bestDistance = int.MaxValue;
             foreach (var alarmSwitch in _switches)
             {
                 if (alarmSwitch is MonoBehaviour mb && !mb) continue;
                 var offset = alarmSwitch.Cell - from;
-                var distance = Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
-                if (distance >= bestDistance) continue;
-                bestDistance = distance;
+                if (Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y)) <= cells) return true;
+            }
+
+            return false;
+        }
+
+        // The switch this mover reaches by the shortest walk, or null if it can reach none.
+        // Distance is route length, so walls and doors this mover can't open count.
+        public IAlarmSwitch NearestSwitch(Vector2Int from, AStarPathfinder pathfinder, Actor mover)
+        {
+            _ranked.Clear();
+            foreach (var alarmSwitch in _switches)
+            {
+                if (alarmSwitch is MonoBehaviour mb && !mb) continue;
+                var offset = alarmSwitch.Cell - from;
+                _ranked.Add((alarmSwitch, Mathf.Abs(offset.x) + Mathf.Abs(offset.y)));
+            }
+
+            // Find the best round to the nearest alarm switch.
+            _ranked.Sort((a, b) => a.lowerBound.CompareTo(b.lowerBound));
+
+            IAlarmSwitch best = null;
+            var bestSteps = int.MaxValue;
+            foreach (var (alarmSwitch, lowerBound) in _ranked)
+            {
+                if (lowerBound >= bestSteps) break;
+                var route = pathfinder.FindPath(from, alarmSwitch.Cell, mover);
+                if (route == null) continue;
+                var steps = route.Count - 1; // the route includes the cell the mover stands on
+                if (steps >= bestSteps) continue;
+                bestSteps = steps;
                 best = alarmSwitch;
             }
 

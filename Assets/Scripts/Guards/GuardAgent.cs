@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Entities;
 using Guards.Actions;
 using Guards.Goap;
+using Navigation;
 using Simulation;
 using UnityEngine;
 
@@ -53,6 +54,9 @@ namespace Guards
 
         // Narrow window onto the level's alarm for the guard's actions (Actor.World is protected).
         public AlarmState Alarm => World?.Alarm;
+
+        // And onto the pathfinder, so an action can weigh what a route actually costs before committing to it.
+        public AStarPathfinder Pathfinder => World?.Navigator?.Pathfinder;
 
         // Shown by the debug label so the AI's thinking is visible at a glance.
         public string CurrentGoalName => _goal?.Name ?? "Idle";
@@ -171,8 +175,7 @@ namespace Guards
             Memory.OfferLead(slot, LeadKind.Alarm);
         }
 
-        // This guard's stretch of the escape line: the contact projected a per-guard distance along the
-        // heading (stopping at a wall) and stepped to a per-guard side, so guards spread along and across it.
+        // This guard's stretch of the escape line: the contact projected a per-guard distance along the heading.
         private Vector2Int SweepCell(Vector2Int contact, Vector2Int heading)
         {
             if (heading == Vector2Int.zero) return contact; // no heading: search the last-seen cell itself
