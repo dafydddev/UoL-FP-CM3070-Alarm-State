@@ -1323,7 +1323,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b40182b07c43e4a520de70b9d454b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Spawners.ObjectiveSpawner
-  objectivePrefab: {fileID: 2521305447512504710, guid: 769fb30667557b948b61abf2fe1c56b1, type: 3}
+  primaryObjectivePrefab: {fileID: 2521305447512504710, guid: 93eccbe1e37bb5644992235cd87a35fd, type: 3}
+  secondaryObjectivePrefab: {fileID: 2521305447512504710, guid: d2523ca4760b7584f9e4dc7347957208, type: 3}
 --- !u!1 &724178092
 GameObject:
   m_ObjectHideFlags: 0
