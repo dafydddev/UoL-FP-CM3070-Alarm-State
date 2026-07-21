@@ -77,7 +77,11 @@ namespace Guards
 
             // Cover hides the player from being spotted, but doesn't break a gaze already fixed on them.
             var hidden = player.TryGetComponent(out PlayerHiding hiding) && hiding.IsHidden;
-            return !hidden || memory.SeesPlayer;
+
+            // A worn disguise does the same, and just as much stops working once a guard is watching.
+            var disguised = player.TryGetComponent(out PlayerDisguise disguise) && disguise.IsDisguised;
+
+            return !(hidden || disguised) || memory.SeesPlayer;
         }
 
         // The guard's field of view.
