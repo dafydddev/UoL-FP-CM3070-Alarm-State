@@ -40,9 +40,18 @@ namespace Entities
         // Only the player opens the door for good,a guard passing through leaves it locked.
         public void OnEntered(Actor mover)
         {
-            if (_open || mover is not PlayerActor) return;
+            if (mover is not PlayerActor) return;
+            Unlock();
+        }
+
+        // Opens the door without a key, the way a lock pick does.
+        // Returns false if it stood open already, so a single-use pick is not spent for nothing.
+        public bool Unlock()
+        {
+            if (_open) return false;
             _open = true;
             if (_sprite && openSprite) _sprite.sprite = openSprite;
+            return true;
         }
 
         private void OnDestroy()
