@@ -142,7 +142,11 @@ namespace Menu
             foreach (var entry in entries)
             {
                 var index = KeyboardIndex(entry.action.action);
-                entry.label.text = index < 0 ? "" : entry.action.action.GetBindingDisplayString(index).ToUpper();
+                entry.label.text = index < 0
+                    ? ""
+                    : entry.action.action
+                        .GetBindingDisplayString(index, InputBinding.DisplayStringOptions.DontIncludeInteractions)
+                        .ToUpper();
             }
         }
 
