@@ -34,7 +34,7 @@ namespace Simulation
             Clock = clock;
             Grid = grid;
             Occupancy = new OccupancyMap();
-            Entry = new EntryRules(grid, Occupancy);
+            Entry = new EntryRules(grid, Occupancy, scheduler);
             Navigator = new Navigator(tilemap, Entry);
             Mission = new MissionProgress();
             Alarm = new AlarmState();

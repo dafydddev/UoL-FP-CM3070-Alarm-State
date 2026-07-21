@@ -9,8 +9,8 @@ namespace Player
         // Names the item to anything watching the inventory, such as the HUD.
         string ItemId { get; }
 
-        // Runs the item's effect for a user standing at the given position.
+        // Runs the item's effect for a user standing on the given cell.
         // Returns false if it cannot act right now, which leaves it in the inventory.
-        bool Use(Vector3 userPosition);
+        bool Use(Vector2Int userCell);
     }
 }

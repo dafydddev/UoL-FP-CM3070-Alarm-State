@@ -38,10 +38,11 @@ namespace Entities
             _world.Alarm.Raise(contactCell, contactHeading);
 
         // The player disables the alarm by using any switch while it sounds. Guards do the raising.
-        public void OnUsed(Actor user)
+        public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || !_world.Alarm.Active) return;
+            if (user is not PlayerActor || !_world.Alarm.Active) return false;
             _world.Alarm.Disable();
+            return true;
         }
 
         private void Tint(bool active)

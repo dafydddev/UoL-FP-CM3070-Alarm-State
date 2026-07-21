@@ -38,12 +38,11 @@ namespace Entities
 
         // Opens the first locked door standing next to the user, spending the pick.
         // Returns false when there is no such door, which leaves it in the inventory for a door that has one.
-        public bool Use(Vector3 userPosition)
+        public bool Use(Vector2Int userCell)
         {
-            var from = (Vector2Int)_world.Tilemap.WorldToCell(userPosition);
             foreach (var direction in Reach)
             {
-                var occupant = _world.Occupancy.At(from + direction);
+                var occupant = _world.Occupancy.At(userCell + direction);
                 if (!occupant || !occupant.TryGetComponent(out LockedDoor door) || !door.Unlock()) continue;
                 Destroy(gameObject);
                 return true;

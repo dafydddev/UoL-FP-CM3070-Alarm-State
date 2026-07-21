@@ -8,6 +8,9 @@ namespace Simulation
     {
         private readonly List<Actor> _actors = new();
 
+        // The live actors, so cell rules can see who is standing where without a second register to keep in step.
+        public IReadOnlyList<Actor> Actors => _actors;
+
         public void Register(Actor actor) => _actors.Add(actor);
         public void Unregister(Actor actor) => _actors.Remove(actor);
 

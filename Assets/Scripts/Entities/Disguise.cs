@@ -40,7 +40,7 @@ namespace Entities
 
         // Putting the disguise on starts its clock and spends it.
         // Returns false if the player has no PlayerDisguise to run that clock, keeping it in the inventory.
-        public bool Use(Vector3 _)
+        public bool Use(Vector2Int _)
         {
             if (!_player) return false;
             _player.Wear(durationSeconds);

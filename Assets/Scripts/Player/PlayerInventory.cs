@@ -1,32 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Simulation;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Player
 {
-    // What the player is carrying, and the use action that spends it: pick an item up, use it, the item does the rest.
+    // What the player is carrying, and the use that spends it: pick an item up, use it, the item does the rest.
     // Keycards do not go through this loop, so PlayerKeyring holds them instead.
+    // PlayerActor owns the use key and calls TryUse; the inventory does not read input itself.
     public class PlayerInventory : MonoBehaviour
     {
-        [SerializeField] private InputActionReference useAction;
-
         public event Action<string> OnItemCollected;
 
         private readonly List<IInventoryItem> _items = new();
-
-        private void OnEnable()
-        {
-            useAction.action.performed += OnUse;
-            useAction.action.Enable();
-        }
-
-        private void OnDisable()
-        {
-            useAction.action.performed -= OnUse;
-            useAction.action.Disable();
-        }
 
         public void Collect(IInventoryItem item)
         {
@@ -35,13 +20,13 @@ namespace Player
         }
 
         // Uses the most recently collected item, spending it only if it managed to act.
-        private void OnUse(InputAction.CallbackContext _)
+        public bool TryUse(Vector2Int userCell)
         {
-            if (GameLock.Locked) return; // input arrives outside the tick loop, so it checks the lock itself
-            if (_items.Count == 0) return;
+            if (_items.Count == 0) return false;
             var last = _items.Count - 1;
-            if (!_items[last].Use(transform.position)) return; // item refused; keep it in hand
+            if (!_items[last].Use(userCell)) return false; // item refused; keep it in hand
             _items.RemoveAt(last);
+            return true;
         }
     }
 }
