@@ -1,7 +1,7 @@
 using Simulation;
 using UnityEngine;
 
-namespace Menu
+namespace HUD
 {
     // Shows an on-screen indicator while the alarm is sounding.
     public class AlarmHud : MonoBehaviour

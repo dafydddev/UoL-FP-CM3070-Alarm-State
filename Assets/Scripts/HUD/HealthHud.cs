@@ -2,7 +2,7 @@ using Player;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Menu
+namespace HUD
 {
     // The strip of hearts on the HUD showing the player's remaining health.
     public class HealthHud : MonoBehaviour

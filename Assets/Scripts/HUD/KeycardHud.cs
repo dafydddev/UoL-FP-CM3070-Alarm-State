@@ -5,7 +5,7 @@ using Spawners;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Menu
+namespace HUD
 {
     // The row of keycard slots on the HUD: one per key in the level, faded until the player picks it up.
     // Each slot carries its key's colour, the same hue KeyColour gives the card and the door it opens.

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace MiniMap
+namespace HUD.MiniMap
 {
     // Fits the minimap camera to the generated facility.
     // The camera, render texture, and UI are authored in the scene;
