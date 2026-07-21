@@ -8,17 +8,19 @@ namespace Player
 {
     public class PlayerActor : Actor
     {
-        [Header("Input Actions")]
-        [SerializeField] private InputActionReference upAction;
+        [Header("Input Actions")] [SerializeField]
+        private InputActionReference upAction;
+
         [SerializeField] private InputActionReference downAction;
         [SerializeField] private InputActionReference leftAction;
         [SerializeField] private InputActionReference rightAction;
         [SerializeField] private InputActionReference moveToAction;
         [SerializeField] private InputActionReference pointAction;
         [SerializeField] private InputActionReference useAction;
-        
-        [Header("Movement Settings")]
-        [SerializeField, Min(0f)] private float repeatDelay = 0.2f;
+
+        [Header("Movement Settings")] [SerializeField, Min(0f)]
+        private float repeatDelay = 0.2f;
+
         [SerializeField] private LineRenderer routePreview;
 
         private Vector2Int _cell, _prevCell;
@@ -31,7 +33,19 @@ namespace Player
         private Vector2Int _routeGoal;
         private UnityEngine.Camera _camera;
 
-        private void Awake() => _camera = UnityEngine.Camera.main;
+        private PlayerInventory _inventory;
+
+        public override Vector2Int Cell => _cell;
+
+        // The cell the use key acts on: the one being drawn under the player, which part-way
+        // through a step is still the cell being left rather than the one being moved into.
+        private Vector2Int UseCell => (Vector2Int)World.Tilemap.WorldToCell(transform.position);
+
+        private void Awake()
+        {
+            _camera = UnityEngine.Camera.main;
+            _inventory = GetComponent<PlayerInventory>();
+        }
 
         protected override void OnEnable()
         {
@@ -59,10 +73,11 @@ namespace Player
 
         public override void Init(WorldContext world)
         {
-            base.Init(world);
             var tilemap = world.Tilemap;
             _cell = _prevCell = (Vector2Int)tilemap.WorldToCell(transform.position);
             transform.position = tilemap.GetCellCenterWorld((Vector3Int)_cell);
+
+            base.Init(world); // after the cell, so Cell reads true from the moment the scheduler holds us
         }
 
         private void Update()
@@ -154,10 +169,13 @@ namespace Player
         }
 
         // Presses the use key to interact with whatever the player is standing on.
+        // The cell activates first, so an alarm or an unhacked objective takes the key rather than an item.
         private void ReadUse()
         {
             if (!useAction.action.WasPressedThisFrame()) return;
-            World.Entry.HandleUsed(_cell, this);
+            var cell = UseCell;
+            if (World.Entry.HandleUsed(cell, this)) return;
+            if (_inventory) _inventory.TryUse(cell);
         }
 
         private void PlanRoute(Vector2Int goal)
@@ -182,9 +200,11 @@ namespace Player
             routePreview.SetPosition(1, World.Tilemap.GetCellCenterWorld((Vector3Int)_cell));
             var i = 2;
             foreach (var cell in _route)
+            {
                 routePreview.SetPosition(i++, World.Tilemap.GetCellCenterWorld((Vector3Int)cell));
+            }
         }
-
+        
         private void Track(Vector2Int dir, bool held)
         {
             var has = _pressed.Contains(dir);

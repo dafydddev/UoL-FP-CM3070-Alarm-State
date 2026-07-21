@@ -37,13 +37,13 @@ namespace Entities
             gameObject.SetActive(false);
         }
 
-        // Using a distraction drops it on the cell nearest the user, where it starts sounding.
-        // Returns false without placing it if that cell is already occupied.
-        public bool Use(Vector3 userPosition)
+        // Using a distraction drops it on the user's cell, where it starts sounding.
+        // Returns false without placing it if anything else stands there.
+        // The player is the only thing a dropped distraction may share a cell with.
+        public bool Use(Vector2Int userCell)
         {
-            var cell = (Vector2Int)_world.Tilemap.WorldToCell(userPosition);
-            if (_world.Occupancy.At(cell)) return false;
-            Cell = cell;
+            if (!_world.Entry.IsClear(userCell, _world.Player)) return false;
+            Cell = userCell;
             transform.position = _world.Tilemap.GetCellCenterWorld((Vector3Int)Cell);
             _world.Occupancy.Place(Cell, gameObject);
             gameObject.SetActive(true);

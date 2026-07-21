@@ -50,6 +50,8 @@ namespace Guards
         public static readonly List<GuardAgent> Active = new();
 
         public GridMotor Motor { get; private set; }
+
+        public override Vector2Int Cell => Motor.Cell;
         public GuardMemory Memory { get; } = new();
 
         // Narrow window onto the level's alarm for the guard's actions (Actor.World is protected).
@@ -73,11 +75,12 @@ namespace Guards
         // Called by the spawner after Instantiate, with the patrol route derived from the room graph.
         public void Init(WorldContext world, IReadOnlyList<Vector2Int> patrolRoute)
         {
-            base.Init(world);
-
             var cell = (Vector2Int)world.Tilemap.WorldToCell(transform.position);
             transform.position = world.Navigator.CellToWorld(cell);
             Motor = new GridMotor(this, world, cell);
+
+            base.Init(world); // after the motor, so Cell reads true from the moment the scheduler holds us
+
             _sweepSlot = Mathf.Abs(GetInstanceID());
 
             _actions = new GoapAction[]

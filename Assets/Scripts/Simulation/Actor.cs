@@ -9,6 +9,10 @@ namespace Simulation
 
         protected WorldContext World { get; private set; }
 
+        // Where the actor logically stands, whatever the transform is drawing part-way through a step.
+        // One notion of an actor's cell, so anything asking what is on a cell gets the same answer.
+        public abstract Vector2Int Cell { get; }
+
         // Called by the spawner after Instantiate. OnEnable has already run by then
         // (with no context), so registration happens here for the first activation.
         public virtual void Init(WorldContext world)

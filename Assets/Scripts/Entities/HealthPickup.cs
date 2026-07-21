@@ -37,7 +37,7 @@ namespace Entities
 
         // Using it restores a heart and spends it.
         // Returns false on full hearts, which keeps it in the inventory until it is worth spending.
-        public bool Use(Vector3 _)
+        public bool Use(Vector2Int _)
         {
             if (!_player || !_player.Heal()) return false;
             Destroy(gameObject);

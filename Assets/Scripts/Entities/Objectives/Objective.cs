@@ -36,10 +36,11 @@ namespace Entities.Objectives
         }
 
         // Used by the player to start the hack; completion arrives via CompleteHack once the minigame validates a circuit.
-        public void OnUsed(Actor user)
+        public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || Hacked) return;
+            if (user is not PlayerActor || Hacked) return false;
             HackRequested?.Invoke(this);
+            return true;
         }
 
         // Called by the minigame when the circuit activates.
