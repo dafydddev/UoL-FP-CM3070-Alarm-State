@@ -16,7 +16,7 @@ namespace Navigation
 
         public AStarPathfinder(EntryRules entry) => _entry = entry;
 
-        // Walkability is per-mover: a locked door blocks a guard but not a keyholder.
+        // Walkability is per-mover: a locked door blocks a player when they do not have the right key.
         // Out-of-bounds cells have no tile, so the rules refuse them too.
         public bool IsWalkable(Vector2Int cell, Actor mover) => _entry.CanEnter(cell, mover);
 
