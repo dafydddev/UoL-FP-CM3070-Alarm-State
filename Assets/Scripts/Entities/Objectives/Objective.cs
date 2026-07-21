@@ -8,16 +8,13 @@ namespace Entities.Objectives
 {
     // A mission objective the player completes with the use key while standing on or beside it.
     // Using it opens the pipe hacking minigame; the objective completes once the hack is done.
-    // The primary objective gates the level exit: completing it unlocks the way out.
-    public class Objective : MonoBehaviour, IUseHandler
+    // What that completion is worth is left to the two kinds: see PrimaryObjective and SecondaryObjective.
+    public abstract class Objective : MonoBehaviour, IUseHandler
     {
         // Fires when the player uses an unhacked objective, so the hacking screen can open for it.
         public static event Action<Objective> HackRequested;
 
         public string id;
-
-        // Set by the spawner. Only the primary objective unlocks the exit.
-        public bool isPrimary;
 
         // Seed for this objective's hacking puzzle, stamped by the spawner so the same level always presents the same boards.
         public int hackSeed;
@@ -26,12 +23,14 @@ namespace Entities.Objectives
         private bool Hacked { get; set; }
 
         private Vector2Int _cell;
-        private WorldContext _world;
+
+        // The level this objective sits in, for the kinds to act on once they are hacked.
+        protected WorldContext World { get; private set; }
 
         // Called by the spawner after Instantiate, so the use key can find us on the grid.
         public void Init(WorldContext world)
         {
-            _world = world;
+            World = world;
             _cell = (Vector2Int)world.Tilemap.WorldToCell(transform.position);
             world.Occupancy.Place(_cell, gameObject);
         }
@@ -44,16 +43,18 @@ namespace Entities.Objectives
         }
 
         // Called by the minigame when the circuit activates.
-        // Marks the mission's primary objective done, which the exit checks before it will let the player through.
         public void CompleteHack()
         {
             Hacked = true;
-            if (isPrimary) _world.Mission.CompletePrimary();
+            OnHacked();
         }
+
+        // What winning this objective's hack is worth.
+        protected abstract void OnHacked();
 
         private void OnDestroy()
         {
-            if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
+            if (World != null && World.Occupancy.At(_cell) == gameObject) World.Occupancy.Remove(_cell);
         }
     }
 }

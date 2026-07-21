@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8334573921006656117}
   - component: {fileID: 5921620070685368478}
-  - component: {fileID: 1928502719099204470}
+  - component: {fileID: -1198218833799304774}
+  - component: {fileID: -5163064756018008072}
   m_Layer: 0
-  m_Name: Objective
+  m_Name: Secondary Objective
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5614138065025982045, guid: 10154e07b2dff2d47a47af70f9d21b8e, type: 3}
+  m_Sprite: {fileID: -1250925088, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -92,7 +93,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &1928502719099204470
+--- !u!114 &-1198218833799304774
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,7 +102,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 2521305447512504710}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7330a02ea8ea48a584c3515cbf2ffe0a, type: 3}
+  m_Script: {fileID: 11500000, guid: fcc084216387e804d846b0f64d67118b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Generation.Objectives.Objective
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.Objectives.SecondaryObjective
   id: 
+  hackSeed: 0
+  dropSeed: 0
+--- !u!114 &-5163064756018008072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2521305447512504710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9abc2c7c27aea4742bd5d0a8e53dafb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Entities.Objectives.ObjectiveDrop
+  rewardPrefabs:
+  - {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
+  - {fileID: 2521305447512504710, guid: bca4912420e26a44c81f6a3dac4bec0f, type: 3}
+  - {fileID: 2521305447512504710, guid: 0bcf1107b17cc91429ec2221ba007409, type: 3}
+  dropChance: 0.5
