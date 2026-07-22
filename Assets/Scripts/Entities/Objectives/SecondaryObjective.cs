@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Entities.Objectives
@@ -7,6 +8,9 @@ namespace Entities.Objectives
     [RequireComponent(typeof(ObjectiveDrop))]
     public class SecondaryObjective : Objective
     {
+        // Raised when a secondary objective is completed. Static so the run orchestrator can subscribe once.
+        public static event Action Completed;
+
         // Seed for the reward roll, stamped by the spawner alongside the hacking seed.
         public int dropSeed;
 
@@ -14,6 +18,10 @@ namespace Entities.Objectives
 
         private void Awake() => _drop = GetComponent<ObjectiveDrop>();
 
-        protected override void OnHacked() => _drop.Roll(World, dropSeed);
+        protected override void OnHacked()
+        {
+            _drop.Roll(World, dropSeed);
+            Completed?.Invoke();
+        }
     }
 }
