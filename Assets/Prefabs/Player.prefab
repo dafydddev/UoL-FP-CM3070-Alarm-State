@@ -89,7 +89,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7123501480511164237, guid: 10154e07b2dff2d47a47af70f9d21b8e, type: 3}
+  m_Sprite: {fileID: 1377548492, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -159,7 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 988bb9c7b1b140dca19f9ed062d9fe97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
-  useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!114 &-2571231643377655764
 MonoBehaviour:
   m_ObjectHideFlags: 0
