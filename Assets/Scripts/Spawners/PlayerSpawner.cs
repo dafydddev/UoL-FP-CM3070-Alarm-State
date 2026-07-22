@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Camera;
 using Generation.Tiles;
 using Graphs.Rooms;
+using HUD;
+using Player;
 using Simulation;
 using UnityEngine;
 
@@ -11,6 +13,7 @@ namespace Spawners
     {
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private CameraFollow cameraFollow;
+        [SerializeField] private InventoryScreen inventoryScreen;
 
         private GameObject _player;
 
@@ -25,6 +28,7 @@ namespace Spawners
             actor.Init(world);
             world.BindPlayer(actor); // so other sim participants (e.g. guards) can find the player
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
+            if (inventoryScreen) inventoryScreen.Bind(_player.GetComponent<PlayerInventory>());
         }
     }
 }
