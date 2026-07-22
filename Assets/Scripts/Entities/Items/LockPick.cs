@@ -3,7 +3,7 @@ using Player;
 using Simulation;
 using UnityEngine;
 
-namespace Entities
+namespace Entities.Items
 {
     // A lock pick. Picked up into the inventory, then spent to open one locked door.
     // The inventory drops an item once its use succeeds, which is what makes the pick single use.
@@ -16,6 +16,8 @@ namespace Entities
         public string lockPickId;
 
         public string ItemId => lockPickId;
+
+        public ItemKind Kind => ItemKind.LockPick;
 
         private Vector2Int _cell;
         private WorldContext _world;

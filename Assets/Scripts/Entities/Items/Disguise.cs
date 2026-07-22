@@ -3,7 +3,7 @@ using Player;
 using Simulation;
 using UnityEngine;
 
-namespace Entities
+namespace Entities.Items
 {
     // A disguise. Picked up into the inventory, then worn for a stretch of time.
     // Guards cannot spot the player unless the guard sees the player activating the disguise.
@@ -14,6 +14,8 @@ namespace Entities
         [SerializeField, Min(0f)] private float durationSeconds = 10f;
 
         public string ItemId => disguiseId;
+
+        public ItemKind Kind => ItemKind.Disguise;
 
         private Vector2Int _cell;
         private WorldContext _world;
