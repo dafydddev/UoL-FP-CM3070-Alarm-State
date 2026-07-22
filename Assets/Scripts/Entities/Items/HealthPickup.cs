@@ -3,7 +3,7 @@ using Player;
 using Simulation;
 using UnityEngine;
 
-namespace Entities
+namespace Entities.Items
 {
     // A health item. Picked up into the inventory, then used to restore one heart, never past the player's maximum.
     public class HealthPickup : MonoBehaviour, IEnterHandler, IInventoryItem, ISpawnedEntity
@@ -11,6 +11,8 @@ namespace Entities
         public string healthPickupId;
 
         public string ItemId => healthPickupId;
+
+        public ItemKind Kind => ItemKind.HealthPack;
 
         private Vector2Int _cell;
         private WorldContext _world;

@@ -4,7 +4,7 @@ using Player;
 using Simulation;
 using UnityEngine;
 
-namespace Entities
+namespace Entities.Items
 {
     public class DistractionItem : MonoBehaviour, IEnterHandler, IInventoryItem
     {
@@ -15,6 +15,8 @@ namespace Entities
         public string distractionId;
 
         public string ItemId => distractionId;
+
+        public ItemKind Kind => ItemKind.Distraction;
 
         // The cell this item currently sits on (meaningful while placed in the world).
         public Vector2Int Cell { get; private set; }
