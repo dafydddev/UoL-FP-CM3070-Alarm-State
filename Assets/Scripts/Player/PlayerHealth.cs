@@ -19,6 +19,9 @@ namespace Player
 
         private int Current { get; set; }
 
+        // The hearts remaining, read when a cleared level carries the player's health into the next.
+        public int Hearts => Current;
+
         // Alive while at least one heart remains.
         private bool IsAlive => Current > 0;
 
@@ -49,6 +52,14 @@ namespace Player
             Current++;
             OnHealthChanged?.Invoke(Current, maxHearts);
             return true;
+        }
+
+        // Opens a carried-over level on the hearts the player finished the last one with, instead of a full refill.
+        // Clamped to the maximum; a completed level always carries at least one, so this never spawns the player dead.
+        public void SetHearts(int hearts)
+        {
+            Current = Mathf.Clamp(hearts, 0, maxHearts);
+            OnHealthChanged?.Invoke(Current, maxHearts);
         }
 
         // An arrest inside the iFrame window costs nothing; the guards keep trying regardless.

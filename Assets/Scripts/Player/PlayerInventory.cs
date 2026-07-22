@@ -19,6 +19,9 @@ namespace Player
         // The kind the use key acts on, or null before anything has filled the slot.
         public ItemKind? Selected { get; private set; }
 
+        // The kinds held, one entry per unit in collection order, read when a run carries the inventory across a level.
+        public IEnumerable<ItemKind> Kinds => _items.Select(item => item.Kind);
+
         // Announce the empty slot on spawn, the way PlayerHealth announces its hearts, so the HUD starts clean.
         private void Awake() => OnSlotChanged?.Invoke(Selected);
 
