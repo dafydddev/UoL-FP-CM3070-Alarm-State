@@ -124,4 +124,4 @@ MonoBehaviour:
   - {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
   - {fileID: 2521305447512504710, guid: bca4912420e26a44c81f6a3dac4bec0f, type: 3}
   - {fileID: 2521305447512504710, guid: 0bcf1107b17cc91429ec2221ba007409, type: 3}
-  dropChance: 0.5
+  dropChance: 1
