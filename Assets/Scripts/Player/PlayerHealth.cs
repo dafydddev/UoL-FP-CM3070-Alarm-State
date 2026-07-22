@@ -19,7 +19,7 @@ namespace Player
 
         private int Current { get; set; }
 
-        // The hearts remaining, read when a cleared level carries the player's health into the next.
+        // The hearts remaining.
         public int Hearts => Current;
 
         // Alive while at least one heart remains.
@@ -54,8 +54,7 @@ namespace Player
             return true;
         }
 
-        // Opens a carried-over level on the hearts the player finished the last one with, instead of a full refill.
-        // Clamped to the maximum; a completed level always carries at least one, so this never spawns the player dead.
+        // Sets the starting hearts for a carried-over level, clamped to the maximum.
         public void SetHearts(int hearts)
         {
             Current = Mathf.Clamp(hearts, 0, maxHearts);
