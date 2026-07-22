@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Player;
-using Run;
 using Settings;
 using TMPro;
 using UnityEngine;
@@ -50,18 +49,18 @@ namespace Menu
             if (CurrencySettings.Balance < offer.price) return;
 
             CurrencySettings.Balance -= offer.price;
-            CurrencySettings.Save();
-            (RunLoadout.Pending ??= new RunLoadout()).Add(offer.kind);
+            SaveSystem.Data.ownedItems.Add(offer.kind);
+            SaveSystem.Save(); // persist the spend and the new item together
             ShowBalance();
             ShowItem(offer);
         }
 
         private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
 
-        private void ShowItem(Offer offer) =>
-            itemLabel.text = $"{NameOf(offer.kind)}: {offer.price} points (Owned {OwnedCount(offer.kind)})";
+        private void ShowItem(Offer offer) => itemLabel.text =
+            $"{NameOf(offer.kind)}: {offer.price} points (Owned {OwnedCount(offer.kind)})";
 
-        private static int OwnedCount(ItemKind kind) => RunLoadout.Pending?.Items.Count(k => k == kind) ?? 0;
+        private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
 
         // The spaced name for a kind, since the enum runs the words together.
         private static string NameOf(ItemKind kind) => kind switch
