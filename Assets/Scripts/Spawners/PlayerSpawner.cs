@@ -47,8 +47,7 @@ namespace Spawners
             ApplyLoadout(world);
         }
 
-        // Seeds the spawned player with the loadout the level starts on: the items bought in the shop,
-        // or the health and inventory carried level-to-level. Read once as the level starts, then cleared.
+        // Fills the spawned player from the pending loadout: shop purchases or carried from previous level.
         private void ApplyLoadout(WorldContext world)
         {
             var loadout = RunLoadout.Pending;
@@ -65,7 +64,7 @@ namespace Spawners
                 held.SetActive(false);
             }
 
-            // A carried-over player keeps the hearts level-to-level and the use slot they finished the last level with.
+            // Hearts and inventory settings carried over from previous level.
             if (loadout.StartingHearts is { } hearts && world.Player.TryGetComponent(out PlayerHealth health))
             {
                 health.SetHearts(hearts);
