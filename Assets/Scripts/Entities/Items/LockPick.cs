@@ -30,6 +30,8 @@ namespace Entities.Items
             world.Occupancy.Place(_cell, gameObject);
         }
 
+        public void Bind(WorldContext world) => _world = world;
+
         public void OnEntered(Actor mover)
         {
             if (!mover.TryGetComponent(out PlayerInventory inventory)) return;

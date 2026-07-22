@@ -1,3 +1,4 @@
+using Simulation;
 using UnityEngine;
 
 namespace Player
@@ -13,5 +14,8 @@ namespace Player
         // Runs the item's effect for a user standing on the given cell.
         // Returns false if it cannot act right now, which leaves it in the inventory.
         bool Use(Vector2Int userCell);
+
+        // Gives the item the world it needs to be usable.
+        void Bind(WorldContext world);
     }
 }
