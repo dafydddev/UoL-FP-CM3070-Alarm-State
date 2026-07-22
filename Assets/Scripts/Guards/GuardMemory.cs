@@ -1,10 +1,10 @@
-using Entities;
+using Entities.Items;
 using UnityEngine;
 
 namespace Guards
 {
-    // What kind of lead a guard is holding; higher values matter more, so a last-seen player position
-    // displaces a noticed distraction but not vice versa, and a sounding alarm displaces both.
+    // What kind of lead a guard is holding; higher values matter more.
+    // A last-seen player position displaces a noticed distraction but not vice versa, and a sounding alarm displaces both.
     public enum LeadKind
     {
         Distraction,
@@ -13,8 +13,7 @@ namespace Guards
     }
 
     // The guard's working memory:
-    // what its senses last established about the player, and the single most important lead worth investigating.
-    // Senses write here; the agent reads it to build the planner's world snapshot.
+    // What its senses last established about the player, and the single most important lead worth investigating.
     public class GuardMemory
     {
         public bool SeesPlayer { get; private set; }

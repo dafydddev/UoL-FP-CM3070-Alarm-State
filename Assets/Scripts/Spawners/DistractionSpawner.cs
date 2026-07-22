@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Entities;
+using Entities.Items;
 using Generation;
 using Generation.Tiles;
 using Graphs.Rooms;
@@ -15,7 +15,7 @@ namespace Spawners
         [SerializeField] private GameObject distractionPrefab;
         [SerializeField] private int count = 8; // upper bound on distractions placed
         [SerializeField] private float minSeparation = 6f; // minimum spacing between distractions, in tiles
-        private const int SampleAttempts = 30; // candidates tried per active point (Bridson's k)
+        private const int SampleAttempts = 30; // candidates tried per active point
 
         // Places up to count distractions on distinct, unoccupied floor cells with Poisson spacing.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
@@ -46,10 +46,8 @@ namespace Spawners
             }
         }
 
-        // Bridson's Poisson disk sampling over [0,width] x [0,height]:
-        // returns points no closer than radius apart, in roughly O(n).
-        // A background grid of cellSize = radius/sqrt(2) holds at most one sample per cell,
-        // so proximity checks only touch a fixed neighbourhood.
+        // Bridson's Poisson disk sampling over [0,width] x [0,height].
+        // Returns points no closer than radius apart.
         private static List<Vector2> PoissonSample(int width, int height, float radius, System.Random rng)
         {
             var samples = new List<Vector2>();

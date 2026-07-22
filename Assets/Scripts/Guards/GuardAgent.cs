@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Entities;
+using Entities.Items;
 using Guards.Actions;
 using Guards.Goap;
 using Navigation;
@@ -152,9 +152,8 @@ namespace Guards
                 World.Alarm.UpdateContact(Memory.PlayerCell, Memory.PlayerHeading);
         }
 
-        // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps the escape line,
-        // so responders string out across where the player likely fled.
-        // A contact that has moved re-arms it, causing all the guards to scramble again.
+        // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps the escape line.
+        // Responders string out across where the player likely fled.
         private void HearAlarm()
         {
             var alarm = World.Alarm;
@@ -209,8 +208,7 @@ namespace Guards
 
         // Picks the most important goal that applies and isn't already achieved.
         // Keeps the current plan when the winner hasn't changed; otherwise plans fresh.
-        // A goal that can't be planned for falls through to the next,
-        // that is the failure recovery: the guard always degrades to something it can do.
+        // A goal that can't be planned for falls through to the next.
         private void Think(WorldState snapshot)
         {
             GoapGoal best = null;
@@ -293,7 +291,6 @@ namespace Guards
 
         // Every cell this guard can currently see (range + cone + line of sight).
         // Reports the world size of one grid cell so an overlay can size its markers to the tiles.
-        // Yields nothing until the guard has been initialised.
         public void CollectVisibleCells(List<Vector3> into, out Vector2 cellWorldSize)
         {
             into.Clear();
@@ -331,7 +328,6 @@ namespace Guards
 
         // A dropped distraction sounds until a guard reaches it and pockets it, so this runs every tick.
         // Whatever is audible right now becomes the lead, and keeps being re-offered until it falls silent.
-        // Being the lowest lead kind, it can never displace a player trail or an alarm.
         // A guard with something better to do ignores the noise, then is pulled back to it once that resolves.
         private void HearNoise()
         {
