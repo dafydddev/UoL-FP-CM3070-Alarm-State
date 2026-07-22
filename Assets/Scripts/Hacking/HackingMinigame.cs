@@ -17,20 +17,17 @@ namespace Hacking
     {
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
+        [SerializeField] private Button backdrop;
         [SerializeField] private GridLayoutGroup boardLayout;
         [SerializeField] private PipeTileButton tileButtonPrefab;
 
         [Header("Input Actions")]
-        // The same bindings that drive the character and the pause menu.
-        // While the panel is open they drive the hacking instead.
         [SerializeField] private InputActionReference upAction;
         [SerializeField] private InputActionReference downAction;
         [SerializeField] private InputActionReference leftAction;
         [SerializeField] private InputActionReference rightAction;
         [SerializeField] private InputActionReference useAction;
         [SerializeField] private InputActionReference pauseAction;
-        [SerializeField] private InputActionReference clickAction;
-        [SerializeField] private InputActionReference pointAction;
 
         [Header("Start and End Markers")]
         // Markers sat just outside the board showing where the circuit enters and leaves.
@@ -52,7 +49,6 @@ namespace Hacking
         [SerializeField, Min(0f)] private float surgeStep = 0.08f; // seconds the activation surge spends per tile
 
         private RunContext _run;
-        private Canvas _canvas; // the panel's root canvas; its camera feeds the click-outside test
         private Objective _objective; // the objective being hacked while the panel is open
         private PipeBoard _board;
         private PipeTileButton[,] _buttons;
@@ -69,8 +65,7 @@ namespace Hacking
             rightAction.action.Enable();
             useAction.action.Enable();
             pauseAction.action.Enable();
-            clickAction.action.Enable();
-            pointAction.action.Enable();
+            if (backdrop) backdrop.onClick.AddListener(Close);
         }
 
         private void OnDisable()
@@ -82,8 +77,7 @@ namespace Hacking
             rightAction.action.Disable();
             useAction.action.Disable();
             pauseAction.action.Disable();
-            clickAction.action.Disable();
-            pointAction.action.Disable();
+            if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
 
         // The shared actions are polled rather than subscribed:
@@ -98,16 +92,10 @@ namespace Hacking
             if (rightAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.right);
             if (useAction.action.WasPressedThisFrame()) OnTileClicked(_buttons[_selected.x, _selected.y]);
             if (pauseAction.action.WasPressedThisFrame()) Close();
-
-            // A click outside the panel backs out; clicks on the pipes land on their buttons.
-            if (clickAction.action.WasPressedThisFrame() &&
-                !RectTransformUtility.RectangleContainsScreenPoint(
-                    (RectTransform)panel.transform, pointAction.action.ReadValue<Vector2>(), _canvas.worldCamera))
-                Close();
         }
 
-        // Called by the facility orchestrator on every generate,
-        // so boards scale with the run's difficulty profile and level.
+        // Called by the facility orchestrator on every time a level is generated.
+        // Boards scale with the run's difficulty profile and level.
         // A rebuild invalidates any hack still open, so that closes (and releases its lock) first.
         public void Prepare(RunContext run)
         {
@@ -133,7 +121,7 @@ namespace Hacking
             _board = PipePuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
 
             panel.SetActive(true);
-            _canvas ??= panel.GetComponentInParent<Canvas>().rootCanvas;
+            if (backdrop) backdrop.gameObject.SetActive(true);
             BuildBoardUi();
 
             // Park the selection on the feed end of the circuit.
@@ -236,11 +224,13 @@ namespace Hacking
         // Backing out leaves the objective unhacked; using it again reopens the same puzzle.
         private void Close()
         {
+            if (!_hacking) return; // several paths can fire on one frame, and the shared backdrop calls this for both screens
             StopAllCoroutines(); // a rebuild can close us mid-surge
             _surging = false;
             _objective = null;
             _hacking = false;
             panel.SetActive(false);
+            if (backdrop) backdrop.gameObject.SetActive(false);
             GameLock.Release();
         }
 
