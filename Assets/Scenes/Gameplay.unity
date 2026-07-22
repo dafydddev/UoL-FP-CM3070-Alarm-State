@@ -473,6 +473,15 @@ MonoBehaviour:
   playerPrefab: {fileID: 5505076589466554815, guid: 89924503c0e28ec43a8c77dc4a466172, type: 3}
   cameraFollow: {fileID: 1249475571}
   inventoryScreen: {fileID: 1421318875}
+  startingItems:
+  - kind: 1
+    prefab: {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
+  - kind: 0
+    prefab: {fileID: 2066398228206630087, guid: bd2eacbb66ce2a54983c163b0162d346, type: 3}
+  - kind: 3
+    prefab: {fileID: 2521305447512504710, guid: bca4912420e26a44c81f6a3dac4bec0f, type: 3}
+  - kind: 2
+    prefab: {fileID: 2521305447512504710, guid: 0bcf1107b17cc91429ec2221ba007409, type: 3}
 --- !u!1 &154401018
 GameObject:
   m_ObjectHideFlags: 0
@@ -5597,6 +5606,9 @@ MonoBehaviour:
   default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0
   wipeEffect: {fileID: 331585042}
+  primaryObjectiveReward: 100
+  secondaryObjectiveReward: 50
+  levelClearedReward: 25
 --- !u!114 &1820973510
 MonoBehaviour:
   m_ObjectHideFlags: 0
