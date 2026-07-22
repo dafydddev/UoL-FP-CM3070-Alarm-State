@@ -1,17 +1,14 @@
-using UnityEngine;
-
 namespace Settings
 {
+    // Banked currency, stored in the shared save profile.
     public static class CurrencySettings
     {
-        private const string BalanceKey = "CurrencyBalance";
-
         public static int Balance
         {
-            get => PlayerPrefs.GetInt(BalanceKey, 0);
-            set => PlayerPrefs.SetInt(BalanceKey, value);
+            get => SaveSystem.Data.currencyBalance;
+            set => SaveSystem.Data.currencyBalance = value;
         }
 
-        public static void Save() => PlayerPrefs.Save();
+        public static void Save() => SaveSystem.Save();
     }
 }
