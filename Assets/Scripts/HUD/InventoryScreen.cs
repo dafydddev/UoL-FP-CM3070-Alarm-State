@@ -10,8 +10,6 @@ using UnityEngine.UI;
 namespace HUD
 {
     // The inventory screen: a panel with one slot per item kind.
-    // Left and right walk the cursor along the row, tinting the slot under it.
-    // Use puts the highlighted kind into the HUD use slot and closes.
     public class InventoryScreen : MonoBehaviour
     {
         // One kind's slot: the kind it stands for and the authored image tinted for it.
@@ -29,10 +27,14 @@ namespace HUD
         [SerializeField] private TMP_Text label; // names the highlighted kind and how many are held
 
         [Header("Slot Colours")] [SerializeField]
-        private Color slotColour = Color.white; // a slot away from the cursor
+        private Color slotColour = Color.white;
 
         [SerializeField] private Color highlightColour = Color.yellow; // the slot under the cursor
         [SerializeField, Range(0f, 1f)] private float missingAlpha = 0.25f; // faded when none of the kind is held
+
+        [Header("UI Buttons")]
+        [SerializeField] private Button openButton;
+        [SerializeField] private Button backdrop;
 
         [Header("Input Actions")]
         [SerializeField] private InputActionReference openAction;
@@ -40,11 +42,8 @@ namespace HUD
         [SerializeField] private InputActionReference rightAction;
         [SerializeField] private InputActionReference useAction;
         [SerializeField] private InputActionReference pauseAction;
-        [SerializeField] private InputActionReference clickAction;
-        [SerializeField] private InputActionReference pointAction;
 
         private PlayerInventory _inventory; // bound to the spawned player each level
-        private Canvas _canvas; // the panel's root canvas; its camera feeds the click-outside test
         private int _cursor; // index into slots of the highlighted kind
         private bool _open;
 
@@ -55,8 +54,8 @@ namespace HUD
             rightAction.action.Enable();
             useAction.action.Enable();
             pauseAction.action.Enable();
-            clickAction.action.Enable();
-            pointAction.action.Enable();
+            if (openButton) openButton.onClick.AddListener(OpenFromButton);
+            if (backdrop) backdrop.onClick.AddListener(Close);
         }
 
         private void OnDisable()
@@ -66,8 +65,8 @@ namespace HUD
             rightAction.action.Disable();
             useAction.action.Disable();
             pauseAction.action.Disable();
-            clickAction.action.Disable();
-            pointAction.action.Disable();
+            if (openButton) openButton.onClick.RemoveListener(OpenFromButton);
+            if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
 
         // Handed the spawned player's inventory each level, the way the camera is handed its target.
@@ -86,13 +85,13 @@ namespace HUD
             if (rightAction.action.WasPressedThisFrame()) MoveCursor(1);
             if (useAction.action.WasPressedThisFrame()) Choose();
             if (pauseAction.action.WasPressedThisFrame()) Close();
-            if (_open && openAction.action.WasPressedThisFrame()) Close();
+            if (openAction.action.WasPressedThisFrame()) Close();
+        }
 
-            // A click outside the panel backs out; clicks on the slots land inside it.
-            if (clickAction.action.WasPressedThisFrame() &&
-                !RectTransformUtility.RectangleContainsScreenPoint(
-                    (RectTransform)panel.transform, pointAction.action.ReadValue<Vector2>(), _canvas.worldCamera))
-                Close();
+        // The on-screen button opens the screen the same way its key does.
+        private void OpenFromButton()
+        {
+            if (!_open && _inventory && !GameLock.Locked) Open();
         }
 
         // Presents the slots and parks the cursor on the kind already in the use slot.
@@ -101,7 +100,8 @@ namespace HUD
             _open = true;
             GameLock.Acquire();
             panel.SetActive(true);
-            _canvas ??= panel.GetComponentInParent<Canvas>().rootCanvas;
+            if (backdrop) backdrop.gameObject.SetActive(true);
+            if (openButton) openButton.gameObject.SetActive(false);
             _cursor = CursorFor(_inventory.Selected);
             Redraw();
         }
@@ -124,8 +124,11 @@ namespace HUD
 
         private void Close()
         {
+            if (!_open) return;
             _open = false;
             panel.SetActive(false);
+            if (backdrop) backdrop.gameObject.SetActive(false);
+            if (openButton) openButton.gameObject.SetActive(true);
             GameLock.Release();
         }
 
