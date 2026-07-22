@@ -42,7 +42,23 @@ namespace Run
             GameLock.Clear();
             _run = RunContext.Pending ?? new RunContext(@default, defaultStartLevel, defaultTotalLevels, defaultLayoutStyle);
             RunContext.Pending = null;
+            OpenLoadout();
             StartCoroutine(BuildLevel());
+        }
+
+        // Opens this run's inventory from the items bought in the shop, then spends them.
+        // A run entered without a shop (a direct scene load) opens empty.
+        private static void OpenLoadout()
+        {
+            var owned = SaveSystem.Data.ownedItems;
+            if (owned.Count == 0) return;
+
+            var loadout = new RunLoadout();
+            foreach (var kind in owned) loadout.Add(kind);
+            RunLoadout.Pending = loadout;
+
+            owned.Clear();
+            SaveSystem.Save();
         }
 
         private void OnEnable()
