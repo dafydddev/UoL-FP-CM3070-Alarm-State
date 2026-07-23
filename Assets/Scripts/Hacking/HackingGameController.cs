@@ -31,7 +31,9 @@ namespace Hacking
         [Header("Start and End Markers")]
         // Markers sat just outside the board showing where the circuit enters and leaves.
         [SerializeField] private RectTransform startMarker;
+        [SerializeField] private Image startMarkerImage;
         [SerializeField] private RectTransform endMarker;
+        [SerializeField] private Image endMarkerImage;
 
         [Header("Pipe Sprites")]
         // One sprite per pipe shape, authored in the unrotated orientations PipeTypeExtensions.Ends describes.
@@ -203,13 +205,14 @@ namespace Hacking
         private IEnumerator ActivateCircuit(List<Vector2Int> path)
         {
             _surging = true;
+            startMarkerImage.color = poweredColour;
             _buttons[_selected.x, _selected.y].Tint(pipeColour); // the surge owns the colours now
             foreach (var cell in path)
             {
                 _buttons[cell.x, cell.y].Tint(poweredColour);
                 yield return new WaitForSeconds(surgeStep);
             }
-
+            endMarkerImage.color = poweredColour;
             _objective.CompleteHack();
             Close();
         }
