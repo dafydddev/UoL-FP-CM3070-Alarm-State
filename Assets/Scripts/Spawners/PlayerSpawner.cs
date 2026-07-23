@@ -16,7 +16,7 @@ namespace Spawners
     {
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private CameraFollow cameraFollow;
-        [SerializeField] private InventoryScreen inventoryScreen;
+        [SerializeField] private InventoryController inventoryController;
 
         // The prefab granted for each item kind bought in the shop.
         [SerializeField] private StartingItem[] startingItems;
@@ -42,7 +42,7 @@ namespace Spawners
             actor.Init(world);
             world.BindPlayer(actor); // so other sim participants (e.g. guards) can find the player
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
-            if (inventoryScreen) inventoryScreen.Bind(_player.GetComponent<PlayerInventory>());
+            if (inventoryController) inventoryController.Bind(_player.GetComponent<PlayerInventory>());
 
             ApplyLoadout(world);
         }

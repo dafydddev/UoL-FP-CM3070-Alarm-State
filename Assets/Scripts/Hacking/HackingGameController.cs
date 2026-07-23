@@ -12,8 +12,7 @@ namespace Hacking
 {
     // The pipe hacking screen. Opens when the player uses an objective.
     // The objective completes once the pipes are rotated into a circuit from the feed to the outlet.
-    // The puzzle itself is pure state (PipeBoard); this drives the surrounding UI.
-    public class HackingMinigame : MonoBehaviour
+    public class HackingGameController : MonoBehaviour
     {
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
@@ -80,9 +79,6 @@ namespace Hacking
             if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
 
-        // The shared actions are polled rather than subscribed:
-        // the pause menu's handler fires off the event first and sees the lock we hold,
-        // so a press of the pause key closes the hack without also opening the pause menu.
         private void Update()
         {
             if (!_hacking || _surging) return;
@@ -96,7 +92,6 @@ namespace Hacking
 
         // Called by the facility orchestrator on every time a level is generated.
         // Boards scale with the run's difficulty profile and level.
-        // A rebuild invalidates any hack still open, so that closes (and releases its lock) first.
         public void Prepare(RunContext run)
         {
             _run = run;
@@ -128,8 +123,8 @@ namespace Hacking
             Select(_board.StartCell);
         }
 
-        // Rebuilds the grid of tile buttons for the current board,
-        // with the cell size recomputed so any board dimensions fill the same panel space.
+        // Rebuilds the grid of tile buttons for the board.
+        // The cell size, recomputed so any board dimensions fill the same panel space.
         private void BuildBoardUi()
         {
             var root = (RectTransform)boardLayout.transform;
@@ -195,7 +190,6 @@ namespace Hacking
         }
 
         // Rotates the clicked tile and re-validates the circuit.
-        // The win check runs on the board state, never on what's drawn.
         private void OnTileClicked(PipeTileButton button)
         {
             if (_surging) return;
@@ -205,8 +199,7 @@ namespace Hacking
             if (_board.TryTraceCircuit(out var path)) StartCoroutine(ActivateCircuit(path));
         }
 
-        // The electrical surge running the completed circuit:
-        // tiles light up one by one from the feed, and the hack completes once the charge reaches the outlet.
+        // The electrical surge running the completed circuit. Tiles light up one by one from the feed.
         private IEnumerator ActivateCircuit(List<Vector2Int> path)
         {
             _surging = true;
@@ -221,7 +214,7 @@ namespace Hacking
             Close();
         }
 
-        // Backing out leaves the objective unhacked; using it again reopens the same puzzle.
+        // Backing out leaves the process incomplete. Using the objective again reopens the same puzzle.
         private void Close()
         {
             if (!_hacking) return; // several paths can fire on one frame, and the shared backdrop calls this for both screens
