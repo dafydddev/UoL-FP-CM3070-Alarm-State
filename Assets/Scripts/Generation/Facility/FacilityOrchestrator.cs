@@ -1,5 +1,4 @@
-﻿using Camera;
-using Generation.Terrain;
+﻿using Generation.Terrain;
 using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
@@ -19,18 +18,22 @@ namespace Generation.Facility
     [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
-        [Header("Tile Map")]
+        [Header("Tiles")]
         [SerializeField] private Tilemap tilemap;
+        [SerializeField] private Tileset tileset;
 
         [Header("Simulation")]
         [SerializeField] private Scheduler scheduler;
         [SerializeField] private SimulationClock clock;
 
-        [Header("Subsystems")]
+        [Header("Run")]
         [SerializeField] private RunDifficulty profile;
+        
+        [Header("UI")]
         [SerializeField] private MinimapHud minimap;
+        
+        [Header("Hacking Game Controller")]
         [SerializeField] private HackingGameController hackingGameController;
-        [SerializeField] private Tileset tileset;
 
         [Header("Spawners")]
         [SerializeField] private PlayerSpawner playerSpawner;
