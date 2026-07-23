@@ -26,11 +26,6 @@ namespace Run
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
         [SerializeField] private ScreenWipeEffect wipeEffect;
 
-        [Header("Rewards")]
-        [SerializeField, Min(0)] private int primaryObjectiveReward = 100;
-        [SerializeField, Min(0)] private int secondaryObjectiveReward = 50;
-        [SerializeField, Min(0)] private int levelClearedReward = 25;
-
         private FacilityOrchestrator _facility;
 
         private RunContext _run;
@@ -84,15 +79,15 @@ namespace Run
         }
 
         // Completing an objective adds its reward to the run's pending total.
-        private void OnPrimaryCompleted() => _run.Award(primaryObjectiveReward);
+        private void OnPrimaryCompleted() => _run.Award(_run.Profile.primaryObjectiveReward);
 
-        private void OnSecondaryCompleted() => _run.Award(secondaryObjectiveReward);
+        private void OnSecondaryCompleted() => _run.Award(_run.Profile.secondaryObjectiveReward);
 
         private void NextLevel()
         {
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run);
-            _run.Award(levelClearedReward);
+            _run.Award(_run.Profile.levelClearedReward);
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
             {
