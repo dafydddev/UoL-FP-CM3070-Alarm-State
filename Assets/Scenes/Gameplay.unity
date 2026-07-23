@@ -393,6 +393,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77247973}
   m_CullTransparentMesh: 1
+--- !u!1 &82604021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 82604023}
+  - component: {fileID: 82604022}
+  m_Layer: 0
+  m_Name: Results Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &82604022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82604021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b435079f340abe45b7fa1de095c6bae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUD.ResultsScreen
+  panel: {fileID: 0}
+  titleLabel: {fileID: 0}
+  primaryAmount: {fileID: 0}
+  secondaryAmount: {fileID: 0}
+  levelAmount: {fileID: 0}
+  totalLabel: {fileID: 0}
+  balanceLabel: {fileID: 0}
+  continueButton: {fileID: 0}
+  wipeEffect: {fileID: 331585042}
+  rowStep: 0.35
+  countDuration: 0.6
+--- !u!4 &82604023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82604021}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &122706073
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,7 +684,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Spawners.PlayerSpawner
   playerPrefab: {fileID: 5505076589466554815, guid: 89924503c0e28ec43a8c77dc4a466172, type: 3}
   cameraFollow: {fileID: 1249475571}
-  inventoryScreen: {fileID: 1421318875}
+  inventoryController: {fileID: 0}
   startingItems:
   - kind: 1
     prefab: {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
@@ -3064,7 +3119,7 @@ GameObject:
   - component: {fileID: 957134665}
   - component: {fileID: 957134664}
   m_Layer: 0
-  m_Name: Hacking Mini Game
+  m_Name: Hacking Game Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4590,7 +4645,7 @@ GameObject:
   - component: {fileID: 1421318876}
   - component: {fileID: 1421318875}
   m_Layer: 0
-  m_Name: Inventory System
+  m_Name: Inventory Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5912,7 +5967,7 @@ MonoBehaviour:
   clock: {fileID: 1125184272}
   profile: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   minimap: {fileID: 1578414557}
-  hackingMinigame: {fileID: 957134664}
+  hackingGameController: {fileID: 0}
   tileset: {fileID: 11400000, guid: 95372241cf7acf242b502fdd6a703f62, type: 2}
   playerSpawner: {fileID: 150073135}
   keycardSpawner: {fileID: 763302045}
@@ -5958,9 +6013,6 @@ MonoBehaviour:
   default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0
   wipeEffect: {fileID: 331585042}
-  primaryObjectiveReward: 100
-  secondaryObjectiveReward: 50
-  levelClearedReward: 25
 --- !u!114 &1820973510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6740,6 +6792,7 @@ SceneRoots:
   - {fileID: 1125184275}
   - {fileID: 957134665}
   - {fileID: 1421318876}
+  - {fileID: 82604023}
   - {fileID: 1953602492}
   - {fileID: 331585043}
   - {fileID: 951844361}

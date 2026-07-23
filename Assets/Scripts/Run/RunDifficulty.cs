@@ -8,6 +8,9 @@ namespace Run
     public class RunDifficulty : ScriptableObject
     {
         public string label;
+        public int primaryObjectiveReward = 100;
+        public int secondaryObjectiveReward = 50;
+        public int levelClearedReward = 25;
 
         [Serializable]
         public class Range
