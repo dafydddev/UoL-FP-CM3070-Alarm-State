@@ -145,13 +145,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3994899}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 457034683}
-  m_Father: {fileID: 129751869}
+  m_Father: {fileID: 1953602492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -393,61 +393,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77247973}
   m_CullTransparentMesh: 1
---- !u!1 &82604021
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 82604023}
-  - component: {fileID: 82604022}
-  m_Layer: 0
-  m_Name: Results Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &82604022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 82604021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b435079f340abe45b7fa1de095c6bae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HUD.ResultsScreen
-  panel: {fileID: 0}
-  titleLabel: {fileID: 0}
-  primaryAmount: {fileID: 0}
-  secondaryAmount: {fileID: 0}
-  levelAmount: {fileID: 0}
-  totalLabel: {fileID: 0}
-  balanceLabel: {fileID: 0}
-  continueButton: {fileID: 0}
-  wipeEffect: {fileID: 331585042}
-  rowStep: 0.35
-  countDuration: 0.6
---- !u!4 &82604023
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 82604021}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &122706073
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,42 +428,6 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 37.5, y: -75}
   m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &129751868
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 129751869}
-  m_Layer: 5
-  m_Name: Backdrop Panel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &129751869
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 129751868}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3994900}
-  m_Father: {fileID: 1953602492}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &147464652
 GameObject:
@@ -684,7 +593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Spawners.PlayerSpawner
   playerPrefab: {fileID: 5505076589466554815, guid: 89924503c0e28ec43a8c77dc4a466172, type: 3}
   cameraFollow: {fileID: 1249475571}
-  inventoryController: {fileID: 0}
+  inventoryController: {fileID: 1421318875}
   startingItems:
   - kind: 1
     prefab: {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
@@ -847,7 +756,7 @@ GameObject:
   - component: {fileID: 171902248}
   - component: {fileID: 171902247}
   m_Layer: 5
-  m_Name: Start Icon
+  m_Name: Start Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1485,7 +1394,7 @@ GameObject:
   - component: {fileID: 491213819}
   - component: {fileID: 491213818}
   m_Layer: 5
-  m_Name: End Icon
+  m_Name: End Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1616,7 +1525,7 @@ GameObject:
   - component: {fileID: 574132818}
   - component: {fileID: 574132817}
   m_Layer: 5
-  m_Name: Background Panel
+  m_Name: Pause Background Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3148,7 +3057,9 @@ MonoBehaviour:
   useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   pauseAction: {fileID: 5469640936615731471, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   startMarker: {fileID: 1785123013}
+  startMarkerImage: {fileID: 171902247}
   endMarker: {fileID: 1967853444}
+  endMarkerImage: {fileID: 491213818}
   capSprite: {fileID: 7172373188040678598, guid: 10154e07b2dff2d47a47af70f9d21b8e, type: 3}
   straightSprite: {fileID: 1517830111482430163, guid: 10154e07b2dff2d47a47af70f9d21b8e, type: 3}
   elbowSprite: {fileID: 5956340517020379213, guid: 10154e07b2dff2d47a47af70f9d21b8e, type: 3}
@@ -3908,7 +3819,7 @@ GameObject:
   - component: {fileID: 1160085583}
   - component: {fileID: 1160085582}
   m_Layer: 5
-  m_Name: Background Panel
+  m_Name: Are You Sure Background Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5963,12 +5874,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Layout.FacilityOrchestrator
   tilemap: {fileID: 1361007047}
+  tileset: {fileID: 11400000, guid: 95372241cf7acf242b502fdd6a703f62, type: 2}
   scheduler: {fileID: 1125184273}
   clock: {fileID: 1125184272}
   profile: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   minimap: {fileID: 1578414557}
-  hackingGameController: {fileID: 0}
-  tileset: {fileID: 11400000, guid: 95372241cf7acf242b502fdd6a703f62, type: 2}
+  hackingGameController: {fileID: 957134664}
   playerSpawner: {fileID: 150073135}
   keycardSpawner: {fileID: 763302045}
   lockedDoorSpawner: {fileID: 59819771}
@@ -6008,8 +5919,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e62f1af35cc6c4345b87e968abbce624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.LevelController
-  defaultStartLevel: 20
-  defaultTotalLevels: 20
+  startLevel: 1
+  totalLevels: 10
   default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
   defaultLayoutStyle: 0
   wipeEffect: {fileID: 331585042}
@@ -6269,11 +6180,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 129751869}
   - {fileID: 650013029}
   - {fileID: 955917976}
   - {fileID: 758010713}
   - {fileID: 2048129852}
+  - {fileID: 3994900}
   - {fileID: 1054716611}
   - {fileID: 2076727773}
   m_Father: {fileID: 0}
@@ -6792,7 +6703,6 @@ SceneRoots:
   - {fileID: 1125184275}
   - {fileID: 957134665}
   - {fileID: 1421318876}
-  - {fileID: 82604023}
   - {fileID: 1953602492}
   - {fileID: 331585043}
   - {fileID: 951844361}
