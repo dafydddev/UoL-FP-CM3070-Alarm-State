@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: monochrome_packed_0
+      name: monochrome_empty
       rect:
         serializedVersion: 2
         x: 0
@@ -17801,7 +17801,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_804
+      name: monochrome_card_1
       rect:
         serializedVersion: 2
         x: 320
@@ -17823,7 +17823,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_805
+      name: monochrome_card_2
       rect:
         serializedVersion: 2
         x: 336
@@ -17845,7 +17845,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_806
+      name: monochrome_card_3
       rect:
         serializedVersion: 2
         x: 352
@@ -22289,7 +22289,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_1008
+      name: monochrome_unfilled_arrow_up
       rect:
         serializedVersion: 2
         x: 448
@@ -22311,7 +22311,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_1009
+      name: monochrome_unfilled_arrow_right
       rect:
         serializedVersion: 2
         x: 464
@@ -22333,7 +22333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_1010
+      name: monochrome_unfilled_arrow_down
       rect:
         serializedVersion: 2
         x: 480
@@ -22355,7 +22355,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: monochrome_packed_1011
+      name: monochrome_unfilled_arrow_left
       rect:
         serializedVersion: 2
         x: 496
@@ -23844,7 +23844,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      monochrome_packed_0: -2277038684353269545
+      monochrome_card_1: 1623889549
+      monochrome_card_2: 35463970
+      monochrome_card_3: 1465379211
+      monochrome_empty: -2277038684353269545
       monochrome_packed_1: 1008865964
       monochrome_packed_10: 195988980
       monochrome_packed_100: -267341224
@@ -23856,11 +23859,7 @@ TextureImporter:
       monochrome_packed_1005: 1934024395
       monochrome_packed_1006: 106215338
       monochrome_packed_1007: -853208793
-      monochrome_packed_1008: -935679447
-      monochrome_packed_1009: 831199009
       monochrome_packed_101: 1092098854
-      monochrome_packed_1010: -1256968192
-      monochrome_packed_1011: -939528338
       monochrome_packed_1012: 1111522154
       monochrome_packed_1013: 1622524658
       monochrome_packed_1014: 1152346817
@@ -24706,9 +24705,6 @@ TextureImporter:
       monochrome_packed_801: 1267973757
       monochrome_packed_802: 632228472
       monochrome_packed_803: 1184725913
-      monochrome_packed_804: 1623889549
-      monochrome_packed_805: 35463970
-      monochrome_packed_806: 1465379211
       monochrome_packed_807: -1331583407
       monochrome_packed_808: 1847862701
       monochrome_packed_809: 1862230843
@@ -24922,6 +24918,10 @@ TextureImporter:
       monochrome_packed_997: -1973556697
       monochrome_packed_998: 935027254
       monochrome_packed_999: -613444472
+      monochrome_unfilled_arrow_down: -1256968192
+      monochrome_unfilled_arrow_left: -939528338
+      monochrome_unfilled_arrow_right: 831199009
+      monochrome_unfilled_arrow_up: -935679447
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
