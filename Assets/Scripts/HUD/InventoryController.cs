@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace HUD
 {
     // The inventory screen: a panel with one slot per item kind.
-    public class InventoryScreen : MonoBehaviour
+    public class InventoryController : MonoBehaviour
     {
         // One kind's slot: the kind it stands for and the authored image tinted for it.
         [Serializable]
