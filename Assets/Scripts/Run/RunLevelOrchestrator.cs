@@ -20,8 +20,8 @@ namespace Run
     public class RunLevelOrchestrator : MonoBehaviour
     {
         [Header("Run Options")]
-        [SerializeField, Min(1)] private int defaultStartLevel = 1;
-        [SerializeField, Min(1)] private int defaultTotalLevels = 10;
+        [SerializeField, Min(1)] private int startLevel = 1;
+        [SerializeField, Min(1)] private int totalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
         [SerializeField] private ScreenWipeEffect wipeEffect;
@@ -35,7 +35,7 @@ namespace Run
         private void Start()
         {
             GameLock.Clear();
-            _run = RunContext.Pending ?? new RunContext(@default, defaultStartLevel, defaultTotalLevels, defaultLayoutStyle);
+            _run = RunContext.Pending ?? new RunContext(@default, startLevel, totalLevels, defaultLayoutStyle);
             RunContext.Pending = null;
             OpenLoadout();
             StartCoroutine(BuildLevel());
