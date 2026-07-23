@@ -29,7 +29,7 @@ namespace Generation.Facility
         [Header("Subsystems")]
         [SerializeField] private RunDifficulty profile;
         [SerializeField] private MinimapHud minimap;
-        [SerializeField] private HackingMinigame hackingMinigame;
+        [SerializeField] private HackingGameController hackingGameController;
         [SerializeField] private Tileset tileset;
 
         [Header("Spawners")]
@@ -120,7 +120,7 @@ namespace Generation.Facility
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
 
             // Hand the hacking screen the run state, so its boards scale with the level.
-            hackingMinigame?.Prepare(run);
+            hackingGameController?.Prepare(run);
             // Scale the mini-map for the generated level.
             minimap?.Fit();
         }
