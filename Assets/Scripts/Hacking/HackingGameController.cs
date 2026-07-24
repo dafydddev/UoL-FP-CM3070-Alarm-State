@@ -116,6 +116,9 @@ namespace Hacking
             var decoys = profile.HackingDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
             var scramble = profile.HackingScrambleChance(_run.CurrentLevel, _run.TotalLevels, rng);
             _board = PipePuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
+            
+            startMarkerImage.color = pipeColour;
+            endMarkerImage.color = pipeColour;
 
             panel.SetActive(true);
             if (backdrop) backdrop.gameObject.SetActive(true);
