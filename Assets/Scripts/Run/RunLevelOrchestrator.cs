@@ -5,6 +5,7 @@ using Entities;
 using Entities.Objectives;
 using Generation.Facility;
 using Generation.Tiles;
+using Menu;
 using Player;
 using Settings;
 using Simulation;
@@ -25,6 +26,7 @@ namespace Run
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
         [SerializeField] private ScreenWipeEffect wipeEffect;
+        [SerializeField] private ResultsController resultsController;
 
         private FacilityOrchestrator _facility;
 
@@ -62,6 +64,7 @@ namespace Run
             PlayerHealth.OnHealthChanged += OnHealthChanged;
             AlarmState.ActiveChanged += OnAlarmChanged;
             SecondaryObjective.Completed += OnSecondaryCompleted;
+            PauseMenu.Quit += OnQuit;
         }
 
         private void OnDisable()
@@ -70,6 +73,7 @@ namespace Run
             PlayerHealth.OnHealthChanged -= OnHealthChanged;
             AlarmState.ActiveChanged -= OnAlarmChanged;
             SecondaryObjective.Completed -= OnSecondaryCompleted;
+            PauseMenu.Quit -= OnQuit;
         }
 
         // Records each raise against the current run (the off and per-level reset edges carry no data).
@@ -79,15 +83,15 @@ namespace Run
         }
 
         // Completing an objective adds its reward to the run's pending total.
-        private void OnPrimaryCompleted() => _run.Award(_run.Profile.primaryObjectiveReward);
+        private void OnPrimaryCompleted() => _run.AwardPrimaryObjective(_run.Profile.primaryObjectiveReward);
 
-        private void OnSecondaryCompleted() => _run.Award(_run.Profile.secondaryObjectiveReward);
+        private void OnSecondaryCompleted() => _run.AwardSecondaryObjective(_run.Profile.secondaryObjectiveReward);
 
         private void NextLevel()
         {
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run);
-            _run.Award(_run.Profile.levelClearedReward);
+            _run.AwardLevelCleared(_run.Profile.levelClearedReward);
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
             {
@@ -96,8 +100,11 @@ namespace Run
             }
 
             CarryOver();
-            StartCoroutine(BuildLevel());
+            StartCoroutine(AdvanceLevel());
         }
+
+        // Quitting from the pause menu abandons the run the same as a death does.
+        private void OnQuit() => StartCoroutine(EndRun());
 
         // Carries the cleared level's player into the next one: the hearts they survived on and their inventory
         // Read before BuildLevel tears the level down and spawns their replacement.
@@ -125,17 +132,14 @@ namespace Run
             if (current == 0) StartCoroutine(EndRun());
         }
 
-        // Freeze the sim, wipe to black, rebuild, reveal, then release our hold.
+        // The first level: freeze the sim, wipe to black, build behind it, reveal, then release our hold.
         private IEnumerator BuildLevel()
         {
             GameLock.Acquire();
             try
             {
                 if (wipeEffect) yield return wipeEffect.Close();
-                FacilityOrchestrator.Generate(_run);
-                // The mission is rebuilt with each level; award this level's primary completion.
-                FacilityOrchestrator.World.Mission.PrimaryCompleted += OnPrimaryCompleted;
-                Telemetry.LevelStarted(_run);
+                GenerateLevel();
                 if (wipeEffect) yield return wipeEffect.Open();
             }
             finally
@@ -144,24 +148,75 @@ namespace Run
             }
         }
 
-        // The cleared run: the same exit as a failed one, so the hold and wipe behave identically.
-        // It banks the run's pending currency here, where a failed run discards it.
+        // Each later level: wipe down, reveal the cleared level's tally, then build the next behind the black.
+        private IEnumerator AdvanceLevel()
+        {
+            GameLock.Acquire();
+            try
+            {
+                if (wipeEffect) yield return wipeEffect.Close();
+                if (resultsController)
+                {
+                    resultsController.Show(_run, "Level Complete");
+                    if (wipeEffect) yield return wipeEffect.Open();
+                    yield return resultsController.RunTally(_run);
+                    if (wipeEffect) yield return wipeEffect.Close();
+                    resultsController.Hide();
+                }
+
+                GenerateLevel();
+                if (wipeEffect) yield return wipeEffect.Open();
+            }
+            finally
+            {
+                GameLock.Release();
+            }
+        }
+
+        // Builds the level for the current run state and re-arms this level's primary-objective award.
+        private void GenerateLevel()
+        {
+            FacilityOrchestrator.Generate(_run);
+            FacilityOrchestrator.World.Mission.PrimaryCompleted += OnPrimaryCompleted;
+            Telemetry.LevelStarted(_run);
+        }
+
+        // The cleared run: the results show the takings climbing onto the balance, which is then banked.
         private IEnumerator CompleteRun()
         {
             Telemetry.RunCompleted(_run);
-            CurrencySettings.Balance += _run.PendingCurrency;
-            CurrencySettings.Save();
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
+            if (resultsController)
+            {
+                resultsController.Show(_run, "Run Complete");
+                if (wipeEffect) yield return wipeEffect.Open();
+                yield return resultsController.RunBanked(_run);
+                if (wipeEffect) yield return wipeEffect.Close();
+                resultsController.Hide();
+            }
+
+            CurrencySettings.Balance += _run.PendingCurrency;
+            CurrencySettings.Save();
             SceneManager.LoadScene("Main Menu");
         }
 
-        // The failed run: freeze the sim, wipe to black, then hand back to the menu.
+        // The lost run, whether the last heart went or the player quit: the results forfeit the tally,
+        // then it hands back to the menu with the balance untouched.
         private IEnumerator EndRun()
         {
             Telemetry.LevelFailed(_run);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
+            if (resultsController)
+            {
+                resultsController.Show(_run, "Run Failed");
+                if (wipeEffect) yield return wipeEffect.Open();
+                yield return resultsController.RunForfeit(_run);
+                if (wipeEffect) yield return wipeEffect.Close();
+                resultsController.Hide();
+            }
+
             SceneManager.LoadScene("Main Menu");
         }
     }
