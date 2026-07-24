@@ -1,4 +1,4 @@
-﻿using Generation.Tiles;
+using Generation.Tiles;
 
 namespace Run
 {
@@ -13,9 +13,13 @@ namespace Run
         public int CurrentLevel { get; private set; }
         public int TotalLevels { get; }
 
-        // Currency earned this run but not yet banked.
-        // It rides along with the run across levels and is lost with it, unless the run is completed.
-        public int PendingCurrency { get; private set; }
+        // What each source has paid the run so far, kept apart so the results screen can break the takings down.
+        public int LevelClearedEarnings { get; private set; }
+        public int PrimaryObjectiveEarnings { get; private set; }
+        public int SecondaryObjectiveEarnings { get; private set; }
+
+        // The whole pending purse: it rides along across levels and is lost with the run, unless the run is completed.
+        public int PendingCurrency => LevelClearedEarnings + PrimaryObjectiveEarnings + SecondaryObjectiveEarnings;
 
         private bool IsComplete => CurrentLevel >= TotalLevels;
 
@@ -35,7 +39,10 @@ namespace Run
             return true;
         }
 
-        // Adds to the pending total for a completed objective or a cleared level.
-        public void Award(int amount) => PendingCurrency += amount;
+        public void AwardLevelCleared(int amount) => LevelClearedEarnings += amount;
+
+        public void AwardPrimaryObjective(int amount) => PrimaryObjectiveEarnings += amount;
+
+        public void AwardSecondaryObjective(int amount) => SecondaryObjectiveEarnings += amount;
     }
 }
