@@ -1,13 +1,16 @@
+using System;
 using Simulation;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Menu
 {
     public class PauseMenu : MenuPanelController
     {
+        // Raised when the player quits the run from the pause menu, so it can end through the results screen.
+        public static event Action Quit;
+
         [Header("Pause Action")]
         [SerializeField] private InputActionReference pauseAction;
 
@@ -24,7 +27,7 @@ namespace Menu
             pauseAction.action.Enable();
             pauseButton.onClick.AddListener(OnPausePressed);
             resumeButton.onClick.AddListener(OnPausePressed);
-            mainMenuButton.onClick.AddListener(MainMenu);
+            mainMenuButton.onClick.AddListener(QuitToMenu);
         }
 
         private void OnDisable()
@@ -33,7 +36,7 @@ namespace Menu
             pauseAction.action.Disable();
             pauseButton.onClick.RemoveListener(OnPausePressed);
             resumeButton.onClick.RemoveListener(OnPausePressed);
-            mainMenuButton.onClick.RemoveListener(MainMenu);
+            mainMenuButton.onClick.RemoveListener(QuitToMenu);
         }
 
         private void OnPausePressed(InputAction.CallbackContext context) => OnPausePressed();
@@ -68,9 +71,12 @@ namespace Menu
             pauseButton.gameObject.SetActive(true);
         }
 
-        private static void MainMenu()
+        // Hands the quit to the run orchestrator, which wipes to the results screen before the menu.
+        // Our panel closes first so it doesn't sit over the results.
+        private void QuitToMenu()
         {
-            SceneManager.LoadScene("Main Menu");
+            HideAllMenuPanels();
+            Quit?.Invoke();
         }
     }
 }
