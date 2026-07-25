@@ -117,7 +117,7 @@ MonoBehaviour:
   leftAction: {fileID: -651965338403404756, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   rightAction: {fileID: 7534374900712896568, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   moveToAction: {fileID: -7337193881872488525, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  pointAction: {fileID: 1308948322186195691, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  pointAction: {fileID: -1654692200621890270, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   repeatDelay: 0.2
   routePreview: {fileID: 4208098087324233613}
