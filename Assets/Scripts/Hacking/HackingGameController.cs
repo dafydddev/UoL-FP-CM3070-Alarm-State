@@ -136,7 +136,7 @@ namespace Hacking
             for (var i = root.childCount - 1; i >= 0; i--)
             {
                 var child = root.GetChild(i);
-                if (child == startMarker || child == endMarker) continue; // the markers live here too
+                if (child == startMarker || child == endMarker) continue;
                 Destroy(child.gameObject);
             }
 
@@ -147,7 +147,7 @@ namespace Hacking
 
             // The layout group fills left to right from the top, so walk rows from the top down.
             _buttons = new PipeTileButton[_board.Width, _board.Height];
-            _selected = _board.StartCell; // never leave the selection pointing at the previous board
+            _selected = _board.StartCell;
             for (var y = _board.Height - 1; y >= 0; y--)
             for (var x = 0; x < _board.Width; x++)
             {
@@ -156,7 +156,7 @@ namespace Hacking
                 button.Bind(tile, SpriteFor(tile.Type), pipeColour);
                 // The move keys drive the selection, so uGUI's own navigation would double-step it.
                 button.Button.navigation = new UnityEngine.UI.Navigation { mode = UnityEngine.UI.Navigation.Mode.None };
-                button.Button.onClick.AddListener(() => OnTileClicked(button));
+                button.SetController(this);
                 _buttons[x, y] = button;
             }
 
@@ -195,7 +195,7 @@ namespace Hacking
         }
 
         // Rotates the clicked tile and re-validates the circuit.
-        private void OnTileClicked(PipeTileButton button)
+        public void OnTileClicked(PipeTileButton button)
         {
             if (_surging) return;
             Select(button.Tile.Cell); // a mouse click also moves the selection
