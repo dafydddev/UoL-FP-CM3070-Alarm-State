@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Navigation;
+using Pathfinding;
 using UnityEngine;
 
 namespace Simulation

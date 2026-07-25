@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-// Avoids clash with custom Navigation namespace.
-using UINavigation = UnityEngine.UI.Navigation;
 
 namespace Menu
 {
@@ -38,8 +36,7 @@ namespace Menu
 
                 // Switch to Explicit
                 var nav = current.navigation;
-                nav.mode = UINavigation.Mode.Explicit;
-
+                nav.mode = Navigation.Mode.Explicit;
                 nav.selectOnUp = previous;
                 nav.selectOnLeft = previous;
                 nav.selectOnDown = next;

@@ -4,7 +4,7 @@ using Simulation;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Navigation
+namespace Pathfinding
 {
     // Owns the pathfinder and translates between tile-space (what A* works in) and world-space (what agents move in).
     // The Tilemap is the single source of truth for that conversion, matching every spawner in the project.

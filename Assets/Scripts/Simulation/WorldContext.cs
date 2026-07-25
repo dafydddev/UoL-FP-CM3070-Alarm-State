@@ -1,5 +1,5 @@
 using Generation.Facility;
-using Navigation;
+using Pathfinding;
 using UnityEngine.Tilemaps;
 
 namespace Simulation
