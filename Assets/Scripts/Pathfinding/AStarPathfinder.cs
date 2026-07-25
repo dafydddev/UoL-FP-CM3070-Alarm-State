@@ -4,7 +4,7 @@ using System.Linq;
 using Simulation;
 using UnityEngine;
 
-namespace Navigation
+namespace Pathfinding
 {
     // A* over the world's entry rules:
     // A cell is walkable exactly when the mover could step into it (terrain walkable, no blocking occupant),

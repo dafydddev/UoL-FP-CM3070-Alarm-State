@@ -2,7 +2,7 @@ using Generation.Facility;
 using Simulation;
 using UnityEngine;
 
-namespace Navigation
+namespace Pathfinding
 {
     // Editor gizmo helper: visualises the navigation grid and a test path between two transforms.
     public class NavigationDebugDrawer : MonoBehaviour

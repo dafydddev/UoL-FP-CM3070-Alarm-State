@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Entities.Items;
 using Guards.Actions;
 using Guards.Goap;
-using Navigation;
+using Pathfinding;
 using Simulation;
 using UnityEngine;
 
