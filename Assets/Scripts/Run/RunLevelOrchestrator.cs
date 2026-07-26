@@ -91,7 +91,6 @@ namespace Run
         {
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run);
-            _run.AwardLevelCleared(_run.Profile.levelClearedReward);
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
             {
@@ -157,7 +156,7 @@ namespace Run
                 if (wipeEffect) yield return wipeEffect.Close();
                 if (resultsController)
                 {
-                    resultsController.Show(_run, "Level Complete");
+                    resultsController.Show(_run, "Level Complete", ResultsScreen.LevelComplete);
                     if (wipeEffect) yield return wipeEffect.Open();
                     yield return resultsController.RunTally(_run);
                     if (wipeEffect) yield return wipeEffect.Close();
@@ -181,15 +180,16 @@ namespace Run
             Telemetry.LevelStarted(_run);
         }
 
-        // The cleared run: the results show the takings climbing onto the balance, which is then banked.
+        // The cleared run: the completion bonus lands, then the results show the takings climbing onto the balance.
         private IEnumerator CompleteRun()
         {
             Telemetry.RunCompleted(_run);
+            _run.AwardRunCompleted(_run.Profile.runCompletedReward);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)
             {
-                resultsController.Show(_run, "Run Complete");
+                resultsController.Show(_run, "Run Complete", ResultsScreen.RunComplete);
                 if (wipeEffect) yield return wipeEffect.Open();
                 yield return resultsController.RunBanked(_run);
                 if (wipeEffect) yield return wipeEffect.Close();
@@ -210,7 +210,7 @@ namespace Run
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)
             {
-                resultsController.Show(_run, "Run Failed");
+                resultsController.Show(_run, "Run Failed", ResultsScreen.RunFailed);
                 if (wipeEffect) yield return wipeEffect.Open();
                 yield return resultsController.RunForfeit(_run);
                 if (wipeEffect) yield return wipeEffect.Close();
