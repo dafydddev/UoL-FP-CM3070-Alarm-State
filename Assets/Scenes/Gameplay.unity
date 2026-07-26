@@ -4676,7 +4676,7 @@ GameObject:
   - component: {fileID: 1140210701}
   - component: {fileID: 1140210702}
   m_Layer: 5
-  m_Name: Level Container
+  m_Name: Run Complete Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5217,12 +5217,16 @@ MonoBehaviour:
   resultsMenu: {fileID: 759580807}
   continueButton: {fileID: 1288086458}
   headingLabel: {fileID: 715595386}
-  levelClearedLabel: {fileID: 1892111246}
+  primaryObjectiveRow: {fileID: 1257789317}
   primaryObjectiveLabel: {fileID: 1324156764}
+  secondaryObjectiveRow: {fileID: 578603855}
   secondaryObjectiveLabel: {fileID: 1878723204}
+  runCompleteRow: {fileID: 1140210700}
+  runCompleteLabel: {fileID: 1892111246}
   totalLabel: {fileID: 2005582513}
+  balanceRow: {fileID: 1741015853}
   balanceLabel: {fileID: 27963277}
-  countSeconds: 3
+  countSeconds: 2
 --- !u!1 &1281610490
 GameObject:
   m_ObjectHideFlags: 0
@@ -5929,7 +5933,7 @@ GameObject:
   - component: {fileID: 1377243207}
   - component: {fileID: 1377243206}
   m_Layer: 5
-  m_Name: Level Points Label
+  m_Name: Run Complete Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5974,7 +5978,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Level Cleared Points
+  m_text: Run Complete Bonus
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b551f29ee7c537246a36f32be9f8a550, type: 2}
   m_sharedMaterial: {fileID: -3805138745680541200, guid: b551f29ee7c537246a36f32be9f8a550, type: 2}
@@ -7958,7 +7962,7 @@ GameObject:
   - component: {fileID: 1892111247}
   - component: {fileID: 1892111246}
   m_Layer: 5
-  m_Name: Level Points Text
+  m_Name: Run Complete Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
