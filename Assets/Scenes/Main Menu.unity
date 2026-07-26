@@ -2872,6 +2872,7 @@ GameObject:
   - component: {fileID: 291814698}
   - component: {fileID: 291814697}
   - component: {fileID: 291814696}
+  - component: {fileID: 291814699}
   m_Layer: 5
   m_Name: 'Heart Button '
   m_TagString: Untagged
@@ -2981,6 +2982,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 291814694}
   m_CullTransparentMesh: 1
+--- !u!114 &291814699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291814694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a64f63c94a0d44a985377c2d800d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.SelectOnHover
 --- !u!1 &307813799
 GameObject:
   m_ObjectHideFlags: 0
@@ -5750,6 +5763,7 @@ GameObject:
   - component: {fileID: 711154054}
   - component: {fileID: 711154053}
   - component: {fileID: 711154052}
+  - component: {fileID: 711154055}
   m_Layer: 5
   m_Name: Lock Pick Button
   m_TagString: Untagged
@@ -5859,6 +5873,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 711154050}
   m_CullTransparentMesh: 1
+--- !u!114 &711154055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711154050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a64f63c94a0d44a985377c2d800d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.SelectOnHover
 --- !u!1 &727171080
 GameObject:
   m_ObjectHideFlags: 0
@@ -14668,6 +14694,7 @@ GameObject:
   - component: {fileID: 1794070092}
   - component: {fileID: 1794070091}
   - component: {fileID: 1794070090}
+  - component: {fileID: 1794070093}
   m_Layer: 5
   m_Name: Disguise Button
   m_TagString: Untagged
@@ -14777,6 +14804,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1794070088}
   m_CullTransparentMesh: 1
+--- !u!114 &1794070093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794070088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a64f63c94a0d44a985377c2d800d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.SelectOnHover
 --- !u!1 &1813531622
 GameObject:
   m_ObjectHideFlags: 0
