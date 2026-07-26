@@ -14,12 +14,12 @@ namespace Run
         public int TotalLevels { get; }
 
         // What each source has paid the run so far, kept apart so the results screen can break the takings down.
-        public int LevelClearedEarnings { get; private set; }
         public int PrimaryObjectiveEarnings { get; private set; }
         public int SecondaryObjectiveEarnings { get; private set; }
+        public int RunCompletedEarnings { get; private set; }
 
         // The whole pending purse: it rides along across levels and is lost with the run, unless the run is completed.
-        public int PendingCurrency => LevelClearedEarnings + PrimaryObjectiveEarnings + SecondaryObjectiveEarnings;
+        public int PendingCurrency => PrimaryObjectiveEarnings + SecondaryObjectiveEarnings + RunCompletedEarnings;
 
         private bool IsComplete => CurrentLevel >= TotalLevels;
 
@@ -39,10 +39,10 @@ namespace Run
             return true;
         }
 
-        public void AwardLevelCleared(int amount) => LevelClearedEarnings += amount;
-
         public void AwardPrimaryObjective(int amount) => PrimaryObjectiveEarnings += amount;
 
         public void AwardSecondaryObjective(int amount) => SecondaryObjectiveEarnings += amount;
+
+        public void AwardRunCompleted(int amount) => RunCompletedEarnings += amount;
     }
 }

@@ -10,7 +10,7 @@ namespace Run
         public string label;
         public int primaryObjectiveReward = 100;
         public int secondaryObjectiveReward = 50;
-        public int levelClearedReward = 25;
+        public int runCompletedReward = 250; // paid once, for seeing the run through to the last level
 
         [Serializable]
         public class Range
