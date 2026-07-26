@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Entities
 {
-    // A level exit. Fires Reached when the player steps onto it.
-    public class Exit : MonoBehaviour, IEnterHandler
+    // A level exit. Fires Reached when the player uses it.
+    public class Exit : MonoBehaviour, IUseHandler
     {
         public static event Action Reached;
 
@@ -22,12 +22,13 @@ namespace Entities
             world.Occupancy.Place(_cell, gameObject);
         }
 
-        public void OnEntered(Actor mover)
+        public bool OnUsed(Actor user)
         {
-            if (mover is not PlayerActor) return;
-            // The exit stays locked until the primary objective is completed.
-            if (!_world.Mission.PrimaryComplete) return;
+            if (user is not PlayerActor) return false;
+            // The exit stays locked until the primary objective is completed, and seals while the alarm sounds.
+            if (!_world.Mission.PrimaryComplete || _world.Alarm.Active) return false;
             Reached?.Invoke();
+            return true;
         }
 
         private void OnDestroy()
