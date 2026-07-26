@@ -10,15 +10,23 @@ namespace Player
         // Seconds of disguise remaining.
         private float _worn;
 
+        // The length the disguise being worn started from, so a full mark is there to measure the rest against.
+        private float _span;
+
         // Disguised while the clock is still running.
-        // Public so guard vision can respect it.
         public bool IsDisguised => _worn > 0f;
+
+        // How much of the disguise being worn is left, 0 to 1.
+        public float Remaining => _span > 0f ? Mathf.Clamp01(_worn / _span) : 0f;
 
         // Puts a disguise on for a stretch of time.
         // Wearing one while another still runs keeps the longer of the two rather than cutting it short.
         public void Wear(float seconds)
         {
             if (seconds <= 0f) return;
+
+            // A fresh disguise measures against its own length; one put on over another keeps the longer span.
+            _span = IsDisguised ? Mathf.Max(_span, seconds) : seconds;
             _worn = Mathf.Max(_worn, seconds);
         }
 
