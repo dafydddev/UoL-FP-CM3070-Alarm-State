@@ -15,6 +15,9 @@ namespace Player
         // Returns false if it cannot act right now, which leaves it in the inventory.
         bool Use(Vector2Int userCell);
 
+        // Whether the item has anything left in it. One that has not been used up stays in the inventory.
+        bool IsSpent { get; }
+
         // Gives the item the world it needs to be usable.
         void Bind(WorldContext world);
     }

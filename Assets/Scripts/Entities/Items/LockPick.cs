@@ -1,12 +1,12 @@
 using Generation.Cells;
 using Player;
+using Settings;
 using Simulation;
 using UnityEngine;
 
 namespace Entities.Items
 {
-    // A lock pick. Picked up into the inventory, then spent to open one locked door.
-    // The inventory drops an item once its use succeeds, which is what makes the pick single use.
+    // A lock pick. Picked up into the inventory, then spent to open locked doors, one use per door.
     public class LockPick : MonoBehaviour, IEnterHandler, IInventoryItem, ISpawnedEntity
     {
         // The cells a pick can reach from where the user stands, matching how the player steps.
@@ -15,12 +15,25 @@ namespace Entities.Items
 
         public string lockPickId;
 
+        [SerializeField, Min(1)] private int uses = 1;
+
+        // How many doors it opens instead once the kind's upgrade has been bought.
+        [SerializeField, Min(1)] private int upgradedUses = 2;
+
         public string ItemId => lockPickId;
 
         public ItemKind Kind => ItemKind.LockPick;
 
+        // Used up once the last of its uses has opened a door.
+        public bool IsSpent => _remaining <= 0;
+
         private Vector2Int _cell;
         private WorldContext _world;
+
+        // The doors this pick has left in it, taken from the upgrade when it comes into the world.
+        private int _remaining;
+
+        private void Awake() => _remaining = UpgradeSettings.IsUpgraded(Kind) ? upgradedUses : uses;
 
         // Called by the spawner after Instantiate.
         public void Init(WorldContext world)
@@ -40,7 +53,7 @@ namespace Entities.Items
             gameObject.SetActive(false);
         }
 
-        // Opens the first locked door standing next to the user, spending the pick.
+        // Opens the first locked door standing next to the user, spending one of the pick's uses.
         // Returns false when there is no such door, which leaves it in the inventory for a door that has one.
         public bool Use(Vector2Int userCell)
         {
@@ -48,7 +61,8 @@ namespace Entities.Items
             {
                 var occupant = _world.Occupancy.At(userCell + direction);
                 if (!occupant || !occupant.TryGetComponent(out LockedDoor door) || !door.Unlock()) continue;
-                Destroy(gameObject);
+                _remaining--;
+                if (IsSpent) Destroy(gameObject);
                 return true;
             }
 
