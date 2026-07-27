@@ -83,8 +83,8 @@ namespace Generation.Facility
             AlarmState.Reset();
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
-            var mission = MissionGenerator.Generate(run.Profile, run.CurrentLevel, run.TotalLevels);
-            var rooms = RoomGraphGenerator.Generate(mission, run.Profile, run.CurrentLevel, run.TotalLevels);
+            var mission = MissionGenerator.Generate(run.DifficultyProfile, run.CurrentLevel, run.TotalLevels);
+            var rooms = RoomGraphGenerator.Generate(mission, run.DifficultyProfile, run.CurrentLevel, run.TotalLevels);
             var roles = TileLayoutGenerator.Generate(rooms, run.LayoutStyle, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
