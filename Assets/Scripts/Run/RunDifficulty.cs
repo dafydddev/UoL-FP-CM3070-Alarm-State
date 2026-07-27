@@ -8,9 +8,41 @@ namespace Run
     public class RunDifficulty : ScriptableObject
     {
         public string label;
+
+        [Header("Rewards")]
         public int primaryObjectiveReward = 100;
+
         public int secondaryObjectiveReward = 50;
-        public int runCompletedReward = 250; // paid once, for seeing the run through to the last level
+
+        // Paid once, for seeing the run through to the last level. Longer runs pay more, so it is
+        // authored per run length rather than as a single figure.
+        [Serializable]
+        public class CompletionBonus
+        {
+            public int runLength;
+            public int reward;
+        }
+
+        public CompletionBonus[] runCompletedRewards =
+        {
+            new() { runLength = 10, reward = 250 },
+            new() { runLength = 20, reward = 600 },
+            new() { runLength = 30, reward = 1000 },
+        };
+
+        // The bonus for a run of this length; a length nobody authored falls back to the nearest one that was.
+        public int RunCompletedReward(int runLength)
+        {
+            if (runCompletedRewards is not { Length: > 0 }) return 0;
+
+            var best = runCompletedRewards[0];
+            foreach (var bonus in runCompletedRewards)
+            {
+                if (Mathf.Abs(bonus.runLength - runLength) < Mathf.Abs(best.runLength - runLength)) best = bonus;
+            }
+
+            return best.reward;
+        }
 
         [Serializable]
         public class Range

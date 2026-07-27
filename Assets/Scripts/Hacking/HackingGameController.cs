@@ -110,7 +110,7 @@ namespace Hacking
             GameLock.Acquire();
 
             var rng = new System.Random(objective.hackSeed);
-            var profile = _run.Profile;
+            var profile = _run.DifficultyProfile;
             var size = profile.HackingBoardSize(_run.CurrentLevel, _run.TotalLevels, rng);
             var complexity = profile.HackingComplexity(_run.CurrentLevel, _run.TotalLevels, rng);
             var decoys = profile.HackingDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
