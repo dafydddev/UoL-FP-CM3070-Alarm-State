@@ -1,5 +1,6 @@
 using Generation.Cells;
 using Player;
+using Settings;
 using Simulation;
 using UnityEngine;
 
@@ -13,9 +14,15 @@ namespace Entities.Items
 
         [SerializeField, Min(0f)] private float durationSeconds = 10f;
 
+        // How long it is worn instead once the kind's upgrade has been bought.
+        [SerializeField, Min(0f)] private float upgradedDurationSeconds = 15f;
+
         public string ItemId => disguiseId;
 
         public ItemKind Kind => ItemKind.Disguise;
+
+        // Putting the disguise on uses it up; its clock runs on the player, not on the item.
+        public bool IsSpent => true;
 
         private Vector2Int _cell;
         private WorldContext _world;
@@ -47,7 +54,7 @@ namespace Entities.Items
         public bool Use(Vector2Int _)
         {
             if (!_player) return false;
-            _player.Wear(durationSeconds);
+            _player.Wear(UpgradeSettings.IsUpgraded(Kind) ? upgradedDurationSeconds : durationSeconds);
             Destroy(gameObject);
             return true;
         }

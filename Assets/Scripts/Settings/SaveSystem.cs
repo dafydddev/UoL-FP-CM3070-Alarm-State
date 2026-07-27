@@ -14,6 +14,9 @@ namespace Settings
 
         // Serialized by enum value, so ItemKind is append-only: reordering would remap owned items.
         public List<ItemKind> ownedItems = new();
+
+        // The kinds whose upgrade has been bought. One entry each: an upgrade is bought once and kept.
+        public List<ItemKind> upgradedItems = new();
     }
 
     // Reads and writes the profile as JSON under persistentDataPath.

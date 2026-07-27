@@ -48,7 +48,7 @@ namespace Player
             OnSlotChanged?.Invoke(Selected);
         }
 
-        // Uses one item of the selected kind, spending it only if it managed to act.
+        // Uses one item of the selected kind, dropping it only once it has acted and been used up.
         // Spending the last of the kind empties the slot.
         public bool TryUse(Vector2Int userCell)
         {
@@ -58,6 +58,7 @@ namespace Player
             {
                 if (_items[i].Kind != kind) continue;
                 if (!_items[i].Use(userCell)) return false; // item refused; keep it in hand
+                if (!_items[i].IsSpent) return true; // it acted but has uses left; keep it in hand
                 _items.RemoveAt(i);
                 if (CountOf(kind) != 0) return true; // that was the last of it; empty the slot
                 Selected = null;
