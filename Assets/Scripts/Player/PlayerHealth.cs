@@ -44,12 +44,12 @@ namespace Player
             if (_iFrames > 0f) _iFrames -= Time.deltaTime;
         }
 
-        // Restores a single heart, never past the maximum.
+        // Restores hearts, never past the maximum.
         // Returns false when there is nothing to restore, so a pickup can decline to spend itself.
-        public bool Heal()
+        public bool Heal(int hearts)
         {
             if (!IsAlive || Current >= maxHearts) return false;
-            Current++;
+            Current = Mathf.Min(Current + hearts, maxHearts);
             OnHealthChanged?.Invoke(Current, maxHearts);
             return true;
         }
