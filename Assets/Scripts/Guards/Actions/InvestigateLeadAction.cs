@@ -8,7 +8,7 @@ namespace Guards.Actions
     // An unreachable lead is cleared too — a guard shouldn't obsess over a spot it can never reach.
     public sealed class InvestigateLeadAction : GoapAction
     {
-        private const int LingerTicks = 6;
+        private const int DefaultLingerTicks = 6;
 
         private Vector2Int _goalCell;
         private bool _started;
@@ -23,8 +23,13 @@ namespace Guards.Actions
         public override void OnEnter(GuardAgent agent)
         {
             _started = false;
-            _linger = LingerTicks;
+            _linger = LingerFor(agent.Memory);
         }
+
+        // How long the guard looks the lead over. A distraction says for itself,
+        // so an upgraded one stalls the guard on its cell that much longer.
+        private static int LingerFor(GuardMemory memory) =>
+            memory.LeadItem ? memory.LeadItem.LingerTicks : DefaultLingerTicks;
 
         public override ActionStatus Run(GuardAgent agent)
         {
@@ -37,7 +42,7 @@ namespace Guards.Actions
             {
                 _started = true;
                 _goalCell = memory.LeadCell;
-                _linger = LingerTicks;
+                _linger = LingerFor(memory);
                 if (!agent.Motor.SetGoal(_goalCell))
                 {
                     memory.ClearLead();
