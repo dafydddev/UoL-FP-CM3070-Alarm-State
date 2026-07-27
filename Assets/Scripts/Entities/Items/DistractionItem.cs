@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Generation.Cells;
 using Player;
+using Settings;
 using Simulation;
 using UnityEngine;
 
@@ -14,12 +15,24 @@ namespace Entities.Items
 
         public string distractionId;
 
+        // How long a guard stands looking the distraction over before it resolves it, in ticks.
+        [SerializeField, Min(1)] private int lingerTicks = 6;
+
+        // How long it holds the guard there instead once the kind's upgrade has been bought.
+        [SerializeField, Min(1)] private int upgradedLingerTicks = 15;
+
         public string ItemId => distractionId;
 
         public ItemKind Kind => ItemKind.Distraction;
 
+        // Using one puts it back into the world, so the inventory is done with it either way.
+        public bool IsSpent => true;
+
         // The cell this item currently sits on (meaningful while placed in the world).
         public Vector2Int Cell { get; private set; }
+
+        // The ticks this one keeps a guard standing over it, which is that much longer once it is upgraded.
+        public int LingerTicks => UpgradeSettings.IsUpgraded(Kind) ? upgradedLingerTicks : lingerTicks;
 
         private WorldContext _world;
 
