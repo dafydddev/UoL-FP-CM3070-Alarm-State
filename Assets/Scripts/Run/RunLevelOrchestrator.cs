@@ -83,9 +83,9 @@ namespace Run
         }
 
         // Completing an objective adds its reward to the run's pending total.
-        private void OnPrimaryCompleted() => _run.AwardPrimaryObjective(_run.Profile.primaryObjectiveReward);
+        private void OnPrimaryCompleted() => _run.AwardPrimaryObjective(_run.PrimaryObjectiveReward);
 
-        private void OnSecondaryCompleted() => _run.AwardSecondaryObjective(_run.Profile.secondaryObjectiveReward);
+        private void OnSecondaryCompleted() => _run.AwardSecondaryObjective(_run.SecondaryObjectiveReward);
 
         private void NextLevel()
         {
@@ -184,7 +184,7 @@ namespace Run
         private IEnumerator CompleteRun()
         {
             Telemetry.RunCompleted(_run);
-            _run.AwardRunCompleted(_run.Profile.runCompletedReward);
+            _run.AwardRunCompleted(_run.RunCompletedReward);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)

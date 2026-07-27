@@ -50,7 +50,7 @@ namespace Analytics
             {
                 { "level", run.CurrentLevel },
                 { "totalLevels", run.TotalLevels },
-                { "difficulty", run.Profile.label },
+                { "difficulty", run.DifficultyProfile.label },
                 { "layout", run.LayoutStyle.ToString() },
             });
         }
