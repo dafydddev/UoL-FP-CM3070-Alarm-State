@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Easy
   m_EditorClassIdentifier: Assembly-CSharp::Generation.DifficultyProfile
   label: Easy
+  primaryObjectiveReward: 75
+  secondaryObjectiveReward: 40
+  runCompletedRewards:
+  - runLength: 10
+    reward: 600
+  - runLength: 20
+    reward: 2000
+  - runLength: 30
+    reward: 4500
   secondaryObjectives:
     minFloor: 0
     minCeiling: 1

@@ -4899,23 +4899,23 @@ MonoBehaviour:
   - kind: 0
     price: 100
     button: {fileID: 1711476790}
-    upgradePrice: 1000
+    upgradePrice: 2000
     upgradeButton: {fileID: 430867008}
-  - kind: 3
-    price: 100
-    button: {fileID: 291814696}
-    upgradePrice: 1000
-    upgradeButton: {fileID: 2126488507}
-  - kind: 1
-    price: 100
-    button: {fileID: 1794070090}
-    upgradePrice: 1000
-    upgradeButton: {fileID: 187817266}
   - kind: 2
-    price: 100
+    price: 150
     button: {fileID: 711154052}
-    upgradePrice: 1000
+    upgradePrice: 3000
     upgradeButton: {fileID: 1329922427}
+  - kind: 1
+    price: 200
+    button: {fileID: 1794070090}
+    upgradePrice: 4000
+    upgradeButton: {fileID: 187817266}
+  - kind: 3
+    price: 250
+    button: {fileID: 291814696}
+    upgradePrice: 5000
+    upgradeButton: {fileID: 2126488507}
   unlockedSprite: {fileID: 1163200939, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
 --- !u!1 &516928097
 GameObject:
