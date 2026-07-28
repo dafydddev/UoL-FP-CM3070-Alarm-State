@@ -84,6 +84,7 @@ namespace Player
         {
             if (World == null) return;
             if (GameLock.Locked) return;
+            if (InputCapture.Captured) return;
             ReadInput();
             ReadClick();
             ReadUse();
@@ -98,6 +99,9 @@ namespace Player
         protected override void Act()
         {
             _prevCell = _cell;
+
+            // Ticks keep coming while a minigame has the keys; stand still rather than walk a queued route.
+            if (InputCapture.Captured) return;
 
             Vector2Int dir;
             if (_pending != Vector2Int.zero)

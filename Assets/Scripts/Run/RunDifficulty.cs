@@ -14,8 +14,7 @@ namespace Run
 
         public int secondaryObjectiveReward = 50;
 
-        // Paid once, for seeing the run through to the last level. Longer runs pay more, so it is
-        // authored per run length rather than as a single figure.
+        // Paid once, for seeing the run through to the last level.
         [Serializable]
         public class CompletionBonus
         {
@@ -67,6 +66,9 @@ namespace Run
         public Range hackingComplexity;
         public Range hackingDecoyPaths;
         public Range hackingScrambleChance;
+
+        // Sequence minigame balance: how many bound keys the order runs to.
+        public int sequenceLength = 3;
 
         private static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));

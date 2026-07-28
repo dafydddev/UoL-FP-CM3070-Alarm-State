@@ -14,6 +14,8 @@ namespace Entities.Objectives
         // Seed for the reward roll, stamped by the spawner alongside the hacking seed.
         public int dropSeed;
 
+        public override HackKind Hack => HackKind.Sequence;
+
         private ObjectiveDrop _drop;
 
         private void Awake() => _drop = GetComponent<ObjectiveDrop>();

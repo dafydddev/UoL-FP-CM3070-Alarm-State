@@ -68,7 +68,7 @@ namespace HUD
             if (!_open)
             {
                 // Opens on its own key, but only when nothing else holds the game (a pause, a hack, etc.).
-                if (openAction.action.WasPressedThisFrame() && _inventory && !GameLock.Locked) Open();
+                if (openAction.action.WasPressedThisFrame() && CanOpen) Open();
                 return;
             }
 
@@ -77,10 +77,12 @@ namespace HUD
             if (openAction.action.WasPressedThisFrame()) Close();
         }
 
+        private bool CanOpen => !_open && _inventory && !GameLock.Locked && !InputCapture.Captured;
+
         // The on-screen button opens the screen the same way its key does.
         private void OpenFromButton()
         {
-            if (!_open && _inventory && !GameLock.Locked) Open();
+            if (CanOpen) Open();
         }
 
         // Presents the slots and focuses the kind already in the use slot.

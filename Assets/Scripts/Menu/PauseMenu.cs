@@ -52,6 +52,8 @@ namespace Menu
             // Outside the tick loop, so check the lock ourselves.
             // Only guards pausing — while paused we hold the lock, so Locked is always true.
             if (GameLock.Locked) return;
+            // A minigame holding the keys backs out on this one instead.
+            if (InputCapture.Captured) return;
             Pause();
         }
 
