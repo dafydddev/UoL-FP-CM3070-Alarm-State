@@ -37,6 +37,7 @@ namespace Run
         private void Start()
         {
             GameLock.Clear();
+            InputCapture.Clear();
             _run = RunContext.Pending ?? new RunContext(@default, startLevel, totalLevels, defaultLayoutStyle);
             RunContext.Pending = null;
             OpenLoadout();

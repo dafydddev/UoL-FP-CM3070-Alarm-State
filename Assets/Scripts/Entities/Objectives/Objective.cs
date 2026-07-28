@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Entities.Objectives
 {
     // A mission objective the player completes with the use key while standing on or beside it.
-    // Using it opens the pipe hacking minigame; the objective completes once the hack is done.
+    // Using it opens a hacking minigame; the objective completes once the hack is done.
     // What that completion is worth is left to the two kinds: see PrimaryObjective and SecondaryObjective.
     public abstract class Objective : MonoBehaviour, IUseHandler
     {
@@ -15,6 +15,8 @@ namespace Entities.Objectives
         public static event Action<Objective> HackRequested;
 
         public string id;
+
+        public abstract HackKind Hack { get; }
 
         // Seed for this objective's hacking puzzle, stamped by the spawner so the same level always presents the same boards.
         public int hackSeed;

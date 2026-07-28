@@ -105,6 +105,7 @@ namespace Hacking
         private void Open(Objective objective)
         {
             if (_hacking) return; // already hacking
+            if (objective.Hack != HackKind.Pipes) return;
             _objective = objective;
             _hacking = true;
             GameLock.Acquire();
