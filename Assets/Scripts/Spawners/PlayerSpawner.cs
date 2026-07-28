@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Camera;
@@ -18,16 +17,8 @@ namespace Spawners
         [SerializeField] private CameraFollow cameraFollow;
         [SerializeField] private InventoryController inventoryController;
 
-        // The prefab granted for each item kind bought in the shop.
-        [SerializeField] private StartingItem[] startingItems;
-
-        // One item kind's prefab.
-        [Serializable]
-        private class StartingItem
-        {
-            public ItemKind kind;
-            public GameObject prefab;
-        }
+        // The kinds a loadout can grant, each carrying the prefab the player is handed for it.
+        [SerializeField] private ItemDefinition[] startingItems;
 
         private GameObject _player;
 
