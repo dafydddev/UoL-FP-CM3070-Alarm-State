@@ -4896,25 +4896,17 @@ MonoBehaviour:
   balanceLabel: {fileID: 485002421}
   itemLabel: {fileID: 1971752380}
   offers:
-  - kind: 0
-    price: 100
+  - definition: {fileID: 11400000, guid: 5c9a3e1f7b2d48609ae4c81d3f60b7a2, type: 2}
     button: {fileID: 1711476790}
-    upgradePrice: 2000
     upgradeButton: {fileID: 430867008}
-  - kind: 2
-    price: 150
+  - definition: {fileID: 11400000, guid: 9a1f6d3b8c2e47051fb3a9d60c48e2b7, type: 2}
     button: {fileID: 711154052}
-    upgradePrice: 3000
     upgradeButton: {fileID: 1329922427}
-  - kind: 1
-    price: 200
+  - definition: {fileID: 11400000, guid: 7e2b4c8d1a9f36502bd7e40c95a13f68, type: 2}
     button: {fileID: 1794070090}
-    upgradePrice: 4000
     upgradeButton: {fileID: 187817266}
-  - kind: 3
-    price: 250
+  - definition: {fileID: 11400000, guid: 4b8d20e6a1c93f57d2e08b41a67c95d3, type: 2}
     button: {fileID: 291814696}
-    upgradePrice: 5000
     upgradeButton: {fileID: 2126488507}
   unlockedSprite: {fileID: 1163200939, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
 --- !u!1 &516928097

@@ -796,14 +796,10 @@ MonoBehaviour:
   cameraFollow: {fileID: 1249475571}
   inventoryController: {fileID: 1421318875}
   startingItems:
-  - kind: 1
-    prefab: {fileID: 2521305447512504710, guid: 2eb558cc072ecc44a91ba8aafcefd8da, type: 3}
-  - kind: 0
-    prefab: {fileID: 2066398228206630087, guid: bd2eacbb66ce2a54983c163b0162d346, type: 3}
-  - kind: 3
-    prefab: {fileID: 2521305447512504710, guid: bca4912420e26a44c81f6a3dac4bec0f, type: 3}
-  - kind: 2
-    prefab: {fileID: 2521305447512504710, guid: 0bcf1107b17cc91429ec2221ba007409, type: 3}
+  - {fileID: 11400000, guid: 7e2b4c8d1a9f36502bd7e40c95a13f68, type: 2}
+  - {fileID: 11400000, guid: 5c9a3e1f7b2d48609ae4c81d3f60b7a2, type: 2}
+  - {fileID: 11400000, guid: 4b8d20e6a1c93f57d2e08b41a67c95d3, type: 2}
+  - {fileID: 11400000, guid: 9a1f6d3b8c2e47051fb3a9d60c48e2b7, type: 2}
 --- !u!1 &154401018
 GameObject:
   m_ObjectHideFlags: 0
@@ -5321,13 +5317,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HUD.InventoryHud
   icons:
-  - kind: 0
+  - definition: {fileID: 11400000, guid: 5c9a3e1f7b2d48609ae4c81d3f60b7a2, type: 2}
     image: {fileID: 729605051}
-  - kind: 1
+  - definition: {fileID: 11400000, guid: 7e2b4c8d1a9f36502bd7e40c95a13f68, type: 2}
     image: {fileID: 247561174}
-  - kind: 3
+  - definition: {fileID: 11400000, guid: 4b8d20e6a1c93f57d2e08b41a67c95d3, type: 2}
     image: {fileID: 1510749081}
-  - kind: 2
+  - definition: {fileID: 11400000, guid: 9a1f6d3b8c2e47051fb3a9d60c48e2b7, type: 2}
     image: {fileID: 1844305329}
 --- !u!1 &1288086456
 GameObject:
@@ -6164,13 +6160,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUD.InventoryScreen
   panel: {fileID: 2076727774}
   slots:
-  - kind: 0
+  - definition: {fileID: 11400000, guid: 5c9a3e1f7b2d48609ae4c81d3f60b7a2, type: 2}
     icon: {fileID: 1136410214}
-  - kind: 3
+  - definition: {fileID: 11400000, guid: 4b8d20e6a1c93f57d2e08b41a67c95d3, type: 2}
     icon: {fileID: 154401020}
-  - kind: 1
+  - definition: {fileID: 11400000, guid: 7e2b4c8d1a9f36502bd7e40c95a13f68, type: 2}
     icon: {fileID: 1564323947}
-  - kind: 2
+  - definition: {fileID: 11400000, guid: 9a1f6d3b8c2e47051fb3a9d60c48e2b7, type: 2}
     icon: {fileID: 1772531240}
   label: {fileID: 1017985083}
   slotColour: {r: 1, g: 1, b: 1, a: 1}
