@@ -149,15 +149,17 @@ namespace Hacking
             _buttons = new PipeTileButton[_board.Width, _board.Height];
             _selected = _board.StartCell;
             for (var y = _board.Height - 1; y >= 0; y--)
-            for (var x = 0; x < _board.Width; x++)
             {
-                var tile = _board.At(new Vector2Int(x, y));
-                var button = Instantiate(tileButtonPrefab, root);
-                button.Bind(tile, SpriteFor(tile.Type), pipeColour);
-                // The move keys drive the selection, so uGUI's own navigation would double-step it.
-                button.Button.navigation = new UnityEngine.UI.Navigation { mode = UnityEngine.UI.Navigation.Mode.None };
-                button.SetController(this);
-                _buttons[x, y] = button;
+                for (var x = 0; x < _board.Width; x++)
+                {
+                    var tile = _board.At(new Vector2Int(x, y));
+                    var button = Instantiate(tileButtonPrefab, root);
+                    button.Bind(tile, SpriteFor(tile.Type), pipeColour);
+                    // The move keys drive the selection, so uGUI's own navigation would double-step it.
+                    button.Button.navigation = new Navigation { mode = Navigation.Mode.None };
+                    button.SetController(this);
+                    _buttons[x, y] = button;
+                }
             }
 
             PlaceMarker(startMarker, _board.StartCell, Vector2Int.left, cellSize);
