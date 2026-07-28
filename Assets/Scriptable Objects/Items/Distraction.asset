@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2c3b77b77a997a40bf36497ccff66d6, type: 3}
+  m_Name: Distraction
+  m_EditorClassIdentifier: Assembly-CSharp::Player.ItemDefinition
+  kind: 0
+  displayName: Distraction
+  price: 100
+  upgradePrice: 2000
+  prefab: {fileID: 2066398228206630087, guid: bd2eacbb66ce2a54983c163b0162d346, type: 3}
