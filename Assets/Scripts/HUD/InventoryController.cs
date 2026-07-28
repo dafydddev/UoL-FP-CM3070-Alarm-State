@@ -1,23 +1,25 @@
 using System;
+using System.Linq;
 using Menu;
 using Player;
 using Simulation;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace HUD
 {
-    // The inventory screen: a panel with one slot per item.
+    // The inventory screen: a panel with one slot button per item.
     public class InventoryController : MonoBehaviour
     {
-        // An inventory slot: the item definition it uses and the image used to show on the UI.
+        // An inventory slot: the item definition it uses and the button that picks it.
         [Serializable]
         private class Slot
         {
             public ItemDefinition definition;
-            public Image icon;
+            public Button button;
         }
 
         [Header("UI Game Objects")] [SerializeField]
@@ -26,47 +28,36 @@ namespace HUD
         [SerializeField] private Slot[] slots;
         [SerializeField] private TMP_Text sharedLabel; // UI label for the highlighted item
 
-        [Header("Slot Colours")] [SerializeField]
-        private Color slotColour = Color.white;
+        [Header("UI Buttons")] [SerializeField]
+        private Button openButton;
 
-        [SerializeField] private Color highlightColour = Color.yellow; // the slot under the cursor
-        [SerializeField, Range(0f, 1f)] private float missingAlpha = 0.25f; // faded when none of the kind is held
-
-        [Header("UI Buttons")]
-        [SerializeField] private Button openButton;
         [SerializeField] private Button backdrop;
 
-        [Header("Input Actions")]
-        [SerializeField] private InputActionReference openAction;
-        [SerializeField] private InputActionReference leftAction;
-        [SerializeField] private InputActionReference rightAction;
-        [SerializeField] private InputActionReference useAction;
+        [Header("Input Actions")] [SerializeField]
+        private InputActionReference openAction;
+
         [SerializeField] private InputActionReference pauseAction;
 
         private PlayerInventory _inventory; // bound to the spawned player each level
-        private int _cursor; // index into slots of the highlighted kind
+        private GameObject _highlighted;
         private bool _open;
 
         private void OnEnable()
         {
             openAction.action.Enable();
-            leftAction.action.Enable();
-            rightAction.action.Enable();
-            useAction.action.Enable();
             pauseAction.action.Enable();
             if (openButton) openButton.onClick.AddListener(OpenFromButton);
             if (backdrop) backdrop.onClick.AddListener(Close);
+            foreach (var slot in slots) slot.button.onClick.AddListener(() => Choose(slot));
         }
 
         private void OnDisable()
         {
             openAction.action.Disable();
-            leftAction.action.Disable();
-            rightAction.action.Disable();
-            useAction.action.Disable();
             pauseAction.action.Disable();
             if (openButton) openButton.onClick.RemoveListener(OpenFromButton);
             if (backdrop) backdrop.onClick.RemoveListener(Close);
+            foreach (var slot in slots) slot.button.onClick.RemoveAllListeners();
         }
 
         // Handed the spawned player's inventory each level, the way the camera is handed its target.
@@ -81,9 +72,7 @@ namespace HUD
                 return;
             }
 
-            if (leftAction.action.WasPressedThisFrame()) MoveCursor(-1);
-            if (rightAction.action.WasPressedThisFrame()) MoveCursor(1);
-            if (useAction.action.WasPressedThisFrame()) Choose();
+            ShowHighlighted();
             if (pauseAction.action.WasPressedThisFrame()) Close();
             if (openAction.action.WasPressedThisFrame()) Close();
         }
@@ -94,7 +83,7 @@ namespace HUD
             if (!_open && _inventory && !GameLock.Locked) Open();
         }
 
-        // Presents the slots and parks the cursor on the kind already in the use slot.
+        // Presents the slots and focuses the kind already in the use slot.
         private void Open()
         {
             _open = true;
@@ -102,23 +91,21 @@ namespace HUD
             panel.SetActive(true);
             if (backdrop) backdrop.gameObject.SetActive(true);
             if (openButton) openButton.gameObject.SetActive(false);
-            _cursor = CursorFor(_inventory.Selected);
-            Redraw();
+
+            // Kinds held none of can't be picked; the disabled tint fades them.
+            foreach (var slot in slots) slot.button.interactable = _inventory.CountOf(slot.definition.kind) > 0;
+
+            // Draw the label before the panel's first frame, not on the next poll.
+            var selected = SlotFor(_inventory.Selected);
+            selected.button.Select();
+            _highlighted = selected.button.gameObject;
+            ShowSlot(selected);
         }
 
-        // Steps the cursor along the row, stopping at the ends.
-        private void MoveCursor(int step)
+        // Puts the picked kind into the use slot and closes.
+        private void Choose(Slot slot)
         {
-            _cursor = Mathf.Clamp(_cursor + step, 0, slots.Length - 1);
-            Redraw();
-        }
-
-        // Puts the highlighted kind into the use slot and closes.
-        private void Choose()
-        {
-            var kind = slots[_cursor].definition.kind;
-            if (_inventory.CountOf(kind) == 0) return;
-            _inventory.Select(kind);
+            _inventory.Select(slot.definition.kind);
             Close();
         }
 
@@ -129,32 +116,30 @@ namespace HUD
             panel.SetActive(false);
             if (backdrop) backdrop.gameObject.SetActive(false);
             if (openButton) openButton.gameObject.SetActive(true);
+            // Drop focus so a stray navigation input mid-run can't re-fire a slot.
+            if (EventSystem.current) EventSystem.current.SetSelectedGameObject(null);
+            _highlighted = null;
             GameLock.Release();
         }
 
-        // Tints each slot for the cursor, fades the kinds held none of, and names the highlighted kind and its count.
-        private void Redraw()
+        // Refreshes the shared label when the highlight moves to another slot.
+        private void ShowHighlighted()
         {
-            for (var i = 0; i < slots.Length; i++)
-            {
-                var slot = slots[i];
-                var held = _inventory.CountOf(slot.definition.kind);
-                slot.icon.color = Fade(i == _cursor ? highlightColour : slotColour, held > 0 ? 1f : missingAlpha);
-                if (i == _cursor) sharedLabel.text = $"{slot.definition.displayName}: {held}";
-            }
+            var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
+            if (selected == _highlighted) return;
+            _highlighted = selected;
+            var slot = slots.FirstOrDefault(s => s.button.gameObject == selected);
+            if (slot != null) ShowSlot(slot);
         }
 
-        // The slot index for a kind, defaulting to the first slot when the use slot is empty.
-        private int CursorFor(ItemKind? selected)
-        {
-            if (!selected.HasValue) return 0;
-            for (var i = 0; i < slots.Length; i++)
-            {
-                if (slots[i].definition.kind == selected.Value) return i;
-            }
-            return 0;
-        }
+        private void ShowSlot(Slot slot) => sharedLabel.text =
+            $"{slot.definition.displayName}: {_inventory.CountOf(slot.definition.kind)}";
 
-        private static Color Fade(Color colour, float alpha) => new(colour.r, colour.g, colour.b, alpha);
+        // The slot for a kind, defaulting to the first when the use slot is empty.
+        private Slot SlotFor(ItemKind? selected)
+        {
+            if (!selected.HasValue) return slots[0];
+            return slots.FirstOrDefault(s => s.definition.kind == selected.Value) ?? slots[0];
+        }
     }
 }
