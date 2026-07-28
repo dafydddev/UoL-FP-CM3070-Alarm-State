@@ -9,14 +9,14 @@ using UnityEngine.UI;
 
 namespace HUD
 {
-    // The inventory screen: a panel with one slot per item kind.
+    // The inventory screen: a panel with one slot per item.
     public class InventoryController : MonoBehaviour
     {
-        // One kind's slot: the kind it stands for and the authored image tinted for it.
+        // An inventory slot: the item definition it uses and the image used to show on the UI.
         [Serializable]
         private class Slot
         {
-            public ItemKind kind;
+            public ItemDefinition definition;
             public Image icon;
         }
 
@@ -24,7 +24,7 @@ namespace HUD
         private MenuPanel panel;
 
         [SerializeField] private Slot[] slots;
-        [SerializeField] private TMP_Text label; // names the highlighted kind and how many are held
+        [SerializeField] private TMP_Text sharedLabel; // UI label for the highlighted item
 
         [Header("Slot Colours")] [SerializeField]
         private Color slotColour = Color.white;
@@ -116,7 +116,7 @@ namespace HUD
         // Puts the highlighted kind into the use slot and closes.
         private void Choose()
         {
-            var kind = slots[_cursor].kind;
+            var kind = slots[_cursor].definition.kind;
             if (_inventory.CountOf(kind) == 0) return;
             _inventory.Select(kind);
             Close();
@@ -138,9 +138,9 @@ namespace HUD
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
-                var held = _inventory.CountOf(slot.kind);
+                var held = _inventory.CountOf(slot.definition.kind);
                 slot.icon.color = Fade(i == _cursor ? highlightColour : slotColour, held > 0 ? 1f : missingAlpha);
-                if (i == _cursor) label.text = $"{NameOf(slot.kind)}: {held}";
+                if (i == _cursor) sharedLabel.text = $"{slot.definition.displayName}: {held}";
             }
         }
 
@@ -150,18 +150,10 @@ namespace HUD
             if (!selected.HasValue) return 0;
             for (var i = 0; i < slots.Length; i++)
             {
-                if (slots[i].kind == selected.Value) return i;
+                if (slots[i].definition.kind == selected.Value) return i;
             }
             return 0;
         }
-
-        // The spaced name for a kind, since the enum runs the words together.
-        private static string NameOf(ItemKind kind) => kind switch
-        {
-            ItemKind.LockPick => "Lock Pick",
-            ItemKind.HealthPack => "Health Pack",
-            _ => kind.ToString(),
-        };
 
         private static Color Fade(Color colour, float alpha) => new(colour.r, colour.g, colour.b, alpha);
     }

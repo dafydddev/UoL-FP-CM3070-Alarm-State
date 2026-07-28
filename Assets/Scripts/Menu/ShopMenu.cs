@@ -12,14 +12,13 @@ namespace Menu
     // The shop panel: spends banked currency on the items for the next run and offers to upgrade them.
     public class ShopMenu : MonoBehaviour
     {
-        // One item kind's offer: its authored price and the button that buys it, alongside its upgrade.
+        // One item kind's offer: the definition it sells and the buttons that buy it and its upgrade.
+        // The prices live on the definition; only the scene wiring is authored here.
         [Serializable]
         private class Offer
         {
-            public ItemKind kind;
-            public int price;
+            public ItemDefinition definition;
             public Button button;
-            public int upgradePrice;
             public Button upgradeButton;
         }
 
@@ -57,10 +56,10 @@ namespace Menu
         // Buys one of the kind, spending its price, unless the wallet can't afford it.
         private void Buy(Offer offer)
         {
-            if (CurrencySettings.Balance < offer.price) return;
+            if (CurrencySettings.Balance < offer.definition.price) return;
 
-            CurrencySettings.Balance -= offer.price;
-            SaveSystem.Data.ownedItems.Add(offer.kind);
+            CurrencySettings.Balance -= offer.definition.price;
+            SaveSystem.Data.ownedItems.Add(offer.definition.kind);
             SaveSystem.Save(); // persist the spend and the new item together
             ShowBalance();
             ShowItem(offer);
@@ -70,10 +69,10 @@ namespace Menu
         // Bought once and kept: every item of the kind is upgraded from then on, this run's and every later one's.
         private void BuyUpgrade(Offer offer)
         {
-            if (UpgradeSettings.IsUpgraded(offer.kind)) return;
-            if (CurrencySettings.Balance < offer.upgradePrice) return;
-            CurrencySettings.Balance -= offer.upgradePrice;
-            SaveSystem.Data.upgradedItems.Add(offer.kind);
+            if (UpgradeSettings.IsUpgraded(offer.definition.kind)) return;
+            if (CurrencySettings.Balance < offer.definition.upgradePrice) return;
+            CurrencySettings.Balance -= offer.definition.upgradePrice;
+            SaveSystem.Data.upgradedItems.Add(offer.definition.kind);
             SaveSystem.Save();
             ShowBalance();
             ShowUpgradeSprite(offer);
@@ -84,28 +83,20 @@ namespace Menu
         private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
 
         private void ShowItem(Offer offer) => itemLabel.text =
-            $"{NameOf(offer.kind)}: {offer.price} points (Owned {OwnedCount(offer.kind)})";
+            $"{offer.definition.displayName}: {offer.definition.price} points (Owned {OwnedCount(offer.definition.kind)})";
 
         private void ShowUpgrade(Offer offer)
         {
-            itemLabel.text = UpgradeSettings.IsUpgraded(offer.kind)
-                ? $"{NameOf(offer.kind)} Upgrade: Bought"
-                : $"{NameOf(offer.kind)} Upgrade: {offer.upgradePrice} points";
+            itemLabel.text = UpgradeSettings.IsUpgraded(offer.definition.kind)
+                ? $"{offer.definition.displayName} Upgrade: Bought"
+                : $"{offer.definition.displayName} Upgrade: {offer.definition.upgradePrice} points";
         }
 
         private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
 
-        // The spaced name for a kind, since the enum runs the words together.
-        private static string NameOf(ItemKind kind) => kind switch
-        {
-            ItemKind.LockPick => "Lock Pick",
-            ItemKind.HealthPack => "Health Pack",
-            _ => kind.ToString(),
-        };
-        
         private void ShowUpgradeSprite(Offer offer)
         {
-            if (!UpgradeSettings.IsUpgraded(offer.kind)) return;
+            if (!UpgradeSettings.IsUpgraded(offer.definition.kind)) return;
             if (offer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite) image.sprite = unlockedSprite;
         }
     }
