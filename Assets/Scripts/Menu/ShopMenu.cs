@@ -29,7 +29,7 @@ namespace Menu
 
         private GameObject _highlighted;
 
-        private void Start()
+        private void OnEnable()
         {
             foreach (var offer in offers)
             {
@@ -39,6 +39,19 @@ namespace Menu
             }
 
             ShowBalance();
+
+            if (offers.Length == 0) return;
+            _highlighted = offers[0].button.gameObject;
+            ShowItem(offers[0]);
+        }
+
+        private void OnDisable()
+        {
+            foreach (var offer in offers)
+            {
+                offer.button.onClick.RemoveAllListeners();
+                offer.upgradeButton.onClick.RemoveAllListeners();
+            }
         }
 
         // Refreshes the shared label when the highlight moves to another item or upgrade.
@@ -79,7 +92,6 @@ namespace Menu
             ShowUpgrade(offer);
         }
 
-
         private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
 
         private void ShowItem(Offer offer) => itemLabel.text =
@@ -97,7 +109,8 @@ namespace Menu
         private void ShowUpgradeSprite(Offer offer)
         {
             if (!UpgradeSettings.IsUpgraded(offer.definition.kind)) return;
-            if (offer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite) image.sprite = unlockedSprite;
+            if (offer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite)
+                image.sprite = unlockedSprite;
         }
     }
 }
