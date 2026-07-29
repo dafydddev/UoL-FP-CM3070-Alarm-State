@@ -17,9 +17,11 @@ namespace Run
         public int PrimaryObjectiveEarnings { get; private set; }
         public int SecondaryObjectiveEarnings { get; private set; }
         public int RunCompletedEarnings { get; private set; }
+        public int UnusedItemEarnings { get; private set; }
 
         // The whole pending purse: it rides along across levels and is lost with the run, unless the run is completed.
-        public int PendingCurrency => PrimaryObjectiveEarnings + SecondaryObjectiveEarnings + RunCompletedEarnings;
+        public int PendingCurrency =>
+            PrimaryObjectiveEarnings + SecondaryObjectiveEarnings + RunCompletedEarnings + UnusedItemEarnings;
 
         // What this run's difficulty pays, at the length this run was started at.
         public int PrimaryObjectiveReward => DifficultyProfile.primaryObjectiveReward;
@@ -49,5 +51,7 @@ namespace Run
         public void AwardSecondaryObjective(int amount) => SecondaryObjectiveEarnings += amount;
 
         public void AwardRunCompleted(int amount) => RunCompletedEarnings += amount;
+
+        public void AwardUnusedItems(int amount) => UnusedItemEarnings += amount;
     }
 }

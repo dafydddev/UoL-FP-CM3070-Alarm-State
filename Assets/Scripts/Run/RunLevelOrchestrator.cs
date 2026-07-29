@@ -20,8 +20,9 @@ namespace Run
     [RequireComponent(typeof(FacilityOrchestrator))]
     public class RunLevelOrchestrator : MonoBehaviour
     {
-        [Header("Run Options")]
-        [SerializeField, Min(1)] private int startLevel = 1;
+        [Header("Run Options")] [SerializeField, Min(1)]
+        private int startLevel = 1;
+
         [SerializeField, Min(1)] private int totalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
@@ -181,11 +182,15 @@ namespace Run
             Telemetry.LevelStarted(_run);
         }
 
-        // The cleared run: the completion bonus lands, then the results show the takings climbing onto the balance.
+        // The cleared run: the completion bonus lands and the inventory cashes in what it never spent,
+        // then the results show the takings climbing onto the balance.
+        // Read before the level is torn down, the same as the carry-over between levels.
         private IEnumerator CompleteRun()
         {
             Telemetry.RunCompleted(_run);
             _run.AwardRunCompleted(_run.RunCompletedReward);
+            var player = FacilityOrchestrator.World?.Player;
+            if (player && player.TryGetComponent(out PlayerInventory inventory)) _run.AwardUnusedItems(inventory.CashInValue);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)
