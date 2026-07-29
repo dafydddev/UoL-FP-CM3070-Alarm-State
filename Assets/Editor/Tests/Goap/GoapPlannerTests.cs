@@ -5,8 +5,6 @@ using NUnit.Framework;
 
 namespace Editor.Tests.Goap
 {
-    // The planner's contract: a satisfied goal plans as an empty list and an unreachable one as null.
-    // Where several action sequences reach the goal, the cheapest total cost wins.
     public class GoapPlannerTests
     {
         [Test]
@@ -37,7 +35,6 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.EqualTo(new[] { catchPlayer }));
         }
 
-        // An action whose preconditions are met only by another action must be planned behind it.
         [Test]
         public void PreconditionsAreChainedIntoThePlan()
         {
@@ -51,7 +48,6 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.EqualTo(new[] { approach, catchPlayer }));
         }
 
-        // Two routes reach the goal: one action costing 10, or two costing 1 each.
         [Test]
         public void TheCheapestRouteWinsEvenWhenItTakesMoreSteps()
         {
@@ -78,7 +74,6 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.Null);
         }
 
-        // An action that leaves the state unchanged must not be re-expanded forever.
         [Test]
         public void ActionsThatDoNotChangeTheStateTerminate()
         {
@@ -94,21 +89,20 @@ namespace Editor.Tests.Goap
         private static GoapAction Action(string name, WorldState preconditions, WorldState effects, int cost = 1) =>
             new TestAction(name, preconditions, effects, cost);
 
-        // Planning-only stand-in: the planner reads Preconditions, Effects and Cost, never Run.
         private sealed class TestAction : GoapAction
         {
-            private readonly int _cost;
             private readonly string _name;
 
             public TestAction(string name, WorldState preconditions, WorldState effects, int cost)
             {
                 _name = name;
-                _cost = cost;
+                Cost = cost;
                 Preconditions = preconditions;
                 Effects = effects;
             }
 
-            public override int Cost => _cost;
+            public override int Cost { get; }
+
             public override ActionStatus Run(GuardAgent agent) => ActionStatus.Succeeded;
             public override string ToString() => _name;
         }
