@@ -25,6 +25,7 @@ namespace Menu
         {
             public bool ShowBreakdown;
             public bool ShowRunBonus;
+            public bool ShowUnusedItems;
             public bool ShowBalance;
             public int InitialTotal;
         }
@@ -41,6 +42,8 @@ namespace Menu
         [SerializeField] private TMP_Text secondaryObjectiveLabel;
         [SerializeField] private GameObject runCompleteRow;
         [SerializeField] private TMP_Text runCompleteLabel;
+        [SerializeField] private GameObject unusedItemsRow;
+        [SerializeField] private TMP_Text unusedItemsLabel;
         [SerializeField] private TMP_Text totalLabel;
         [SerializeField] private GameObject balanceRow;
         [SerializeField] private TMP_Text balanceLabel;
@@ -62,20 +65,23 @@ namespace Menu
         }
 
         // A lost run has no breakdown worth reading, and its total drains from full rather than climbing.
-        // Only a run seen through to the last level is paid the completion bonus, or moves the balance.
+        // Only a run seen through to the last level is paid the completion bonus, cashes its leftovers in,
+        // or moves the balance.
         private static ResultsView ViewFor(ResultsScreen screen, RunContext run) => screen switch
         {
             ResultsScreen.LevelComplete => new ResultsView
             {
-                ShowBreakdown = true, ShowRunBonus = false, ShowBalance = false, InitialTotal = 0
+                ShowBreakdown = true, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
+                InitialTotal = 0
             },
             ResultsScreen.RunComplete => new ResultsView
             {
-                ShowBreakdown = true, ShowRunBonus = true, ShowBalance = true, InitialTotal = 0
+                ShowBreakdown = true, ShowRunBonus = true, ShowUnusedItems = true, ShowBalance = true,
+                InitialTotal = 0
             },
             ResultsScreen.RunFailed => new ResultsView
             {
-                ShowBreakdown = false, ShowRunBonus = false, ShowBalance = false,
+                ShowBreakdown = false, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
                 InitialTotal = run.PendingCurrency
             },
             _ => throw new ArgumentOutOfRangeException(nameof(screen), screen, null)
@@ -92,6 +98,7 @@ namespace Menu
             primaryObjectiveRow.SetActive(view.ShowBreakdown);
             secondaryObjectiveRow.SetActive(view.ShowBreakdown);
             runCompleteRow.SetActive(view.ShowRunBonus);
+            unusedItemsRow.SetActive(view.ShowUnusedItems);
             balanceRow.SetActive(view.ShowBalance);
 
             if (view.ShowBreakdown)
@@ -101,6 +108,7 @@ namespace Menu
             }
 
             if (view.ShowRunBonus) SetLabel(runCompleteLabel, run.RunCompletedEarnings);
+            if (view.ShowUnusedItems) SetLabel(unusedItemsLabel, run.UnusedItemEarnings);
             if (view.ShowBalance) SetLabel(balanceLabel, CurrencySettings.Balance);
             SetLabel(totalLabel, view.InitialTotal);
 
