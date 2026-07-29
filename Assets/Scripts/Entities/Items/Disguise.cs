@@ -17,12 +17,16 @@ namespace Entities.Items
         // How long it is worn instead once the kind's upgrade has been bought.
         [SerializeField, Min(0f)] private float upgradedDurationSeconds = 15f;
 
+        [SerializeField, Min(0)] private int cashInValue = 100;
+
         public string ItemId => disguiseId;
 
         public ItemKind Kind => ItemKind.Disguise;
 
         // Putting the disguise on uses it up; its clock runs on the player, not on the item.
         public bool IsSpent => true;
+
+        public int CashInValue => cashInValue;
 
         private Vector2Int _cell;
         private WorldContext _world;

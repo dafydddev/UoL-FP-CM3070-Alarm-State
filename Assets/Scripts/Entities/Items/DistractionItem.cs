@@ -21,12 +21,16 @@ namespace Entities.Items
         // How long it holds the guard there instead once the kind's upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedLingerTicks = 15;
 
+        [SerializeField, Min(0)] private int cashInValue = 50;
+
         public string ItemId => distractionId;
 
         public ItemKind Kind => ItemKind.Distraction;
 
         // Using one puts it back into the world, so the inventory is done with it either way.
         public bool IsSpent => true;
+
+        public int CashInValue => cashInValue;
 
         // The cell this item currently sits on (meaningful while placed in the world).
         public Vector2Int Cell { get; private set; }

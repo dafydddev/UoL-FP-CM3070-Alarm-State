@@ -20,12 +20,16 @@ namespace Entities.Items
         // How many doors it opens instead once the kind's upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedUses = 2;
 
+        [SerializeField, Min(0)] private int cashInValue = 75;
+
         public string ItemId => lockPickId;
 
         public ItemKind Kind => ItemKind.LockPick;
 
         // Used up once the last of its uses has opened a door.
         public bool IsSpent => _remaining <= 0;
+
+        public int CashInValue => cashInValue;
 
         private Vector2Int _cell;
         private WorldContext _world;
