@@ -22,6 +22,9 @@ namespace Player
         // The kinds held, one entry per unit.
         public IEnumerable<ItemKind> Kinds => _items.Select(item => item.Kind);
 
+        // What everything still held is worth cashed in, for a run that ends with items to spare.
+        public int CashInValue => _items.Sum(item => item.CashInValue);
+
         // Announce the empty slot on spawn, the way PlayerHealth announces its hearts, so the HUD starts clean.
         private void Awake() => OnSlotChanged?.Invoke(Selected);
 
