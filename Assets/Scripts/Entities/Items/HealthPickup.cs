@@ -16,12 +16,16 @@ namespace Entities.Items
         // What it restores instead once the kind's upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedHearts = 2;
 
+        [SerializeField, Min(0)] private int cashInValue = 125;
+
         public string ItemId => healthPickupId;
 
         public ItemKind Kind => ItemKind.HealthPack;
 
         // Restoring hearts uses the whole pack up.
         public bool IsSpent => true;
+
+        public int CashInValue => cashInValue;
 
         private Vector2Int _cell;
         private WorldContext _world;
