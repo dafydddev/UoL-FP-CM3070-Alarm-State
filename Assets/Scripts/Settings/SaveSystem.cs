@@ -17,6 +17,12 @@ namespace Settings
 
         // The kinds whose upgrade has been bought. One entry each: an upgrade is bought once and kept.
         public List<ItemKind> upgradedItems = new();
+
+        // The skins bought. One entry each: a skin is bought once and kept.
+        public List<SkinKind> boughtSkins = new();
+
+        // The skin the player appears in.
+        public SkinKind equippedSkin;
     }
 
     // Reads and writes the profile as JSON under persistentDataPath.

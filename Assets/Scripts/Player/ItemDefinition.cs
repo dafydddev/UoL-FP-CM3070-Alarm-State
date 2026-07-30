@@ -12,11 +12,8 @@ namespace Player
 
         [Header("Shop")] [Min(0)] public int price;
 
-        // What buying the upgrade costs. Bought once and kept.
         [Min(0)] public int upgradePrice;
 
-        [Header("World")]
-        // Granted to the player for each of the items bought or carried into a level.
-        public GameObject prefab;
+        [Header("World")] public GameObject prefab;
     }
 }

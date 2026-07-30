@@ -5,6 +5,7 @@ namespace Player
 {
     // Tracks the disguise the player is wearing and how much longer it lasts and uses its sprite for the duration.
     // Separate from PlayerHiding, which counts cover zones: a disguise is worn, not stood in.
+    [RequireComponent(typeof(PlayerSkin))]
     public class PlayerDisguise : MonoBehaviour
     {
         [SerializeField] private Sprite disguisedSprite;
@@ -29,7 +30,8 @@ namespace Player
         private void Awake()
         {
             _sprite = GetComponentInChildren<SpriteRenderer>();
-            if (_sprite) _plainSprite = _sprite.sprite;
+            _plainSprite = GetComponent<PlayerSkin>().Equipped;
+            if (!_plainSprite && _sprite) _plainSprite = _sprite.sprite; // nothing equipped: the prefab's own
         }
 
         // Puts a disguise on for a stretch of time.

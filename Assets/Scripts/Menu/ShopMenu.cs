@@ -9,22 +9,32 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    // The shop panel: spends banked currency on the items for the next run and offers to upgrade them.
+    // The shop panel: spends banked currency on the items for the next run, offers to upgrade them,
+    // and sells the skins the player appears in.
     public class ShopMenu : MonoBehaviour
     {
         // One item kind's offer: the definition it sells and the buttons that buy it and its upgrade.
         // The prices live on the definition; only the scene wiring is authored here.
         [Serializable]
-        private class Offer
+        private class ItemOffer
         {
             public ItemDefinition definition;
             public Button button;
             public Button upgradeButton;
         }
 
+        // One skin's offer: the definition it sells and the button that buys it.
+        [Serializable]
+        private class SkinOffer
+        {
+            public SkinDefinition definition;
+            public Button button;
+        }
+
         [SerializeField] private TMP_Text balanceLabel;
         [SerializeField] private TMP_Text itemLabel; // the highlighted item's price and how many are owned
-        [SerializeField] private Offer[] offers;
+        [SerializeField] private ItemOffer[] offers;
+        [SerializeField] private SkinOffer[] skinOffers;
         [SerializeField] private Sprite unlockedSprite;
 
         private GameObject _highlighted;
@@ -35,8 +45,10 @@ namespace Menu
             {
                 offer.button.onClick.AddListener(() => Buy(offer));
                 offer.upgradeButton.onClick.AddListener(() => BuyUpgrade(offer));
-                ShowUpgradeSprite(offer); // restore state bought in an earlier session
+                ShowUpgradeSprite(offer);
             }
+
+            foreach (var offer in skinOffers) offer.button.onClick.AddListener(() => BuySkin(offer));
 
             ShowBalance();
 
@@ -52,6 +64,8 @@ namespace Menu
                 offer.button.onClick.RemoveAllListeners();
                 offer.upgradeButton.onClick.RemoveAllListeners();
             }
+
+            foreach (var offer in skinOffers) offer.button.onClick.RemoveAllListeners();
         }
 
         // Refreshes the shared label when the highlight moves to another item or upgrade.
@@ -64,52 +78,84 @@ namespace Menu
             if (offer != null) ShowItem(offer);
             var upgraded = offers.FirstOrDefault(o => o.upgradeButton.gameObject == selected);
             if (upgraded != null) ShowUpgrade(upgraded);
+            var skin = skinOffers.FirstOrDefault(o => o.button.gameObject == selected);
+            if (skin != null) ShowSkin(skin);
         }
 
         // Buys one of the kind, spending its price, unless the wallet can't afford it.
-        private void Buy(Offer offer)
+        private void Buy(ItemOffer itemOffer)
         {
-            if (CurrencySettings.Balance < offer.definition.price) return;
+            if (CurrencySettings.Balance < itemOffer.definition.price) return;
 
-            CurrencySettings.Balance -= offer.definition.price;
-            SaveSystem.Data.ownedItems.Add(offer.definition.kind);
+            CurrencySettings.Balance -= itemOffer.definition.price;
+            SaveSystem.Data.ownedItems.Add(itemOffer.definition.kind);
             SaveSystem.Save(); // persist the spend and the new item together
             ShowBalance();
-            ShowItem(offer);
+            ShowItem(itemOffer);
         }
 
         // Buys the kind's upgrade, spending its price, unless it is already bought or the wallet can't afford it.
         // Bought once and kept: every item of the kind is upgraded from then on, this run's and every later one's.
-        private void BuyUpgrade(Offer offer)
+        private void BuyUpgrade(ItemOffer itemOffer)
         {
-            if (UpgradeSettings.IsUpgraded(offer.definition.kind)) return;
-            if (CurrencySettings.Balance < offer.definition.upgradePrice) return;
-            CurrencySettings.Balance -= offer.definition.upgradePrice;
-            SaveSystem.Data.upgradedItems.Add(offer.definition.kind);
+            if (UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
+            if (CurrencySettings.Balance < itemOffer.definition.upgradePrice) return;
+            CurrencySettings.Balance -= itemOffer.definition.upgradePrice;
+            SaveSystem.Data.upgradedItems.Add(itemOffer.definition.kind);
             SaveSystem.Save();
             ShowBalance();
-            ShowUpgradeSprite(offer);
-            ShowUpgrade(offer);
+            ShowUpgradeSprite(itemOffer);
+            ShowUpgrade(itemOffer);
+        }
+
+        // Buys the skin and equips it, unless the wallet can't afford it.
+        // Bought once and kept, so pressing it again only equips it.
+        private void BuySkin(SkinOffer offer)
+        {
+            var kind = offer.definition.kind;
+            if (!IsBought(kind))
+            {
+                if (CurrencySettings.Balance < offer.definition.price) return;
+                CurrencySettings.Balance -= offer.definition.price;
+                SaveSystem.Data.boughtSkins.Add(kind);
+            }
+
+            SaveSystem.Data.equippedSkin = kind;
+            SaveSystem.Save();
+            ShowBalance();
+            ShowSkin(offer);
         }
 
         private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
 
-        private void ShowItem(Offer offer) => itemLabel.text =
-            $"{offer.definition.displayName}: {offer.definition.price} points (Owned {OwnedCount(offer.definition.kind)})";
+        private void ShowItem(ItemOffer itemOffer) => itemLabel.text =
+            $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
 
-        private void ShowUpgrade(Offer offer)
+        private void ShowUpgrade(ItemOffer itemOffer)
         {
-            itemLabel.text = UpgradeSettings.IsUpgraded(offer.definition.kind)
-                ? $"{offer.definition.displayName} Upgrade: Bought"
-                : $"{offer.definition.displayName} Upgrade: {offer.definition.upgradePrice} points";
+            itemLabel.text = UpgradeSettings.IsUpgraded(itemOffer.definition.kind)
+                ? $"{itemOffer.definition.displayName} Upgrade: Bought"
+                : $"{itemOffer.definition.displayName} Upgrade: {itemOffer.definition.upgradePrice} points";
+        }
+
+        private void ShowSkin(SkinOffer offer)
+        {
+            var definition = offer.definition;
+            if (SaveSystem.Data.equippedSkin == definition.kind) itemLabel.text = $"{definition.displayName}: Equipped";
+            else if (IsBought(definition.kind)) itemLabel.text = $"{definition.displayName}: Bought";
+            else itemLabel.text = $"{definition.displayName}: {definition.price} points";
         }
 
         private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
 
-        private void ShowUpgradeSprite(Offer offer)
+        // The skin the player starts in is theirs without buying.
+        private static bool IsBought(SkinKind kind) =>
+            kind == SkinKind.Default || SaveSystem.Data.boughtSkins.Contains(kind);
+
+        private void ShowUpgradeSprite(ItemOffer itemOffer)
         {
-            if (!UpgradeSettings.IsUpgraded(offer.definition.kind)) return;
-            if (offer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite)
+            if (!UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
+            if (itemOffer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite)
                 image.sprite = unlockedSprite;
         }
     }
