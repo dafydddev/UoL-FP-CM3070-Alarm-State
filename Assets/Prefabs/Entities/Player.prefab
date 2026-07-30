@@ -374,10 +374,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerSkin
   sprite: {fileID: 1130367498811183456}
-  default: {fileID: 11400000, guid: 32fac325514aa7d4b992f4be0a756233, type: 2}
-  soldier: {fileID: 11400000, guid: 68fbb3f0b90cb034bbd06178385a53c5, type: 2}
-  king: {fileID: 11400000, guid: c7034415cbd0a4a4facdf2aeae8d39af, type: 2}
-  unknown: {fileID: 11400000, guid: bc8ebe45781caa5439a2bcc786166b07, type: 2}
+  skins:
+  - {fileID: 11400000, guid: 32fac325514aa7d4b992f4be0a756233, type: 2}
+  - {fileID: 11400000, guid: 68fbb3f0b90cb034bbd06178385a53c5, type: 2}
+  - {fileID: 11400000, guid: c7034415cbd0a4a4facdf2aeae8d39af, type: 2}
+  - {fileID: 11400000, guid: bc8ebe45781caa5439a2bcc786166b07, type: 2}
 --- !u!1 &5519261102728203849
 GameObject:
   m_ObjectHideFlags: 0
