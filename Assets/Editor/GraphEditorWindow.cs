@@ -207,6 +207,7 @@ namespace Editor
             EditorGUILayout.LabelField($"Rooms: {_roomGraph.rooms.Count}");
             EditorGUILayout.LabelField($"Exits: {_roomGraph.rooms.Count(r => r.type == RoomType.Exit)}");
             EditorGUILayout.LabelField($"Supply: {_roomGraph.rooms.Count(r => r.type == RoomType.SupplyRoom)}");
+            EditorGUILayout.LabelField($"Pressure: {_roomGraph.rooms.Count(r => r.type == RoomType.PressureRoom)}");
             EditorGUILayout.EndHorizontal();
         }
 
