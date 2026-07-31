@@ -13,6 +13,9 @@ namespace Run
         public int CurrentLevel { get; private set; }
         public int TotalLevels { get; }
 
+        // The hearts the player finished each of the last few levels on, and the alarms they raised there.
+        public RunPerformance Performance { get; } = new();
+
         // What each source has paid the run so far, kept apart so that the result screen can break the takings down.
         public int PrimaryObjectiveEarnings { get; private set; }
         public int SecondaryObjectiveEarnings { get; private set; }

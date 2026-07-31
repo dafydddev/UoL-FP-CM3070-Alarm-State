@@ -33,6 +33,9 @@ namespace Run
 
         private RunContext _run;
 
+        // Alarms raised since this level was built.
+        private int _alarmsThisLevel;
+
         private FacilityOrchestrator FacilityOrchestrator => _facility ??= GetComponent<FacilityOrchestrator>();
 
         private void Start()
@@ -78,10 +81,13 @@ namespace Run
             PauseMenu.Quit -= OnQuit;
         }
 
-        // Records each raise against the current run (the off and per-level reset edges carry no data).
+        // Counts and reports the alarm going up. The event also fires when it is switched off and when the
+        // next level resets it; neither is counted.
         private void OnAlarmChanged(bool active)
         {
-            if (active && _run != null) Telemetry.AlarmRaised(_run);
+            if (!active || _run == null) return;
+            _alarmsThisLevel++;
+            Telemetry.AlarmRaised(_run);
         }
 
         // Completing an objective adds its reward to the run's pending total.
@@ -93,6 +99,7 @@ namespace Run
         {
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run);
+            RecordForm();
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
             {
@@ -124,6 +131,14 @@ namespace Run
             if (player.TryGetComponent(out PlayerHealth health)) loadout.StartingHearts = health.Hearts;
 
             RunLoadout.Pending = loadout;
+        }
+
+        // Stores how the finished level went: the hearts the player ended it on, and how many alarms they set off.
+        private void RecordForm()
+        {
+            var player = FacilityOrchestrator.World?.Player;
+            if (player && player.TryGetComponent(out PlayerHealth health))
+                _run.Performance.RecordLevel(health.Hearts, health.MaxHearts, _alarmsThisLevel);
         }
 
         // Losing the last heart ends the run. PlayerHealth fires this at most once at zero,
@@ -177,6 +192,7 @@ namespace Run
         // Builds the level for the current run state and re-arms this level's primary-objective award.
         private void GenerateLevel()
         {
+            _alarmsThisLevel = 0;
             FacilityOrchestrator.Generate(_run);
             FacilityOrchestrator.World.Mission.PrimaryCompleted += OnPrimaryCompleted;
             Telemetry.LevelStarted(_run);

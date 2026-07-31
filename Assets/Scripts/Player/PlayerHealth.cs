@@ -22,6 +22,9 @@ namespace Player
         // The hearts remaining.
         public int Hearts => Current;
 
+        // The hearts a full bar holds.
+        public int MaxHearts => maxHearts;
+
         // Alive while at least one heart remains.
         private bool IsAlive => Current > 0;
 

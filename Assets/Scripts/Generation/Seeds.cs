@@ -16,6 +16,7 @@ namespace Generation
         public const int Tiles = 7;
         public const int Hacking = 8;
         public const int Drops = 9;
+        public const int Adaptive = 10;
 
         // Mixes the base seed with a subsystem id and an optional salt (e.g. the level number).
         public static int For(int seed, int subsystem, int salt = 0)

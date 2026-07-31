@@ -70,6 +70,10 @@ namespace Run
         // Sequence minigame balance: how many bound keys the order runs to.
         public int sequenceLength = 3;
 
+        // How likely an adaptive room is when RunPerformance.Standing sits at -1 or +1.
+        [Header("Adaptive Rooms")]
+        [Range(0f, 1f)] public float adaptiveRoomChance = 0.5f;
+
         private static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));
 
