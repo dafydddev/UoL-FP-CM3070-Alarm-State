@@ -14,7 +14,8 @@ namespace Graphs.Rooms
     // Generation is a fixed pipeline of passes over a shared Builder, which owns the door-budget invariant.
     public static class RoomGraphGenerator
     {
-        public static RoomGraph Generate(MissionGraph mission, RunDifficulty profile, int level, int totalLevels)
+        public static RoomGraph Generate(MissionGraph mission, RunDifficulty profile, int level, int totalLevels,
+            float standing = 0f)
         {
             var builder = new RoomGraphBuilder(mission.seed, level);
             var rng = new Random(Seeds.For(mission.seed, Seeds.Rooms, level));
@@ -24,6 +25,7 @@ namespace Graphs.Rooms
             ConnectDependencies(builder, mission, missionRooms, profile, rng, level, totalLevels);
             InsertGuardPosts(builder, profile, rng, level, totalLevels);
             ScatterExtraExits(builder, profile, rng, level, totalLevels);
+            InjectAdaptiveRooms(builder, profile, standing, mission.seed, level);
             SpliceCorridors(builder);
 
             return builder.Graph;
@@ -116,7 +118,34 @@ namespace Graphs.Rooms
                 roomGraphBuilder.Attach(exitCandidates[i].id, roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
         }
 
-        // 6. Insert a corridor between most connected rooms for spacing (a degree-preserving splice).
+        // 6. Adds one extra room when the player's last few levels went badly: a supply room holding health packs.
+        // Standing runs from -1 (struggling) to +1 (thriving); the lower it is, the more likely the room.
+        private static void InjectAdaptiveRooms(RoomGraphBuilder roomGraphBuilder, RunDifficulty profile,
+            float standing, int seed, int level)
+        {
+            if (standing >= 0f) return;
+
+            var rng = new Random(Seeds.For(seed, Seeds.Adaptive, level));
+            if (rng.NextDouble() >= profile.adaptiveRoomChance * -standing) return;
+
+            InjectSupplyRoom(roomGraphBuilder, rng);
+        }
+
+        // Hangs a supply room off a random corridor or side objective, one step aside from the route through the level.
+        // Attach, not AddEdge, so a room that already has four doors relays the new one through a corridor.
+        private static void InjectSupplyRoom(RoomGraphBuilder roomGraphBuilder, Random rng)
+        {
+            var hosts = roomGraphBuilder.Graph.rooms
+                .Where(r => r.type is RoomType.Corridor or RoomType.SecondaryObjectiveRoom)
+                .ToList();
+            if (hosts.Count == 0) return;
+
+            Shuffle.InPlace(hosts, rng);
+            var supply = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("supply"), RoomType.SupplyRoom);
+            roomGraphBuilder.Attach(hosts[0].id, supply.id);
+        }
+
+        // 7. Insert a corridor between most connected rooms for spacing (a degree-preserving splice).
         private static void SpliceCorridors(RoomGraphBuilder roomGraphBuilder)
         {
             var graph = roomGraphBuilder.Graph;
