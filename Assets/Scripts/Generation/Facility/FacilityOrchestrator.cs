@@ -46,6 +46,7 @@ namespace Generation.Facility
         [SerializeField] private DistractionSpawner distractionSpawner;
         [SerializeField] private GuardSpawner guardSpawner;
         [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
+        [SerializeField] private SupplyRoomSpawner supplyRoomSpawner;
         
         [Header("Preview Level in Editor")]
         [SerializeField] private int previewLevel = 1;
@@ -85,7 +86,11 @@ namespace Generation.Facility
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = MissionGenerator.Generate(run.DifficultyProfile, run.CurrentLevel, run.TotalLevels);
-            var rooms = RoomGraphGenerator.Generate(mission, run.DifficultyProfile, run.CurrentLevel, run.TotalLevels);
+            // A level still inside the cooldown from the last adaptive room generates at a standing of 0.
+            var standing = run.Performance.CanInject(run.CurrentLevel) ? run.Performance.Standing : 0f;
+            var rooms = RoomGraphGenerator.Generate(mission, run.DifficultyProfile, run.CurrentLevel,
+                run.TotalLevels, standing);
+            if (rooms.rooms.Exists(r => r.type == RoomType.SupplyRoom)) run.Performance.RecordInjection(run.CurrentLevel);
             var roles = TileLayoutGenerator.Generate(rooms, run.LayoutStyle, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
@@ -122,6 +127,7 @@ namespace Generation.Facility
             distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
+            supplyRoomSpawner?.Spawn(rooms, rects, World);
 
             // Hand the hacking screens the run state, so their boards and orders scale with the level.
             hackingGameController?.Prepare(run);
@@ -142,6 +148,7 @@ namespace Generation.Facility
             distractionSpawner?.ClearChildren();
             guardSpawner?.ClearChildren();
             alarmSwitchSpawner?.ClearChildren();
+            supplyRoomSpawner?.ClearChildren();
         }
     }
 }
