@@ -17,6 +17,7 @@ namespace Graphs.Rooms
             [RoomType.GuardPost] = new Color(0.80f, 0.50f, 0.90f), // purple
             [RoomType.Corridor] = new Color(0.75f, 0.75f, 0.75f), // grey
             [RoomType.SupplyRoom] = new Color(0.35f, 0.85f, 0.75f), // teal
+            [RoomType.PressureRoom] = new Color(0.95f, 0.30f, 0.55f), // magenta
         };
 
         // False for roles with no assigned colour; callers choose their own fallback.

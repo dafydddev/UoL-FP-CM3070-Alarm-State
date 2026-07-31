@@ -13,7 +13,8 @@ namespace Graphs.Rooms
         GuardPost,
         Corridor,
         Exit,
-        SupplyRoom
+        SupplyRoom,
+        PressureRoom
     }
 
     public static class RoomTypeExtensions
@@ -21,6 +22,9 @@ namespace Graphs.Rooms
         // Both objective rooms, for the places where primary/secondary doesn't matter.
         public static bool IsObjective(this RoomType type) =>
             type is RoomType.PrimaryObjectiveRoom or RoomType.SecondaryObjectiveRoom;
+
+        public static bool IsAdaptive(this RoomType type) =>
+            type is RoomType.SupplyRoom or RoomType.PressureRoom;
     }
     
     // A single room in the layout graph, linked back to the mission node it represents.
