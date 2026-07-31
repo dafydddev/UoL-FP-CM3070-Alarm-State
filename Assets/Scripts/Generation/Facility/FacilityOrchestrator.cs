@@ -36,7 +36,7 @@ namespace Generation.Facility
         [SerializeField] private HackingGameController hackingGameController;
         [SerializeField] private SequenceGameController sequenceGameController;
 
-        [Header("Spawners")]
+        [Header("Spawners")] 
         [SerializeField] private PlayerSpawner playerSpawner;
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
@@ -47,6 +47,7 @@ namespace Generation.Facility
         [SerializeField] private GuardSpawner guardSpawner;
         [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
         [SerializeField] private SupplyRoomSpawner supplyRoomSpawner;
+        [SerializeField] private PressureRoomSpawner pressureRoomSpawner;
         
         [Header("Preview Level in Editor")]
         [SerializeField] private int previewLevel = 1;
@@ -73,7 +74,8 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
+        public void GeneratePreview() =>
+            Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
@@ -90,7 +92,7 @@ namespace Generation.Facility
             var standing = run.Performance.CanInject(run.CurrentLevel) ? run.Performance.Standing : 0f;
             var rooms = RoomGraphGenerator.Generate(mission, run.DifficultyProfile, run.CurrentLevel,
                 run.TotalLevels, standing);
-            if (rooms.rooms.Exists(r => r.type == RoomType.SupplyRoom)) run.Performance.RecordInjection(run.CurrentLevel);
+            if (rooms.rooms.Exists(r => r.type.IsAdaptive())) run.Performance.RecordInjection(run.CurrentLevel);
             var roles = TileLayoutGenerator.Generate(rooms, run.LayoutStyle, out var rects);
 
             // Realise each role into a tile: keep it in the grid for queries and paint it.
@@ -113,11 +115,12 @@ namespace Generation.Facility
 
             // Tint rooms by role for readability.
             FacilityColourCoder.Apply(tilemap, rooms, rects);
-            
+
             // Generate and paint the exterior terrain behind the facility using PCG noise.
             ExteriorGenerator.Paint(roles, rooms.seed, rooms.level);
 
             // Populate the level: sim participants get the world, set dressing just the tilemap.
+            pressureRoomSpawner?.Spawn(rooms, rects, World);
             playerSpawner?.Spawn(rooms, rects, World);
             keycardSpawner?.Spawn(rooms, rects, World);
             lockedDoorSpawner?.Spawn(rooms, rects, World);
@@ -128,12 +131,9 @@ namespace Generation.Facility
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
-
-            // Hand the hacking screens the run state, so their boards and orders scale with the level.
-            hackingGameController?.Prepare(run);
+            hackingGameController?.Prepare(run); // Hand the hacking screens the run state.
             sequenceGameController?.Prepare(run);
-            // Scale the mini-map for the generated level.
-            minimap?.Fit();
+            minimap?.Fit(); // Scale the mini-map for the generated level.
         }
 
         // Destroys everything spawned under each spawner from the previous level.
@@ -149,6 +149,7 @@ namespace Generation.Facility
             guardSpawner?.ClearChildren();
             alarmSwitchSpawner?.ClearChildren();
             supplyRoomSpawner?.ClearChildren();
+            pressureRoomSpawner?.ClearChildren();
         }
     }
 }

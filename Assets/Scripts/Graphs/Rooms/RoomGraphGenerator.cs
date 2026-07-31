@@ -32,7 +32,8 @@ namespace Graphs.Rooms
         }
 
         // 1. One room per mission node.
-        private static Dictionary<string, RoomNode> CreateMissionRooms(RoomGraphBuilder roomGraphBuilder, MissionGraph mission)
+        private static Dictionary<string, RoomNode> CreateMissionRooms(RoomGraphBuilder roomGraphBuilder,
+            MissionGraph mission)
         {
             var missionRooms = new Dictionary<string, RoomNode>(); // mission node id → its room
             foreach (var node in mission.nodes)
@@ -43,11 +44,14 @@ namespace Graphs.Rooms
 
         // 2. Entrance: the player spawn and graph root.
         // It only connects to the mission start and its own exit, so the spawn stays clean of guards and keys.
-        private static void ConnectEntrance(RoomGraphBuilder roomGraphBuilder, Dictionary<string, RoomNode> missionRooms)
+        private static void ConnectEntrance(RoomGraphBuilder roomGraphBuilder,
+            Dictionary<string, RoomNode> missionRooms)
         {
             var entrance = roomGraphBuilder.AddRoom("room_entrance", RoomType.Entrance);
-            if (missionRooms.TryGetValue("entry", out var entryRoom)) roomGraphBuilder.AddEdge(entrance.id, entryRoom.id);
-            roomGraphBuilder.AddEdge(entrance.id, roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
+            if (missionRooms.TryGetValue("entry", out var entryRoom))
+                roomGraphBuilder.AddEdge(entrance.id, entryRoom.id);
+            roomGraphBuilder.AddEdge(entrance.id,
+                roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
         }
 
         // 3. Turn mission dependencies into edges (preserving the graph's topology);
@@ -69,7 +73,8 @@ namespace Graphs.Rooms
                     if (toRoom.type.IsObjective() && rng.NextDouble() < lockChance)
                     {
                         var key = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("key"), RoomType.KeycardRoom);
-                        roomGraphBuilder.Attach(fromRoom.id, key.id); // key reachable off the source, before the door it opens
+                        roomGraphBuilder.Attach(fromRoom.id,
+                            key.id); // key reachable off the source, before the door it opens
                         keyRoomId = key.id;
                     }
 
@@ -80,7 +85,8 @@ namespace Graphs.Rooms
 
         // 4. Guard posts in front of objective rooms (always) and keycard rooms (per profile).
         // Every inbound approach is retargeted through the guard, so no approach can bypass it.
-        private static void InsertGuardPosts(RoomGraphBuilder roomGraphBuilder, RunDifficulty profile, Random rng, int level,
+        private static void InsertGuardPosts(RoomGraphBuilder roomGraphBuilder, RunDifficulty profile, Random rng,
+            int level,
             int totalLevels)
         {
             var guardChance = profile.GuardChance(level, totalLevels, rng);
@@ -115,20 +121,21 @@ namespace Graphs.Rooms
 
             var additionalCount = Math.Min(extraExitCount, exitCandidates.Count);
             for (var i = 0; i < additionalCount; i++)
-                roomGraphBuilder.Attach(exitCandidates[i].id, roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
+                roomGraphBuilder.Attach(exitCandidates[i].id,
+                    roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("exit"), RoomType.Exit).id);
         }
 
-        // 6. Adds one extra room when the player's last few levels went badly: a supply room holding health packs.
-        // Standing runs from -1 (struggling) to +1 (thriving); the lower it is, the more likely the room.
+        // 6. Adds one extra room when the last few levels stand out: health packs when they went badly, lasers when they went well.
         private static void InjectAdaptiveRooms(RoomGraphBuilder roomGraphBuilder, RunDifficulty profile,
             float standing, int seed, int level)
         {
-            if (standing >= 0f) return;
+            if (standing == 0f) return;
 
             var rng = new Random(Seeds.For(seed, Seeds.Adaptive, level));
-            if (rng.NextDouble() >= profile.adaptiveRoomChance * -standing) return;
+            if (rng.NextDouble() >= profile.adaptiveRoomChance * Math.Abs(standing)) return;
 
-            InjectSupplyRoom(roomGraphBuilder, rng);
+            if (standing < 0f) InjectSupplyRoom(roomGraphBuilder, rng);
+            else InjectPressureRoom(roomGraphBuilder);
         }
 
         // Hangs a supply room off a random corridor or side objective, one step aside from the route through the level.
@@ -143,6 +150,23 @@ namespace Graphs.Rooms
             Shuffle.InPlace(hosts, rng);
             var supply = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("supply"), RoomType.SupplyRoom);
             roomGraphBuilder.Attach(hosts[0].id, supply.id);
+        }
+
+        // Splices a laser room in front of the objective the way guard posts are spliced in, so no approach bypasses it.
+        private static void InjectPressureRoom(RoomGraphBuilder roomGraphBuilder)
+        {
+            var target = roomGraphBuilder.Graph.rooms.Find(r => r.type == RoomType.PrimaryObjectiveRoom)
+                         ?? roomGraphBuilder.Graph.rooms.Find(r => r.type.IsObjective());
+
+            if (target == null) return;
+
+            var inbound = roomGraphBuilder.Graph.edges.FindAll(e => e.toId == target.id);
+            if (inbound.Count == 0) return; // nothing to gate, and the room would be left stranded
+
+            var pressure = roomGraphBuilder.AddRoom(roomGraphBuilder.NextId("pressure"), RoomType.PressureRoom);
+            foreach (var edge in inbound)
+                roomGraphBuilder.RerouteEdge(edge, pressure.id); // its lock, if any, rides along
+            roomGraphBuilder.AddEdge(pressure.id, target.id);
         }
 
         // 7. Insert a corridor between most connected rooms for spacing (a degree-preserving splice).
