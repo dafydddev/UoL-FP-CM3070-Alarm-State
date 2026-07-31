@@ -25,6 +25,9 @@ namespace Editor
         private int _seed = 1;
         private bool _randomSeed = true;
 
+        // How well the player has been doing, -1 struggling to +1 thriving.
+        private float _standing;
+
         // The most recently generated graphs.
         private MissionGraph _missionGraph;
         private RoomGraph _roomGraph;
@@ -50,8 +53,8 @@ namespace Editor
         private const int FontSizeSmall = 10; // Smaller text size
 
         // Node and layout dimensions.
-        private const float NodeW = 140f;   // node box width
-        private const float NodeH = 50f;    // node box height
+        private const float NodeW = 140f; // node box width
+        private const float NodeH = 50f; // node box height
         private const float NodeGapX = 40f; // horizontal gap between node edges at adjacent levels
         private const float NodeGapY = 30f; // vertical gap between node edges within the same level
         private const float LevelSpacingX = NodeW + NodeGapX; // distance between level centres
@@ -92,7 +95,7 @@ namespace Editor
         private const float SubtitleHeightRatio = 0.4f;
 
         // Halo ring drawn around the primary objective's node.
-        private const float HaloInflate = 4f;   // gap between the node box and its halo ring
+        private const float HaloInflate = 4f; // gap between the node box and its halo ring
         private const float HaloThickness = 2f; // halo ring thickness
 
         // Arrow drawing.
@@ -135,8 +138,10 @@ namespace Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Generation", EditorStyles.boldLabel);
 
-            _runDifficulty = (RunDifficulty)EditorGUILayout.ObjectField("Difficulty Profile", _runDifficulty, typeof(RunDifficulty), false);
-            _totalLevels = EditorGUILayout.IntPopup("Total Levels", _totalLevels, new[] { "10", "20", "30" }, new[] { 10, 20, 30 });
+            _runDifficulty = (RunDifficulty)EditorGUILayout.ObjectField("Difficulty Profile", _runDifficulty,
+                typeof(RunDifficulty), false);
+            _totalLevels = EditorGUILayout.IntPopup("Total Levels", _totalLevels, new[] { "10", "20", "30" },
+                new[] { 10, 20, 30 });
             _level = EditorGUILayout.IntSlider("Level", _level, MinLevel, _totalLevels);
             _randomType = EditorGUILayout.Toggle("Random Type", _randomType);
             if (!_randomType)
@@ -149,6 +154,8 @@ namespace Editor
             {
                 _seed = EditorGUILayout.IntField("Seed", _seed);
             }
+
+            _standing = EditorGUILayout.Slider("Standing", _standing, -1f, 1f);
 
             if (!_runDifficulty)
             {
@@ -167,7 +174,8 @@ namespace Editor
                 };
 
                 _missionGraph = gen.Generate(_level, _totalLevels);
-                _roomGraph = RoomGraphGenerator.Generate(_missionGraph, _runDifficulty, _level, _totalLevels);
+                _roomGraph =
+                    RoomGraphGenerator.Generate(_missionGraph, _runDifficulty, _level, _totalLevels, _standing);
                 _seed = _missionGraph.seed; // reflect the used seed back into the field
 
                 // Compute node positions for both diagrams.
@@ -198,6 +206,7 @@ namespace Editor
             EditorGUILayout.LabelField($"Nodes: {_missionGraph.nodes.Count}", GUILayout.Width(MetaNodesWidth));
             EditorGUILayout.LabelField($"Rooms: {_roomGraph.rooms.Count}");
             EditorGUILayout.LabelField($"Exits: {_roomGraph.rooms.Count(r => r.type == RoomType.Exit)}");
+            EditorGUILayout.LabelField($"Supply: {_roomGraph.rooms.Count(r => r.type == RoomType.SupplyRoom)}");
             EditorGUILayout.EndHorizontal();
         }
 
@@ -446,7 +455,8 @@ namespace Editor
         }
 
         // Average row of a node's neighbours, or its own row when it has none to follow.
-        private static float Barycenter(string id, Dictionary<string, List<string>> neighbours, Dictionary<string, float> rows)
+        private static float Barycenter(string id, Dictionary<string, List<string>> neighbours,
+            Dictionary<string, float> rows)
         {
             if (!neighbours.TryGetValue(id, out var linked) || linked.Count == 0) return rows[id];
             var sum = 0f;
@@ -493,7 +503,8 @@ namespace Editor
             if (highlight)
             {
                 var inflate = HaloInflate * _zoom;
-                var halo = new Rect(rect.x - inflate, rect.y - inflate, rect.width + inflate * 2f, rect.height + inflate * 2f);
+                var halo = new Rect(rect.x - inflate, rect.y - inflate, rect.width + inflate * 2f,
+                    rect.height + inflate * 2f);
                 DrawBorder(halo, col, HaloThickness);
             }
 
@@ -509,8 +520,12 @@ namespace Editor
                 normal = { textColor = new Color(0.6f, 0.6f, 0.7f) }
             };
 
-            GUI.Label(new Rect(rect.x + NodePadding, rect.y + NodePadding, rect.width - NodePadding * 2, rect.height * TitleHeightRatio), text, labelStyle);
-            GUI.Label(new Rect(rect.x + NodePadding, rect.y + rect.height * SubtitleTopRatio, rect.width - NodePadding * 2, rect.height * SubtitleHeightRatio), subtitle,
+            GUI.Label(
+                new Rect(rect.x + NodePadding, rect.y + NodePadding, rect.width - NodePadding * 2,
+                    rect.height * TitleHeightRatio), text, labelStyle);
+            GUI.Label(
+                new Rect(rect.x + NodePadding, rect.y + rect.height * SubtitleTopRatio, rect.width - NodePadding * 2,
+                    rect.height * SubtitleHeightRatio), subtitle,
                 subStyle);
 
             // Toggle selection if this node was clicked.
