@@ -12,7 +12,8 @@ namespace Graphs.Rooms
         KeycardRoom,
         GuardPost,
         Corridor,
-        Exit
+        Exit,
+        SupplyRoom
     }
 
     public static class RoomTypeExtensions
