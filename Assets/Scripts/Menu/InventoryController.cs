@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Menu;
 using Player;
 using Simulation;
 using TMPro;
@@ -9,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace HUD
+namespace Menu
 {
     // The inventory screen: a panel with one slot button per item.
     public class InventoryController : MonoBehaviour

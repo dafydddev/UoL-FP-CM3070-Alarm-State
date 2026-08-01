@@ -4,6 +4,7 @@ using Camera;
 using Generation.Tiles;
 using Graphs.Rooms;
 using HUD;
+using Menu;
 using Player;
 using Run;
 using Simulation;
