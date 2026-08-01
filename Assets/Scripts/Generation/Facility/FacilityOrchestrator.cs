@@ -117,7 +117,7 @@ namespace Generation.Facility
             FacilityColourCoder.Apply(tilemap, rooms, rects);
 
             // Generate and paint the exterior terrain behind the facility using PCG noise.
-            ExteriorGenerator.Paint(roles, rooms.seed, rooms.level);
+            ExteriorGenerator.Paint(roles, rooms.seed, rooms.level, run.TotalLevels);
 
             // Populate the level: sim participants get the world, set dressing just the tilemap.
             pressureRoomSpawner?.Spawn(rooms, rects, World);

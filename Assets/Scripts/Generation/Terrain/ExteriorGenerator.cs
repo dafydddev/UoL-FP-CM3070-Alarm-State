@@ -1,48 +1,52 @@
 using Generation.Cells;
+using Run;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace Generation.Terrain
 {
-    // Generates PCG terrain around (and in the gaps of) the facility footprint and paints it onto
-    // a background tilemap. Two independent Perlin fields — elevation and moisture — are sampled
-    // per tile and mapped to a biome; facility cells (and a buffer around them) are left blank so
-    // the facility tilemap shows through.
-    //
-    // Land biomes pick a seeded variant per cell. Water cells pick the pre-oriented tile matching
-    // which of their four neighbours are land, so any water shape the noise produces draws with a
-    // continuous shoreline.
-    //
-    // A generator component like MissionGenerator: its tunables and tileset live here, and the
-    // orchestrator drives it with the run's seed for repeatable output.
+    // Generates PCG terrain around (and in the gaps of) the facility and paints it onto a background tilemap.
     public class ExteriorGenerator : MonoBehaviour
     {
-        [SerializeField] private Tilemap tilemap;   // the background tilemap terrain is painted onto
+        [SerializeField] private Tilemap tilemap; // the background tilemap terrain is painted onto
         [SerializeField] private TerrainTileset tileset;
 
-        [Header("Extent")]
-        [Tooltip("How many tiles of terrain to paint around the facility's bounding box.")]
-        [Min(0)] public int margin = 10;
-        [Tooltip("Keep terrain this many tiles clear of the facility footprint.")]
-        [Min(0)] public int buffer;
+        [Header("Extent")] [Tooltip("How many tiles of terrain to paint around the facility's bounding box.")] [Min(0)]
+        public int margin = 10;
 
-        [Header("Noise shape")]
-        [Tooltip("Base noise frequency; smaller = larger, smoother features.")]
+        [Tooltip("Keep terrain this many tiles clear of the facility footprint.")] [Min(0)]
+        public int buffer;
+
+        [Header("Noise shape")] [Tooltip("Base noise frequency; smaller = larger, smoother features.")]
         public float frequency = 0.08f;
-        [Tooltip("Layers of detail summed together (fractal Brownian motion).")]
-        [Range(1, 6)] public int octaves = 4;
-        [Tooltip("How quickly each successive octave loses influence.")]
-        [Range(0f, 1f)] public float persistence = 0.5f;
-        [Tooltip("How quickly each successive octave gains frequency.")]
-        [Min(1f)] public float lacunarity = 2f;
 
-        [Header("Biome thresholds — elevation (0..1)")]
-        [Range(0f, 1f)] public float waterLevel = 0.36f; // below this is water
-        [Range(0f, 1f)] public float rockLevel = 0.72f;  // above this is bare rock
+        [Tooltip("Layers of detail summed together (fractal Brownian motion).")] [Range(1, 6)]
+        public int octaves = 4;
 
-        [Header("Biome thresholds — moisture (0..1)")]
-        [Range(0f, 1f)] public float treesMoisture = 0.55f; // wetter than this grows living trees
-        [Range(0f, 1f)] public float deadMoisture = 0.40f;  // drier than this leaves dead trees
+        [Tooltip("How quickly each successive octave loses influence.")] [Range(0f, 1f)]
+        public float persistence = 0.5f;
+
+        [Tooltip("How quickly each successive octave gains frequency.")] [Min(1f)]
+        public float lacunarity = 2f;
+
+        [Header("Biome thresholds — elevation (0..1)")] [Range(0f, 1f)]
+        public float waterLevel = 0.36f; // below this is water
+
+        [Range(0f, 1f)] public float rockLevel = 0.72f; // above this level is bare rock
+
+        [Header("Biome thresholds — moisture (0..1)")] [Range(0f, 1f)]
+        public float treesMoisture = 0.55f; // wetter than this grows living trees
+
+        [Range(0f, 1f)] public float deadMoisture = 0.40f; // drier than this leaves dead trees
+
+        [Header("Nightfall")] [Tooltip("Terrain tint on the run's first level.")]
+        public Color dayTint = Color.white;
+
+        [Tooltip("Terrain tint on the run's last level.")]
+        public Color nightTint = new(0.22f, 0.26f, 0.42f);
+
+        [Tooltip("How the light goes across the run: 0 is the first level, 1 the last.")]
+        public AnimationCurve nightfallShape = AnimationCurve.Linear(0, 0, 1, 1);
 
         // Clears any terrain this component previously painted. Kept separate from Paint because
         // the terrain shares its tilemap with the facility, which is cleared in the same phase.
@@ -51,17 +55,15 @@ namespace Generation.Terrain
             if (tilemap) tilemap.ClearAllTiles();
         }
 
-        // Generates the terrain and paints it onto the tilemap behind the facility. roles is the
-        // facility's structural grid; any non-None cell counts as "inside the facility". `seed`
-        // and `level` drive both the noise and the per-cell variant choice, so the same run
-        // repaints identically.
-        public void Paint(CellRole[,] roles, int seed, int level)
+        // Generates the terrain and paints it onto the tilemap behind the facility.
+        public void Paint(CellRole[,] roles, int seed, int level, int totalLevels)
         {
             if (!tilemap || !tileset) return;
 
             var terrain = Generate(roles, seed, level);
             var w = terrain.GetLength(0);
             var h = terrain.GetLength(1);
+            var tint = TintFor(level, totalLevels);
 
             for (var i = 0; i < w; i++)
             for (var j = 0; j < h; j++)
@@ -76,13 +78,24 @@ namespace Generation.Terrain
                     ? tileset.WaterTile(Shoreline(terrain, i, j))
                     : tileset.For(type.Value, seed, pos.x, pos.y);
 
-                if (def) tilemap.SetTile(pos, def.TileBase);
+                if (!def) continue;
+
+                tilemap.SetTile(pos, def.TileBase);
+
+                // Clear LockColor so SetColor takes effect, then dim the tile for the hour.
+                tilemap.SetTileFlags(pos, TileFlags.None);
+                tilemap.SetColor(pos, tint);
             }
         }
 
-        // Builds the biome grid covering the facility's bounding box expanded by `margin`.
-        // Indexed [i, j] where tile coord = (i - margin, j - margin); null entries are the
-        // facility footprint.
+        // The tint terrain draws at on this level: daylight on the first, night on the last.
+        private Color TintFor(int level, int totalLevels)
+        {
+            var fallen = Mathf.Clamp01(nightfallShape.Evaluate(RunDifficulty.Progress(level, totalLevels)));
+            return Color.Lerp(dayTint, nightTint, fallen);
+        }
+
+        // Builds the biome grid covering the facility's bounding box expanded by margin.
         private TerrainType?[,] Generate(CellRole[,] roles, int seed, int level)
         {
             var gridW = roles.GetLength(0);
@@ -113,8 +126,7 @@ namespace Generation.Terrain
                     continue;
                 }
 
-                // Sample both fields at the true tile coordinate so terrain is seamless
-                // regardless of margin, then pick a biome.
+                // Sample both fields at the true tile coordinate so terrain is seamless.
                 var elevation = Fbm(tx + eOff.x, ty + eOff.y);
                 var moisture = Fbm(tx + mOff.x, ty + mOff.y);
                 terrain[i, j] = Classify(elevation, moisture);
@@ -123,9 +135,9 @@ namespace Generation.Terrain
             return terrain;
         }
 
-        // Maps an elevation/moisture pair to a biome using the configured thresholds. Low ground
-        // is water and high ground is rock; the middle band splits by moisture into living trees
-        // (wet), dead trees (dry), or grass in between.
+        // Maps an elevation/moisture pair to a biome using the configured thresholds.
+        // - Low ground is water and high ground is rock,
+        // - The middle band splits by moisture into living trees (wet), dead trees (dry), or grass in between.
         private TerrainType Classify(float elevation, float moisture)
         {
             if (elevation < waterLevel) return TerrainType.Water;
@@ -135,8 +147,7 @@ namespace Generation.Terrain
             return TerrainType.Grass;
         }
 
-        // The sides of the water cell at (i, j) that touch land. Out-of-bounds and facility cells
-        // count as land, so terrain gets a shoreline at the map edge and around the facility.
+        // The sides of the water cell at (i, j) that touch land.
         private static Shore Shoreline(TerrainType?[,] grid, int i, int j)
         {
             var shore = Shore.None;
@@ -151,13 +162,13 @@ namespace Generation.Terrain
             i >= 0 && j >= 0 && i < grid.GetLength(0) && j < grid.GetLength(1) &&
             grid[i, j] == TerrainType.Water;
 
-        // Fractal Brownian motion: sums octaves of Perlin noise, normalised back to ~[0, 1].
+        // Fractal Brownian motion: sums octaves of Perlin noise.
         private float Fbm(float x, float y)
         {
             float sum = 0f, amplitude = 1f, freq = frequency, range = 0f;
             for (var o = 0; o < octaves; o++)
             {
-                // Mathf.PerlinNoise returns [0,1]; centre it so octaves can subtract as well as add.
+                // Mathf.PerlinNoise returns [0,1], centre it so octaves can subtract as well as add.
                 sum += (Mathf.PerlinNoise(x * freq, y * freq) - 0.5f) * amplitude;
                 range += amplitude;
                 amplitude *= persistence;
@@ -193,8 +204,6 @@ namespace Generation.Terrain
             return blocked;
         }
 
-        // A large random offset that de-correlates a noise field and hides Mathf.PerlinNoise's
-        // integer-lattice symmetry (it returns 0.5 at whole coordinates).
         private static float NextOffset(System.Random rng) => (float)(rng.NextDouble() * 10000.0 - 5000.0);
     }
 }
