@@ -74,7 +74,8 @@ namespace Run
         [Header("Adaptive Rooms")]
         [Range(0f, 1f)] public float adaptiveRoomChance = 0.5f;
 
-        private static float Progress(int level, int totalLevels) =>
+        // How far into the run a level sits, 0 on the first and 1 on the last.
+        public static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));
 
         private static float CurrentMin(Range range, float progress) =>
