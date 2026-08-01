@@ -33,7 +33,7 @@ namespace Generation.Facility
         [SerializeField] private MinimapHud minimap;
         
         [Header("Hacking Game Controllers")]
-        [SerializeField] private HackingGameController hackingGameController;
+        [SerializeField] private PipeGameController pipeGameController;
         [SerializeField] private SequenceGameController sequenceGameController;
 
         [Header("Spawners")] 
@@ -131,7 +131,7 @@ namespace Generation.Facility
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
-            hackingGameController?.Prepare(run); // Hand the hacking screens the run state.
+            pipeGameController?.Prepare(run); // Hand the hacking screens the run state.
             sequenceGameController?.Prepare(run);
             minimap?.Fit(); // Scale the mini-map for the generated level.
         }

@@ -12,7 +12,7 @@ namespace Hacking
 {
     // The pipe hacking screen. Opens when the player uses an objective.
     // The objective completes once the pipes are rotated into a circuit from the feed to the outlet.
-    public class HackingGameController : MonoBehaviour
+    public class PipeGameController : MonoBehaviour
     {
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
