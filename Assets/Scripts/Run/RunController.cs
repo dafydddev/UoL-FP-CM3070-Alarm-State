@@ -14,14 +14,12 @@ using UnityEngine.SceneManagement;
 
 namespace Run
 {
-    // Drives level progression:
-    // Builds the starting level, then advances one level each time the player reaches an exit.
-    // Difficulty scales with the level number, which the facility orchestrator handles.
+    // Drives level progression. Builds starting the level and advances level each time the player reaches an exit.
     [RequireComponent(typeof(FacilityOrchestrator))]
-    public class RunLevelOrchestrator : MonoBehaviour
+    public class RunController : MonoBehaviour
     {
-        [Header("Run Options")] [SerializeField, Min(1)]
-        private int startLevel = 1;
+        [Header("Run Options")] 
+        [SerializeField, Min(1)] private int startLevel = 1;
 
         [SerializeField, Min(1)] private int totalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
@@ -81,8 +79,7 @@ namespace Run
             PauseMenu.Quit -= OnQuit;
         }
 
-        // Counts and reports the alarm going up. The event also fires when it is switched off and when the
-        // next level resets it; neither is counted.
+        // Counts and reports the alarm going up.
         private void OnAlarmChanged(bool active)
         {
             if (!active || _run == null) return;
@@ -115,7 +112,6 @@ namespace Run
         private void OnQuit() => StartCoroutine(EndRun());
 
         // Carries the cleared level's player into the next one: the hearts they survived on and their inventory
-        // Read before BuildLevel tears the level down and spawns their replacement.
         private void CarryOver()
         {
             var player = FacilityOrchestrator.World?.Player;
@@ -141,8 +137,8 @@ namespace Run
                 _run.Performance.RecordLevel(health.Hearts, health.MaxHearts, _alarmsThisLevel);
         }
 
-        // Losing the last heart ends the run. PlayerHealth fires this at most once at zero,
-        // so the run can't be ended twice by arrests landing in the same burst of ticks.
+        // Losing the last heart ends the run. PlayerHealth fires makes sure to only fire this once.
+        // So that the run can't be ended twice by arrests landing in the same burst of ticks.
         private void OnHealthChanged(int current, int _)
         {
             if (current == 0) StartCoroutine(EndRun());
@@ -198,15 +194,15 @@ namespace Run
             Telemetry.LevelStarted(_run);
         }
 
-        // The cleared run: the completion bonus lands and the inventory cashes in what it never spent,
-        // then the results show the takings climbing onto the balance.
+        // The cleared run: the completion bonus lands, and the inventory cashes which items weren't used.
         // Read before the level is torn down, the same as the carry-over between levels.
         private IEnumerator CompleteRun()
         {
             Telemetry.RunCompleted(_run);
             _run.AwardRunCompleted(_run.RunCompletedReward);
             var player = FacilityOrchestrator.World?.Player;
-            if (player && player.TryGetComponent(out PlayerInventory inventory)) _run.AwardUnusedItems(inventory.CashInValue);
+            if (player && player.TryGetComponent(out PlayerInventory inventory))
+                _run.AwardUnusedItems(inventory.CashInValue);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)
@@ -223,8 +219,7 @@ namespace Run
             SceneManager.LoadScene("Main Menu");
         }
 
-        // The lost run, whether the last heart went or the player quit: the results forfeit the tally,
-        // then it hands back to the menu with the balance untouched.
+        // The lost run, whether the player died or quit.
         private IEnumerator EndRun()
         {
             Telemetry.LevelFailed(_run);
