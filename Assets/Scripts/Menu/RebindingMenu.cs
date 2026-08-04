@@ -18,12 +18,18 @@ namespace Menu
             public TMP_Text label;
         }
 
+        private const int KeyboardOption = 0;
+        private const int GamepadOption = 1;
+
         [SerializeField] private InputDeviceState inputDeviceState;
         [SerializeField] private InputActionReference uiNavigateReference;
 
         [SerializeField] private Sprite keyboardSprite;
         [SerializeField] private Sprite gamepadSprite;
         [SerializeField] private Image activeImage;
+
+        [SerializeField] private Toggle autoDetectToggle;
+        [SerializeField] private TMP_Dropdown deviceDropdown;
 
         [SerializeField] private Entry[] entries;
 
@@ -37,7 +43,8 @@ namespace Menu
 
         private InputActionAsset Asset => entries[0].action.action.actionMap.asset;
 
-        private InputDevice _activeDevice;
+        private bool _autoDetect;
+        private bool _useGamepad;
 
         private void OnEnable()
         {
@@ -48,6 +55,8 @@ namespace Menu
                 entry.button.onClick.AddListener(() => StartRebind(captured));
             }
             resetButton?.onClick.AddListener(ResetBindings);
+            if (autoDetectToggle) autoDetectToggle.onValueChanged.AddListener(OnAutoDetectChanged);
+            if (deviceDropdown) deviceDropdown.onValueChanged.AddListener(OnDeviceDropdownChanged);
         }
 
         private void OnDisable()
@@ -58,22 +67,88 @@ namespace Menu
                 entry.button.onClick.RemoveListener(() => StartRebind(entry));
             }
             resetButton?.onClick.RemoveListener(ResetBindings);
+            if (autoDetectToggle) autoDetectToggle.onValueChanged.RemoveListener(OnAutoDetectChanged);
+            if (deviceDropdown) deviceDropdown.onValueChanged.RemoveListener(OnDeviceDropdownChanged);
         }
 
         private void Start()
         {
-            _activeDevice = inputDeviceState.CurrentDevice;
+            LoadDeviceSettings();
             var json = BindingSettings.Overrides;
             if (!string.IsNullOrEmpty(json)) Asset.LoadBindingOverridesFromJson(json);
             RefreshLabels();
             RefreshImages();
         }
 
+        private void LoadDeviceSettings()
+        {
+            _autoDetect = BindingSettings.AutoDetectDevice;
+            var index = Mathf.Clamp(BindingSettings.DeviceIndex, KeyboardOption, GamepadOption);
+
+            if (deviceDropdown)
+            {
+                deviceDropdown.SetValueWithoutNotify(index);
+                deviceDropdown.RefreshShownValue();
+            }
+
+            autoDetectToggle?.SetIsOnWithoutNotify(_autoDetect);
+
+            _useGamepad = _autoDetect
+                ? inputDeviceState.CurrentDevice is Gamepad
+                : index == GamepadOption;
+
+            // Repair the saved value if it was invalid.
+            BindingSettings.DeviceIndex = index;
+            SyncDropdownInteractable();
+        }
+
+        private void OnAutoDetectChanged(bool value)
+        {
+            _autoDetect = value;
+            BindingSettings.AutoDetectDevice = value;
+            BindingSettings.Save();
+
+            // Fall back to whichever source now owns the selection.
+            SetUseGamepad(value
+                ? inputDeviceState.CurrentDevice is Gamepad
+                : deviceDropdown && deviceDropdown.value == GamepadOption);
+
+            SyncDropdownInteractable();
+        }
+
+        private void OnDeviceDropdownChanged(int index)
+        {
+            BindingSettings.DeviceIndex = index;
+            BindingSettings.Save();
+            if (_autoDetect) return;
+            SetUseGamepad(index == GamepadOption);
+        }
+
         private void OnInputEvent(InputDevice deviceType)
         {
-            _activeDevice = deviceType;
+            if (!_autoDetect) return;
+            SetUseGamepad(deviceType is Gamepad);
+        }
+
+        private void SetUseGamepad(bool useGamepad)
+        {
+            _useGamepad = useGamepad;
+            SyncDropdownValue();
             RefreshLabels();
             RefreshImages();
+        }
+
+        // Keep the dropdown showing the device in use while auto-detecting.
+        private void SyncDropdownValue()
+        {
+            if (!deviceDropdown || !_autoDetect) return;
+            deviceDropdown.SetValueWithoutNotify(_useGamepad ? GamepadOption : KeyboardOption);
+            deviceDropdown.RefreshShownValue();
+        }
+
+        private void SyncDropdownInteractable()
+        {
+            if (deviceDropdown) deviceDropdown.interactable = !_autoDetect;
         }
 
         private void StartRebind(Entry entry)
@@ -91,9 +166,8 @@ namespace Menu
             {
                 r.action.action.Disable();
             }
-            var path = _activeDevice is Gamepad ? "<Gamepad>" : "<Keyboard>";
             _rebind = entry.action.action.PerformInteractiveRebinding(_activeIndex)
-                .WithControlsHavingToMatchPath(path)
+                .WithControlsHavingToMatchPath(DevicePath)
                 .WithControlsExcluding("<Mouse>/*")
                 .OnComplete(_ => Complete())
                 .OnCancel(_ => Finish())
@@ -175,14 +249,14 @@ namespace Menu
 
         private void RefreshImages()
         {
-            activeImage.sprite = _activeDevice is Gamepad ? gamepadSprite : keyboardSprite;
+            activeImage.sprite = _useGamepad ? gamepadSprite : keyboardSprite;
         }
+
+        private string DevicePath => _useGamepad ? "<Gamepad>" : "<Keyboard>";
 
         private int BindingIndex(InputAction action)
         {
-            var path = _activeDevice is Gamepad
-                ? "<Gamepad>"
-                : "<Keyboard>";
+            var path = DevicePath;
 
             return action.bindings.IndexOf(b => b.path.StartsWith(path));
         }
