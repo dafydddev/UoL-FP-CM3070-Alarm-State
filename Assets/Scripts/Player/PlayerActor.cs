@@ -22,6 +22,7 @@ namespace Player
         private float repeatDelay = 0.2f;
 
         [SerializeField] private LineRenderer routePreview;
+        [SerializeField] private SpriteRenderer routeMarker;
 
         private Vector2Int _cell, _prevCell;
         private readonly List<Vector2Int> _pressed = new();
@@ -94,6 +95,7 @@ namespace Player
                 tilemap.GetCellCenterWorld((Vector3Int)_cell),
                 Mathf.Clamp01(World.Clock.Alpha));
             DrawRoutePreview();
+            DrawRouteMarker();
         }
 
         protected override void Act()
@@ -209,6 +211,17 @@ namespace Player
             }
         }
         
+        // Sits the marker on the clicked cell while the route lasts.
+        private void DrawRouteMarker()
+        {
+            if (!routeMarker) return;
+
+            routeMarker.enabled = _route.Count > 0;
+            if (_route.Count == 0) return;
+
+            routeMarker.transform.position = World.Tilemap.GetCellCenterWorld((Vector3Int)_routeGoal);
+        }
+
         private void Track(Vector2Int dir, bool held)
         {
             var has = _pressed.Contains(dir);
