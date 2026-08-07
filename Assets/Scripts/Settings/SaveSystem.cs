@@ -32,7 +32,7 @@ namespace Settings
             System.IO.Path.Combine(Application.persistentDataPath, "profile.json");
 
         // Loaded once on first access.
-        public static SaveData Data { get; } = Load();
+        public static SaveData Data { get; private set; } = Load();
 
         private static SaveData Load()
         {
@@ -64,5 +64,17 @@ namespace Settings
                 File.WriteAllText(Path, json);
             }
         }
+
+#if UNITY_EDITOR
+        // Debug: back to a fresh profile.
+        [UnityEditor.MenuItem("Tools/Reset Save")]
+        public static void Reset()
+        {
+            Data = new SaveData();
+            Save();
+        }
+        [UnityEditor.MenuItem("Tools/Gift Currency")]
+        public static void GiftCurrency() => Data.currencyBalance += 10000;
+#endif
     }
 }
