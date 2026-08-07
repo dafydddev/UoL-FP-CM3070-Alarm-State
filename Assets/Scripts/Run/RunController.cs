@@ -27,12 +27,19 @@ namespace Run
         [SerializeField] private ScreenWipeEffect wipeEffect;
         [SerializeField] private ResultsController resultsController;
 
+        // Reported for a level nobody noticed the player on.
+        private const float NoAlarm = -1f;
+
         private FacilityOrchestrator _facility;
 
         private RunContext _run;
 
         // Alarms raised since this level was built.
         private int _alarmsThisLevel;
+
+        // Seconds of play since this level was built, and how far in its first alarm went up.
+        private float _levelElapsed;
+        private float _firstAlarmAt;
 
         private FacilityOrchestrator FacilityOrchestrator => _facility ??= GetComponent<FacilityOrchestrator>();
 
@@ -79,12 +86,19 @@ namespace Run
             PauseMenu.Quit -= OnQuit;
         }
 
+        // The level's clock only runs while the world does, so a wipe, a tally or a pause doesn't count as play.
+        private void Update()
+        {
+            if (!GameLock.Locked) _levelElapsed += Time.deltaTime;
+        }
+
         // Counts and reports the alarm going up.
         private void OnAlarmChanged(bool active)
         {
             if (!active || _run == null) return;
             _alarmsThisLevel++;
-            Telemetry.AlarmRaised(_run);
+            if (_alarmsThisLevel == 1) _firstAlarmAt = _levelElapsed;
+            Telemetry.AlarmRaised(_run, _levelElapsed);
         }
 
         // Completing an objective adds its reward to the run's pending total.
@@ -95,7 +109,7 @@ namespace Run
         private void NextLevel()
         {
             // Record against the level just finished, before Advance moves the counter on.
-            Telemetry.LevelCompleted(_run);
+            Telemetry.LevelCompleted(_run, _levelElapsed, _firstAlarmAt);
             RecordForm();
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
@@ -189,6 +203,8 @@ namespace Run
         private void GenerateLevel()
         {
             _alarmsThisLevel = 0;
+            _levelElapsed = 0f;
+            _firstAlarmAt = NoAlarm;
             FacilityOrchestrator.Generate(_run);
             FacilityOrchestrator.World.Mission.PrimaryCompleted += OnPrimaryCompleted;
             Telemetry.LevelStarted(_run);
@@ -222,7 +238,7 @@ namespace Run
         // The lost run, whether the player died or quit.
         private IEnumerator EndRun()
         {
-            Telemetry.LevelFailed(_run);
+            Telemetry.LevelFailed(_run, _levelElapsed, _firstAlarmAt);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)

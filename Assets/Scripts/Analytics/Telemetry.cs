@@ -32,27 +32,44 @@ namespace Analytics
             }
         }
 
-        public static void LevelStarted(RunContext run) => Record("levelStarted", run);
+        public static void LevelStarted(RunContext run) => Send(Event("levelStarted", run));
 
-        public static void LevelCompleted(RunContext run) => Record("levelCompleted", run);
+        public static void RunCompleted(RunContext run) => Send(Event("runCompleted", run));
 
-        public static void LevelFailed(RunContext run) => Record("levelFailed", run);
+        // Both level endings close the level off the same way, so they report the same timings.
+        public static void LevelCompleted(RunContext run, float duration, float timeToFirstAlarm) =>
+            LevelEnded("levelCompleted", run, duration, timeToFirstAlarm);
 
-        public static void RunCompleted(RunContext run) => Record("runCompleted", run);
+        public static void LevelFailed(RunContext run, float duration, float timeToFirstAlarm) =>
+            LevelEnded("levelFailed", run, duration, timeToFirstAlarm);
 
-        public static void AlarmRaised(RunContext run) => Record("alarmRaised", run);
-
-        // Every level event carries the same snapshot of the run.
-        // Once the SDK has shut down (quit, or leaving play mode) it drops the event on the floor itself.
-        private static void Record(string name, RunContext run)
+        // How far into the level this alarm went up. Every raise reports, not just the level's first.
+        public static void AlarmRaised(RunContext run, float secondsIntoLevel)
         {
-            _analytics?.RecordEvent(new CustomEvent(name)
-            {
-                { "level", run.CurrentLevel },
-                { "totalLevels", run.TotalLevels },
-                { "difficulty", run.DifficultyProfile.label },
-                { "layout", run.LayoutStyle.ToString() },
-            });
+            var e = Event("alarmRaised", run);
+            e.Add("secondsIntoLevel", secondsIntoLevel);
+            Send(e);
         }
+
+        // timeToFirstAlarm is -1 on a level the player got through unnoticed.
+        private static void LevelEnded(string name, RunContext run, float duration, float timeToFirstAlarm)
+        {
+            var e = Event(name, run);
+            e.Add("duration", duration);
+            e.Add("timeToFirstAlarm", timeToFirstAlarm);
+            Send(e);
+        }
+
+        // Every event carries the same snapshot of the run.
+        private static CustomEvent Event(string name, RunContext run) => new(name)
+        {
+            { "level", run.CurrentLevel },
+            { "totalLevels", run.TotalLevels },
+            { "difficulty", run.DifficultyProfile.label },
+            { "layout", run.LayoutStyle.ToString() },
+        };
+
+        // Once the SDK has shut down (quit, or leaving play mode) it drops the event on the floor itself.
+        private static void Send(CustomEvent e) => _analytics?.RecordEvent(e);
     }
 }
