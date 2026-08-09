@@ -3,7 +3,7 @@ using Hacking;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Editor.Tests.Hacking
+namespace Editor.Tests.Mini_Games
 {
     // Solvability of the generated hacking board.
     // An unsolvable board would strand the player on an objective with no way to finish it.
