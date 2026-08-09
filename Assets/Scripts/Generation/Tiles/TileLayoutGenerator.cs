@@ -27,8 +27,8 @@ namespace Generation.Tiles
     }
 
     // Turns a mission RoomGraph into a grid of structural roles:
-    // a placement strategy lays rooms out on an abstract cell grid,
-    // then each room is marked as walls + floor and doorways are carved between connected rooms.
+    // - a placement strategy lays rooms out on an abstract cell grid,
+    // - each room is marked as walls and floor and doorways are carved between connected rooms.
     public static class TileLayoutGenerator
     {
         private const int RoomW = 11; // room width in tiles
@@ -39,13 +39,11 @@ namespace Generation.Tiles
         private static int Oy(int cy) => cy * (RoomH - 1);
 
         // Relief is applied one room per round (at most 4 corridors each), so a congested level gains a handful of corridors.
-        // The walk gets few rounds — if wandering can't fit the graph cheaply, the spine takes over rather than growing a tangle,
-        // while the spine may relieve further, because its alternative to relief is stacking rooms, which is worse than extra corridors.
         private const int WalkReliefRounds = 2;
         private const int MaxReliefRounds = 8;
+        private const int StackedReliefRounds = 16; // extra rounds, run only on levels that stacked above
 
         // Builds the structural grid and outputs each room's tile rectangle.
-        // Note: when a graph is too congested to embed on the grid, relief corridors are added to it so callers see rooms and rects consistently.
         public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style,
             out Dictionary<string, RoomRect> roomRects)
         {
@@ -54,8 +52,6 @@ namespace Generation.Tiles
             string root;
 
             // The strategy decides only which abstract cell each room occupies and which pairs get a doorway:
-            // one distinct cell per room, doored pairs orthogonally adjacent.
-            // Everything below enforces the shared rules regardless of strategy.
             var cell = new Dictionary<string, Vector2Int>();
             var connections = new List<(string a, string b)>();
 
@@ -70,9 +66,7 @@ namespace Generation.Tiles
                     ? RandomWalkLayout.Place(graph, root, children, cell, connections)
                     : SpineLayout.Place(graph, root, parent, children, cell, connections);
                 if (clean) break;
-
-                // The walk only gets cheap relief; past that the spine takes over inside this loop,
-                // keeping the no-stacking guarantee (unlike a one-shot fallback).
+                
                 if (useWalk && round >= WalkReliefRounds)
                 {
                     useWalk = false;
@@ -80,11 +74,43 @@ namespace Generation.Tiles
                 }
 
                 // Too congested to embed: give the busiest room's branches a corridor to escape through, then retry.
-                // Only when the rounds run out (or nothing is left to relieve) accept a degraded layout.
                 // The spine always completes, its greedy last resort may stack rooms, so the level still generates.
                 if (round >= MaxReliefRounds || !SubdivideCongested(graph, relieved)) break;
 
                 BuildLookups();
+            }
+
+            // Levels the loop above left with stacked rooms. Relieved sets can layer more corridors until the level embeds.
+            // Retries build fresh layouts, so the accepted one is untouched unless a clean one lands.
+            if (Stacked())
+            {
+                var rooms = new List<RoomNode>(graph.rooms);
+                var edges = new List<RoomEdge>(graph.edges);
+                var again = new HashSet<string>();
+                for (var round = 0; Stacked() && round < StackedReliefRounds; round++)
+                {
+                    if (!SubdivideCongested(graph, again, $"_s{round}"))
+                    {
+                        if (again.Count == 0) break; // nothing congested at all
+                        again.Clear(); // every congested room took a layer: start the next
+                        continue;
+                    }
+
+                    BuildLookups();
+                    var retryCell = new Dictionary<string, Vector2Int>();
+                    var retryDoors = new List<(string a, string b)>();
+                    if (SpineLayout.Place(graph, root, parent, children, retryCell, retryDoors))
+                    {
+                        cell = retryCell; // clean embedding: no room stacked
+                        connections = retryDoors;
+                    }
+                }
+
+                if (Stacked())
+                {
+                    graph.rooms = rooms;
+                    graph.edges = edges;
+                }
             }
 
             // Normalise cell coords so the layout starts at (0, 0).
@@ -140,6 +166,9 @@ namespace Generation.Tiles
 
             return grid;
 
+            // True while two rooms share a layout cell.
+            bool Stacked() => cell.Values.Distinct().Count() < cell.Count;
+
             // Build parent/child lookups from the graph edges, tracking which rooms have a parent.
             // The root is the room with no parent (fall back to the first room).
             void BuildLookups()
@@ -161,10 +190,7 @@ namespace Generation.Tiles
 
         // Emergency relief when a layout cannot be embedded, one room at a time.
         // The busiest not-yet-relieved room gets each outgoing edge subdivided with a pass-through corridor.
-        // Its branches gain an elbow to escape local congestion subdivided enough, any tree fits the grid.
-        // Same degree-preserving splice SpliceCorridors uses; the lock stays on the segment entering the original target.
-        // Returns false when no congestion candidate remains.
-        private static bool SubdivideCongested(RoomGraph graph, HashSet<string> relieved)
+        private static bool SubdivideCongested(RoomGraph graph, HashSet<string> relieved, string idSuffix = "")
         {
             var degree = new Dictionary<string, int>();
             var outgoing = new Dictionary<string, int>();
@@ -199,7 +225,8 @@ namespace Generation.Tiles
             foreach (var edge in new List<RoomEdge>(graph.edges))
             {
                 if (edge.fromId != target.id) continue;
-                var corridor = new RoomNode { id = $"room_relief_{target.id}_{relief++}", type = RoomType.Corridor };
+                var corridor = new RoomNode
+                    { id = $"room_relief_{target.id}_{relief++}{idSuffix}", type = RoomType.Corridor };
                 graph.rooms.Add(corridor);
                 var idx = graph.edges.IndexOf(edge);
                 if (idx != -1) graph.edges.RemoveAt(idx);
