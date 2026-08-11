@@ -104,3 +104,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 653baff7051482e44899954fae890dd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entities.Exit
+  lockedSprite: {fileID: -1489435481, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
