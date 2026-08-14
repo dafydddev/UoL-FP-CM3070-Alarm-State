@@ -8,7 +8,6 @@ namespace Menu
     // Solves Unity's automatic ordering struggling with Vertical and Horizontal layouts groups.
     public class NavigationBuilder : MonoBehaviour
     {
-
         private readonly List<Selectable> _selectables = new();
 
         // Rebuild each time the panel is shown.
@@ -37,11 +36,15 @@ namespace Menu
                 // Switch to Explicit
                 var nav = current.navigation;
                 nav.mode = Navigation.Mode.Explicit;
-                nav.selectOnUp = previous;
-                nav.selectOnLeft = previous;
-                nav.selectOnDown = next;
-                nav.selectOnRight = next;
 
+                // A slider is a case where horizontal movement changes its value, rather than paginate the UI.
+                var slider = current as Slider;
+                var horizontal = slider && slider.direction is Slider.Direction.LeftToRight or Slider.Direction.RightToLeft;
+                var vertical = slider && !horizontal;
+                nav.selectOnUp = vertical ? null : previous;
+                nav.selectOnDown = vertical ? null : next;
+                nav.selectOnLeft = horizontal ? null : previous;
+                nav.selectOnRight = horizontal ? null : next;
                 // Navigation is a struct, so assign the modified copy back to persist it.
                 current.navigation = nav;
             }
