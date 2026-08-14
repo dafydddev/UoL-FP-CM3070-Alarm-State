@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Settings;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,6 +52,7 @@ namespace Effects
         private RawImage _image;
         private RectTransform _rect;
         private Vector2 _scroll;
+        private bool _scrolling;
         private Vector2Int _size;
 
         private void Awake()
@@ -60,6 +62,15 @@ namespace Effects
             _image.color = Color.white;
             _image.uvRect = new Rect(0f, 0f, 1f, 1f);
         }
+
+        // Cached rather than read per frame, and kept live by the event so a toggle elsewhere takes effect immediately.
+        private void OnEnable()
+        {
+            _scrolling = BackgroundSettings.Scrolling;
+            BackgroundSettings.ScrollingChanged += OnScrollingChanged;
+        }
+
+        private void OnDisable() => BackgroundSettings.ScrollingChanged -= OnScrollingChanged;
 
         // Forcing the update first means the plan is always built against 640x360 rather than whatever frame one held.
         private void Start()
@@ -71,12 +82,17 @@ namespace Effects
 
         private void Update()
         {
+            // Frozen where it stands, so switching the drift off leaves the plan drawn rather than snapped back.
+            if (!_scrolling) return;
+
             // Scroll the UV rect; Repeat wrapping makes the drift loop seamlessly.
             _scroll += driftSpeed * Time.unscaledDeltaTime;
             _scroll.x %= _size.x; // wrapped, or the accumulator loses precision over a long sit on the menu
             _scroll.y %= _size.y;
             _image.uvRect = new Rect(_scroll.x / _size.x, _scroll.y / _size.y, 1f, 1f);
         }
+
+        private void OnScrollingChanged(bool value) => _scrolling = value;
 
         private void OnDestroy()
         {
