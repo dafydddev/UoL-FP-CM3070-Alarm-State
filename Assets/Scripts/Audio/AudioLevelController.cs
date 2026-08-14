@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 namespace Audio
 {
     // Puts the saved levels on the mixer. Runtime values do not stick to the asset, so each scene applies them.
-    public class AudioController : MonoBehaviour
+    public class AudioLevelController : MonoBehaviour
     {
         [SerializeField] private AudioMixer mixer;
 
