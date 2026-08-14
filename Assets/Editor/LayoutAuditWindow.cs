@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Editor
 {
     // Visual front-end for LayoutAudit (Tools -> Layout Audit).
-    // Runs the same audit the batchmode entry uses,
-    // but renders the results as per-profile pass/fail cards with colour-coded check tables instead of a wall of text.
+    // Renders the audit results as per-profile pass/fail cards with colour-coded check tables.
     public class LayoutAuditWindow : EditorWindow
     {
         private int _seeds = LayoutAudit.QuickSeeds;
@@ -54,7 +53,6 @@ namespace Editor
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             foreach (var profile in _result.Profiles) DrawProfile(profile);
             EditorGUILayout.EndScrollView();
-            DrawFooter();
         }
 
         // Seed count, stress toggle, and the run buttons (custom + the two presets).
@@ -85,8 +83,7 @@ namespace Editor
             EditorGUILayout.EndVertical();
         }
 
-        // Defers the audit until after OnGUI: the run blocks for a while and pumps its own
-        // progress bar, which upsets IMGUI if it happens mid-layout.
+        // Defers the audit until after OnGUI, avoid race condition with Unity's GUI.
         private void ScheduleRun()
         {
             var seeds = _seeds;
@@ -132,8 +129,8 @@ namespace Editor
             EditorGUILayout.Space(2);
         }
 
-        // One card per difficulty profile: header with pass/fail pill, then the graph checks
-        // and a spine/walk table of the layout checks.
+        // One card per difficulty profile.
+        // Header with pass/fail pill, graph checks, and a table of the layout checks.
         private static void DrawProfile(LayoutAudit.ProfileResult p)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -212,8 +209,7 @@ namespace Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        // Green for a clean check, bold red for a violation; informational rows use gold
-        // when non-zero and muted grey at zero, so they never read as pass/fail.
+        // Green for a clean check, bold red for a violation; informational rows use gold.
         private static GUIStyle ValueStyle(bool flagged, bool info)
         {
             var colour = info
@@ -248,21 +244,6 @@ namespace Editor
                 alignment = TextAnchor.MiddleCenter,
                 normal = { textColor = Color.white }
             });
-        }
-
-        private void DrawFooter()
-        {
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Relief corridors are informational: corridors the layout added to fit congested graphs.",
-                MutedStyle());
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Copy Report", GUILayout.Width(100)))
-            {
-                EditorGUIUtility.systemCopyBuffer = LayoutAudit.BuildReport(_result);
-                ShowNotification(new GUIContent("Report copied to clipboard"));
-            }
-
-            EditorGUILayout.EndHorizontal();
         }
     }
 }
