@@ -1,3 +1,4 @@
+using Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,10 @@ namespace Menu
             // Set the active state of the game object
             gameObject.SetActive(isActive);
             // If the game object is active and the first button is not null, set focus onto it
-            if (isActive && firstSelectable) firstSelectable.Select();
+            if (!isActive || !firstSelectable) return;
+            var selectableAudio = firstSelectable.GetComponent<SelectableAudio>();
+            if (selectableAudio) selectableAudio.ConsumeNextSelect();
+            firstSelectable.Select();
         }
     }
 }
