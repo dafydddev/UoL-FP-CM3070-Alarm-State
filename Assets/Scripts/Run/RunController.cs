@@ -1,5 +1,6 @@
 using System.Collections;
 using Analytics;
+using Audio;
 using Effects;
 using Entities;
 using Entities.Objectives;
@@ -20,11 +21,11 @@ namespace Run
     {
         [Header("Run Options")] 
         [SerializeField, Min(1)] private int startLevel = 1;
-
         [SerializeField, Min(1)] private int totalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
         [SerializeField] private ScreenWipeEffect wipeEffect;
+        [SerializeField] private AudioFader audioFader;
         [SerializeField] private ResultsController resultsController;
 
         // Reported for a level nobody noticed the player on.
@@ -166,6 +167,7 @@ namespace Run
             {
                 if (wipeEffect) yield return wipeEffect.Close();
                 GenerateLevel();
+                if (audioFader) audioFader.FadeIn();
                 if (wipeEffect) yield return wipeEffect.Open();
             }
             finally
@@ -217,10 +219,10 @@ namespace Run
             Telemetry.RunCompleted(_run);
             _run.AwardRunCompleted(_run.RunCompletedReward);
             var player = FacilityOrchestrator.World?.Player;
-            if (player && player.TryGetComponent(out PlayerInventory inventory))
-                _run.AwardUnusedItems(inventory.CashInValue);
+            if (player && player.TryGetComponent(out PlayerInventory inventory)) _run.AwardUnusedItems(inventory.CashInValue);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
+            if (audioFader) audioFader.FadeOut();
             if (resultsController)
             {
                 resultsController.Show(_run, "Run Complete", ResultsScreen.RunComplete);
@@ -229,7 +231,6 @@ namespace Run
                 if (wipeEffect) yield return wipeEffect.Close();
                 resultsController.Hide();
             }
-
             CurrencySettings.Balance += _run.PendingCurrency;
             CurrencySettings.Save();
             SceneManager.LoadScene("Main Menu");
@@ -241,6 +242,7 @@ namespace Run
             Telemetry.LevelFailed(_run, _levelElapsed, _firstAlarmAt);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
+            if (audioFader) audioFader.FadeOut();
             if (resultsController)
             {
                 resultsController.Show(_run, "Run Failed", ResultsScreen.RunFailed);
