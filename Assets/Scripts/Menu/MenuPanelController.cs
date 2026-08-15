@@ -8,16 +8,15 @@ namespace Menu
         [SerializeField] private MenuPanel[] menuPanels;
 
         // The default panel to show on scene load
-        [SerializeField] protected MenuPanel defaultPanel; 
-        
+        [SerializeField] protected MenuPanel defaultPanel;
         [SerializeField] protected bool showOnStart;
 
         // The current panel being displayed
         private MenuPanel _currentPanel;
 
-        private void Awake()
+        private void Start()
         {
-            if (!showOnStart)  return;
+            if (!showOnStart) return;
             UpdateMenu(defaultPanel);
         }
 
