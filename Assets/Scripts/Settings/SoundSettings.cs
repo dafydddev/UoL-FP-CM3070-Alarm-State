@@ -9,7 +9,9 @@ namespace Settings
         private const string MasterKey = "MasterVolume";
         private const string MusicKey = "MusicVolume";
         private const string SfxKey = "SfxVolume";
-        private const float DefaultVolume = 0.8f;
+        private const float DefaultMaster = 0.8f;
+        private const float DefaultMusic = 0.5f;
+        private const float DefaultSfx = 0.8f;
 
         // Raised on change, so the mixer follows without a scene reload.
         public static event Action<float> MasterChanged;
@@ -18,7 +20,7 @@ namespace Settings
 
         public static float Master
         {
-            get => PlayerPrefs.GetFloat(MasterKey, DefaultVolume);
+            get => PlayerPrefs.GetFloat(MasterKey, DefaultMaster);
             set
             {
                 value = Mathf.Clamp01(value);
@@ -30,7 +32,7 @@ namespace Settings
 
         public static float Music
         {
-            get => PlayerPrefs.GetFloat(MusicKey, DefaultVolume);
+            get => PlayerPrefs.GetFloat(MusicKey, DefaultMusic);
             set
             {
                 value = Mathf.Clamp01(value);
@@ -42,7 +44,7 @@ namespace Settings
 
         public static float Sfx
         {
-            get => PlayerPrefs.GetFloat(SfxKey, DefaultVolume);
+            get => PlayerPrefs.GetFloat(SfxKey, DefaultSfx);
             set
             {
                 value = Mathf.Clamp01(value);
