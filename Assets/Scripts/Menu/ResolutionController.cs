@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Settings;
+using UnityEngine.EventSystems;
 
 namespace Menu
 {
@@ -39,6 +40,7 @@ namespace Menu
             dropdown.onValueChanged.AddListener(OnDropdownChanged);
             applyButton.onClick.AddListener(ApplySettings);
             fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
+            SetApplyInteractable();
         }
 
         private void OnDisable()
@@ -73,9 +75,18 @@ namespace Menu
             fullscreenToggle.isOn = _appliedFullscreen;
         }
 
-        private void OnDropdownChanged(int index) => _index = index;
+        private void OnDropdownChanged(int index)
+        {
+            _index = index;
+            SetApplyInteractable();
+        }
 
-        private void OnFullscreenChanged(bool value) => _isFullscreen = value;
+        private void OnFullscreenChanged(bool value)
+        {
+            _isFullscreen = value;
+            SetApplyInteractable();
+        }
+
 
         private void ApplySettings()
         {
@@ -87,6 +98,12 @@ namespace Menu
 
             ApplyResolution();
             ResolutionSettings.Save();
+            
+            var events = EventSystem.current;
+            var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
+            SetApplyInteractable();
+            if (!hadFocus || events.currentSelectedGameObject) return;
+            events.SetSelectedGameObject(applyButton.gameObject);
         }
 
         private void ApplyResolution()
@@ -98,6 +115,11 @@ namespace Menu
                 resolution.y,
                 _appliedFullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed
             );
+        }
+
+        private void SetApplyInteractable()
+        {
+            applyButton.interactable = _index != _appliedIndex || _isFullscreen != _appliedFullscreen;
         }
     }
 }
