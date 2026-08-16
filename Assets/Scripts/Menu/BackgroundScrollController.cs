@@ -1,5 +1,6 @@
 using Settings;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Menu
@@ -17,6 +18,7 @@ namespace Menu
             SeedControls();
             scrollingToggle.onValueChanged.AddListener(OnScrollingChanged);
             applyButton.onClick.AddListener(ApplySettings);
+            SetApplyInteractable();
         }
 
         private void OnDisable()
@@ -35,12 +37,27 @@ namespace Menu
         }
 
         // Held rather than written, so the backdrop keeps drifting until Apply.
-        private void OnScrollingChanged(bool value) => _scrolling = value;
+        private void OnScrollingChanged(bool value)
+        {
+            _scrolling = value;
+            SetApplyInteractable();
+        }
+        
 
         private void ApplySettings()
         {
             BackgroundSettings.Scrolling = _scrolling;
             BackgroundSettings.Save();
+            var events = EventSystem.current;
+            var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
+            SetApplyInteractable();
+            if (!hadFocus || events.currentSelectedGameObject) return;
+            events.SetSelectedGameObject(applyButton.gameObject);
+        }
+
+        private void SetApplyInteractable()
+        {
+            applyButton.interactable = _scrolling != BackgroundSettings.Scrolling;
         }
     }
 }

@@ -1,10 +1,11 @@
 using Settings;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Menu
 {
-    public class AudioMenu : MonoBehaviour
+    public class AudioController : MonoBehaviour
     {
         [SerializeField] private Slider masterSlider;
         [SerializeField] private Slider musicSlider;
@@ -23,6 +24,7 @@ namespace Menu
             musicSlider.onValueChanged.AddListener(OnMusicChanged);
             sfxSlider.onValueChanged.AddListener(OnSfxChanged);
             applyButton.onClick.AddListener(ApplySettings);
+            SetApplyInteractable();
         }
 
         private void OnDisable()
@@ -47,11 +49,23 @@ namespace Menu
         }
 
         // Held rather than written, so the level only moves on Apply.
-        private void OnMasterChanged(float value) => _master = value;
+        private void OnMasterChanged(float value)
+        {
+            _master = value;
+            SetApplyInteractable();
+        }
 
-        private void OnMusicChanged(float value) => _music = value;
+        private void OnMusicChanged(float value)
+        {
+            _music = value;
+            SetApplyInteractable();
+        }
 
-        private void OnSfxChanged(float value) => _sfx = value;
+        private void OnSfxChanged(float value)
+        {
+            _sfx = value;
+            SetApplyInteractable();
+        }
 
         private void ApplySettings()
         {
@@ -59,6 +73,19 @@ namespace Menu
             SoundSettings.Music = _music;
             SoundSettings.Sfx = _sfx;
             SoundSettings.Save();
+
+            var events = EventSystem.current;
+            var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
+            SetApplyInteractable();
+            if (!hadFocus || events.currentSelectedGameObject) return;
+            events.SetSelectedGameObject(applyButton.gameObject);
+        }
+
+        private void SetApplyInteractable()
+        {
+            applyButton.interactable = !Mathf.Approximately(_master, SoundSettings.Master) ||
+                                       !Mathf.Approximately(_music, SoundSettings.Music) ||
+                                       !Mathf.Approximately(_sfx, SoundSettings.Sfx);
         }
     }
 }
