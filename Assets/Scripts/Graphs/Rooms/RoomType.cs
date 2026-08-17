@@ -34,6 +34,7 @@ namespace Graphs.Rooms
         public string id;
         public RoomType type;
         public string missionNodeId; // mission node this room came from, if any
+        public string text; // that node's objective wording, for the HUD to show
     }
     
     // A connection between two rooms, optionally locked behind a keycard room.

@@ -37,8 +37,8 @@ namespace Graphs.Rooms
         {
             var missionRooms = new Dictionary<string, RoomNode>(); // mission node id → its room
             foreach (var node in mission.nodes)
-                missionRooms[node.id] =
-                    roomGraphBuilder.AddRoom($"room_{node.id}", MissionRoleToRoomRole(node.nodeType), node.id);
+                missionRooms[node.id] = roomGraphBuilder.AddRoom($"room_{node.id}",
+                    MissionRoleToRoomRole(node.nodeType), node.id, node.text);
             return missionRooms;
         }
 
@@ -226,9 +226,9 @@ namespace Graphs.Rooms
                 return $"room_{role}_{n}";
             }
 
-            public RoomNode AddRoom(string id, RoomType type, string missionNodeId = null)
+            public RoomNode AddRoom(string id, RoomType type, string missionNodeId = null, string text = null)
             {
-                var room = new RoomNode { id = id, type = type, missionNodeId = missionNodeId };
+                var room = new RoomNode { id = id, type = type, missionNodeId = missionNodeId, text = text };
                 Graph.rooms.Add(room);
                 _doors[id] = 0;
                 return room;

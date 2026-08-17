@@ -14,7 +14,13 @@ namespace Entities.Objectives
         // Fires when the player uses an unhacked objective, so the hacking screen can open for it.
         public static event Action<Objective> HackRequested;
 
+        // Fires once an objective's hack is won, so the HUD can tick its row off. Covers both kinds.
+        public static event Action<Objective> Hacked;
+
         public string id;
+
+        // The mission's wording for this objective, stamped by the spawner for the HUD to show.
+        public string text;
 
         public abstract HackKind Hack { get; }
 
@@ -22,7 +28,7 @@ namespace Entities.Objectives
         public int hackSeed;
 
         // True once this objective's hack has been won; it can't be hacked twice.
-        private bool Hacked { get; set; }
+        private bool _hacked;
 
         private Vector2Int _cell;
 
@@ -40,7 +46,7 @@ namespace Entities.Objectives
         // Used by the player to start the hack; completion arrives via CompleteHack once the minigame validates a circuit.
         public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || Hacked) return false;
+            if (user is not PlayerActor || _hacked) return false;
             HackRequested?.Invoke(this);
             return true;
         }
@@ -48,8 +54,9 @@ namespace Entities.Objectives
         // Called by the minigame when the circuit activates.
         public void CompleteHack()
         {
-            Hacked = true;
-            OnHacked();
+            _hacked = true;
+            OnHacked(); // pay out first, so the world is settled by the time the HUD hears about it
+            Hacked?.Invoke(this);
         }
 
         // What winning this objective's hack is worth.
