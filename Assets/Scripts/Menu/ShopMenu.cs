@@ -34,13 +34,19 @@ namespace Menu
         [SerializeField] private TMP_Text itemLabel; // the highlighted item's price and how many are owned
         [SerializeField] private ItemOffer[] offers;
         [SerializeField] private SkinOffer[] skinOffers;
+        [SerializeField] private Button resetCartButton;
+        [SerializeField] private Button checkoutButton;
         [SerializeField] private Sprite unlockedSprite;
         [SerializeField] private Color balanceErrorColor;
         [SerializeField] private float balanceErrorDuration = 0.5f;
 
+        private readonly Cart _cart = new();
         private GameObject _highlighted;
         private Color _balanceTextColor;
         private float _balanceErrorTimer;
+
+        // The offer the label is showing, which checkout and reset take the highlight away from.
+        private GameObject _shown;
 
         private void Awake() => _balanceTextColor = balanceLabel.color;
 
@@ -55,10 +61,15 @@ namespace Menu
 
             foreach (var offer in skinOffers) offer.button.onClick.AddListener(() => BuySkin(offer));
 
+            checkoutButton.onClick.AddListener(Checkout);
+            resetCartButton.onClick.AddListener(ResetCart);
+
             ShowBalance();
+            ShowCartButtons();
 
             if (offers.Length == 0) return;
             _highlighted = offers[0].button.gameObject;
+            _shown = _highlighted;
             ShowItem(offers[0]);
         }
 
@@ -71,8 +82,11 @@ namespace Menu
             }
 
             foreach (var offer in skinOffers) offer.button.onClick.RemoveAllListeners();
+            checkoutButton.onClick.RemoveAllListeners();
+            resetCartButton.onClick.RemoveAllListeners();
             balanceLabel.color = _balanceTextColor;
             _balanceErrorTimer = 0f;
+            _cart.Clear(); // leaving the shop drops what was never paid for
         }
 
         // Refreshes the shared label when the highlight moves to another item or upgrade.
@@ -82,96 +96,157 @@ namespace Menu
             var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
             if (selected == _highlighted) return;
             _highlighted = selected;
-            var offer = offers.FirstOrDefault(o => o.button.gameObject == selected);
-            if (offer != null) ShowItem(offer);
-            var upgraded = offers.FirstOrDefault(o => o.upgradeButton.gameObject == selected);
-            if (upgraded != null) ShowUpgrade(upgraded);
-            var skin = skinOffers.FirstOrDefault(o => o.button.gameObject == selected);
-            if (skin != null) ShowSkin(skin);
+            // Checkout and reset are not offers, so the label stays on the one it was showing.
+            if (ShowOffer(selected)) _shown = selected;
         }
 
-        // Buys one of the kind, spending its price, unless the wallet can't afford it.
+        // Shows the offer the object is a button for. False if it is not one of them.
+        private bool ShowOffer(GameObject selected)
+        {
+            var offer = offers.FirstOrDefault(o => o.button.gameObject == selected);
+            if (offer != null)
+            {
+                ShowItem(offer);
+                return true;
+            }
+
+            var upgraded = offers.FirstOrDefault(o => o.upgradeButton.gameObject == selected);
+            if (upgraded != null)
+            {
+                ShowUpgrade(upgraded);
+                return true;
+            }
+
+            var skin = skinOffers.FirstOrDefault(o => o.button.gameObject == selected);
+            if (skin == null) return false;
+            ShowSkin(skin);
+            return true;
+        }
+
+        // Carts one of the kind, unless the wallet can't afford it on top of the cart.
         private void Buy(ItemOffer itemOffer)
         {
-            if (CurrencySettings.Balance < itemOffer.definition.price)
+            if (Remaining < itemOffer.definition.price)
             {
                 ShowBalanceError();
                 return;
             }
 
-            CurrencySettings.Balance -= itemOffer.definition.price;
-            SaveSystem.Data.ownedItems.Add(itemOffer.definition.kind);
-            SaveSystem.Save(); // persist the spend and the new item together
+            _cart.AddItem(itemOffer.definition);
             ShowBalance();
+            ShowCartButtons();
             ShowItem(itemOffer);
         }
 
-        // Buys the kind's upgrade, spending its price, unless it is already bought or the wallet can't afford it.
+        // Carts the kind's upgrade, unless it is already bought or carted, or the wallet can't afford it.
         // Bought once and kept: every item of the kind is upgraded from then on, this run's and every later one's.
         private void BuyUpgrade(ItemOffer itemOffer)
         {
-            if (UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
-            if (CurrencySettings.Balance < itemOffer.definition.upgradePrice)
+            var kind = itemOffer.definition.kind;
+            if (UpgradeSettings.IsUpgraded(kind) || _cart.HasUpgrade(kind)) return;
+            if (Remaining < itemOffer.definition.upgradePrice)
             {
                 ShowBalanceError();
                 return;
             }
 
-            CurrencySettings.Balance -= itemOffer.definition.upgradePrice;
-            SaveSystem.Data.upgradedItems.Add(itemOffer.definition.kind);
-            SaveSystem.Save();
+            _cart.AddUpgrade(itemOffer.definition);
             ShowBalance();
+            ShowCartButtons();
             ShowUpgradeSprite(itemOffer);
             ShowUpgrade(itemOffer);
         }
 
-        // Buys the skin and equips it, unless the wallet can't afford it.
-        // Bought once and kept, so pressing it again only equips it.
+        // Carts the skin and equips it, unless the wallet can't afford it.
+        // Bought once and kept, so pressing an owned one only equips it.
         private void BuySkin(SkinOffer offer)
         {
             var kind = offer.definition.kind;
-            if (!IsBought(kind))
+            if (IsBought(kind))
             {
-                if (CurrencySettings.Balance < offer.definition.price)
+                SaveSystem.Data.equippedSkin = kind;
+                SaveSystem.Save();
+            }
+            else if (!_cart.HasSkin(kind)) // carting it already chose it to wear
+            {
+                if (Remaining < offer.definition.price)
                 {
                     ShowBalanceError();
                     return;
                 }
 
-                CurrencySettings.Balance -= offer.definition.price;
-                SaveSystem.Data.boughtSkins.Add(kind);
+                _cart.AddSkin(offer.definition);
             }
 
-            SaveSystem.Data.equippedSkin = kind;
-            SaveSystem.Save();
             ShowBalance();
+            ShowCartButtons();
             ShowSkin(offer);
         }
 
-        private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
+        private void Checkout()
+        {
+            _cart.Commit();
+            ShowBalance();
+            ShowCartButtons();
+            ShowOffer(_shown);
+        }
+
+        private void ResetCart()
+        {
+            _cart.Clear();
+            ShowBalance();
+            ShowCartButtons();
+            ShowOffer(_shown);
+        }
+
+        // What the wallet has left once the cart is paid for.
+        private int Remaining => CurrencySettings.Balance - _cart.Total;
+
+        private void ShowBalance()
+        {
+            balanceLabel.text = $"{Remaining} points";
+            if (_cart.Total > 0) balanceLabel.text += $" ({_cart.Total} pending)";
+        }
+
+        // Only a cart with something in it can be paid for or dropped.
+        private void ShowCartButtons()
+        {
+            var events = EventSystem.current;
+            var focused = events ? events.currentSelectedGameObject : null;
+            checkoutButton.interactable = _cart.Total > 0;
+            resetCartButton.interactable = _cart.Total > 0;
+            if (!focused || events.currentSelectedGameObject) return;
+            events.SetSelectedGameObject(focused); // dimming the button under the focus drops it
+        }
 
         private void ShowItem(ItemOffer itemOffer)
         {
-            itemLabel.text =
-                $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
-            if (itemOffer.definition.price > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
+            itemLabel.text = $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
+            var pending = _cart.CountOf(itemOffer.definition.kind);
+            if (pending > 0) itemLabel.text += $" (Pending {pending})";
+            if (itemOffer.definition.price > Remaining) itemLabel.text += " Insufficient funds";
         }
 
         private void ShowUpgrade(ItemOffer itemOffer)
         {
-            itemLabel.text = UpgradeSettings.IsUpgraded(itemOffer.definition.kind)
-                ? $"{itemOffer.definition.displayName} Upgrade: Bought"
-                : $"{itemOffer.definition.displayName} Upgrade: {itemOffer.definition.upgradePrice} points";
-            if (itemOffer.definition.upgradePrice > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
+            var definition = itemOffer.definition;
+            var status = UpgradeSettings.IsUpgraded(definition.kind) ? "Bought"
+                : _cart.HasUpgrade(definition.kind) ? "Pending"
+                : definition.upgradePrice > Remaining ? $"{definition.upgradePrice} points Insufficient funds"
+                : $"{definition.upgradePrice} points";
+            itemLabel.text = $"{definition.displayName} Upgrade: {status}";
         }
 
         private void ShowSkin(SkinOffer offer)
         {
             var definition = offer.definition;
-            if (SaveSystem.Data.equippedSkin == definition.kind) itemLabel.text = $"{definition.displayName}: Equipped";
-            else if (IsBought(definition.kind)) itemLabel.text = $"{definition.displayName}: Bought";
-            else itemLabel.text = $"{definition.displayName}: {definition.price} points";
-            if (definition.price > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
+            var kind = definition.kind;
+            var status = SaveSystem.Data.equippedSkin == kind ? "Equipped"
+                : IsBought(kind) ? "Bought"
+                : _cart.HasSkin(kind) ? "Pending"
+                : definition.price > Remaining ? $"{definition.price} points Insufficient funds"
+                : $"{definition.price} points";
+            itemLabel.text = $"{definition.displayName}: {status}";
         }
 
         private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
