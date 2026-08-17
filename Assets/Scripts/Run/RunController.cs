@@ -112,13 +112,14 @@ namespace Run
             // Record against the level just finished, before Advance moves the counter on.
             Telemetry.LevelCompleted(_run, _levelElapsed, _firstAlarmAt);
             RecordForm();
+            // Fade out the level's music.
+            if (audioFader) audioFader.FadeOut();
             // Nothing past the final level: clearing it ends the run a winner.
             if (!_run.Advance())
             {
                 StartCoroutine(CompleteRun());
                 return;
             }
-
             CarryOver();
             StartCoroutine(AdvanceLevel());
         }
@@ -167,7 +168,6 @@ namespace Run
             {
                 if (wipeEffect) yield return wipeEffect.Close();
                 GenerateLevel();
-                if (audioFader) audioFader.FadeIn();
                 if (wipeEffect) yield return wipeEffect.Open();
             }
             finally
@@ -194,6 +194,8 @@ namespace Run
 
                 GenerateLevel();
                 if (wipeEffect) yield return wipeEffect.Open();
+                // Fade in the level's music.
+                if (audioFader) audioFader.FadeIn();
             }
             finally
             {
@@ -222,7 +224,6 @@ namespace Run
             if (player && player.TryGetComponent(out PlayerInventory inventory)) _run.AwardUnusedItems(inventory.CashInValue);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
-            if (audioFader) audioFader.FadeOut();
             if (resultsController)
             {
                 resultsController.Show(_run, "Run Complete", ResultsScreen.RunComplete);
