@@ -157,11 +157,8 @@ namespace Guards
         private void HearAlarm()
         {
             var alarm = World.Alarm;
-            if (!alarm.Active)
-            {
-                Memory.ResetAlarmResponse();
-                return;
-            }
+            if (!alarm.Active) return;
+            if (!Memory.SeesPlayer) Memory.MarkAlarmSought();
 
             if (Memory.SeesPlayer || Memory.LeadIsPlayerTrail) return;
             if (Memory.HasAnsweredAlarm(alarm.ContactCell)) return;

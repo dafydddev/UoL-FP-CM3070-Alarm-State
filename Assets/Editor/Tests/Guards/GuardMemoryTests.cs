@@ -226,15 +226,23 @@ namespace Editor.Tests.Guards
         }
 
         [Test]
-        public void ResetAlarmResponseSendsTheGuardBack()
+        public void AnAlarmRaisedAgainAtTheSameContactStaysAnswered()
         {
             var memory = new GuardMemory();
             var contact = new Vector2Int(6, 2);
             memory.MarkAlarmAnswered(contact);
+            Assert.IsTrue(memory.HasAnsweredAlarm(contact), "the guard should not re-sweep ground it has covered");
+        }
 
-            memory.ResetAlarmResponse();
+        [Test]
+        public void AnAlarmAlreadySoundingSettlesTheUrgeToRaiseOne()
+        {
+            var memory = new GuardMemory();
+            memory.MarkTrailLost();
 
-            Assert.IsFalse(memory.HasAnsweredAlarm(contact));
+            memory.MarkAlarmSought(); // HearAlarm, once the alarm sounds
+
+            Assert.IsFalse(memory.WantsToRaiseAlarm, "the alarm already says what this guard set out to report");
         }
     }
 }
