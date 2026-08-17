@@ -36,12 +36,11 @@ namespace Guards
         public void MarkAlarmSought() => _alarmSought = true;
 
         // A guard answers a given contact once: it sweeps its stretch, then stops being pulled and returns to patrol.
-        // A contact that moves (a fresh sighting) no longer matches, re-arming it.
+        // Only a contact that moves (a fresh sighting) re-arms it.
         private bool _alarmAnswered;
         private Vector2Int _answeredContact;
         public bool HasAnsweredAlarm(Vector2Int contact) => _alarmAnswered && _answeredContact == contact;
         public void MarkAlarmAnswered(Vector2Int contact) { _alarmAnswered = true; _answeredContact = contact; }
-        public void ResetAlarmResponse() => _alarmAnswered = false;
 
         public void NotePlayerSeen(Vector2Int cell)
         {
