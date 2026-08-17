@@ -9,8 +9,7 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    // The shop panel: spends banked currency on the items for the next run, offers to upgrade them,
-    // and sells the skins the player appears in.
+    // The shop panel: spends banked currency on the items for the next run, upgrades, and player skins.
     public class ShopMenu : MonoBehaviour
     {
         // One item kind's offer: the definition it sells and the buttons that buy it and its upgrade.
@@ -36,8 +35,14 @@ namespace Menu
         [SerializeField] private ItemOffer[] offers;
         [SerializeField] private SkinOffer[] skinOffers;
         [SerializeField] private Sprite unlockedSprite;
+        [SerializeField] private Color balanceErrorColor;
+        [SerializeField] private float balanceErrorDuration = 0.5f;
 
         private GameObject _highlighted;
+        private Color _balanceTextColor;
+        private float _balanceErrorTimer;
+
+        private void Awake() => _balanceTextColor = balanceLabel.color;
 
         private void OnEnable()
         {
@@ -66,11 +71,14 @@ namespace Menu
             }
 
             foreach (var offer in skinOffers) offer.button.onClick.RemoveAllListeners();
+            balanceLabel.color = _balanceTextColor;
+            _balanceErrorTimer = 0f;
         }
 
         // Refreshes the shared label when the highlight moves to another item or upgrade.
         private void Update()
         {
+            FadeBalance();
             var selected = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
             if (selected == _highlighted) return;
             _highlighted = selected;
@@ -85,7 +93,11 @@ namespace Menu
         // Buys one of the kind, spending its price, unless the wallet can't afford it.
         private void Buy(ItemOffer itemOffer)
         {
-            if (CurrencySettings.Balance < itemOffer.definition.price) return;
+            if (CurrencySettings.Balance < itemOffer.definition.price)
+            {
+                ShowBalanceError();
+                return;
+            }
 
             CurrencySettings.Balance -= itemOffer.definition.price;
             SaveSystem.Data.ownedItems.Add(itemOffer.definition.kind);
@@ -99,7 +111,12 @@ namespace Menu
         private void BuyUpgrade(ItemOffer itemOffer)
         {
             if (UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
-            if (CurrencySettings.Balance < itemOffer.definition.upgradePrice) return;
+            if (CurrencySettings.Balance < itemOffer.definition.upgradePrice)
+            {
+                ShowBalanceError();
+                return;
+            }
+
             CurrencySettings.Balance -= itemOffer.definition.upgradePrice;
             SaveSystem.Data.upgradedItems.Add(itemOffer.definition.kind);
             SaveSystem.Save();
@@ -115,7 +132,12 @@ namespace Menu
             var kind = offer.definition.kind;
             if (!IsBought(kind))
             {
-                if (CurrencySettings.Balance < offer.definition.price) return;
+                if (CurrencySettings.Balance < offer.definition.price)
+                {
+                    ShowBalanceError();
+                    return;
+                }
+
                 CurrencySettings.Balance -= offer.definition.price;
                 SaveSystem.Data.boughtSkins.Add(kind);
             }
@@ -128,14 +150,19 @@ namespace Menu
 
         private void ShowBalance() => balanceLabel.text = $"{CurrencySettings.Balance} points";
 
-        private void ShowItem(ItemOffer itemOffer) => itemLabel.text =
-            $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
+        private void ShowItem(ItemOffer itemOffer)
+        {
+            itemLabel.text =
+                $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
+            if (itemOffer.definition.price > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
+        }
 
         private void ShowUpgrade(ItemOffer itemOffer)
         {
             itemLabel.text = UpgradeSettings.IsUpgraded(itemOffer.definition.kind)
                 ? $"{itemOffer.definition.displayName} Upgrade: Bought"
                 : $"{itemOffer.definition.displayName} Upgrade: {itemOffer.definition.upgradePrice} points";
+            if (itemOffer.definition.upgradePrice > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
         }
 
         private void ShowSkin(SkinOffer offer)
@@ -144,6 +171,7 @@ namespace Menu
             if (SaveSystem.Data.equippedSkin == definition.kind) itemLabel.text = $"{definition.displayName}: Equipped";
             else if (IsBought(definition.kind)) itemLabel.text = $"{definition.displayName}: Bought";
             else itemLabel.text = $"{definition.displayName}: {definition.price} points";
+            if (definition.price > CurrencySettings.Balance) itemLabel.text += " Insufficient funds";
         }
 
         private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
@@ -157,6 +185,22 @@ namespace Menu
             if (!UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
             if (itemOffer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite)
                 image.sprite = unlockedSprite;
+        }
+
+        // Flashes the balance to signal that the wallet cannot afford the press.
+        private void ShowBalanceError()
+        {
+            _balanceErrorTimer = balanceErrorDuration;
+            balanceLabel.color = balanceErrorColor;
+        }
+
+        // Eases the balance back to its authored colour over the remainder of the flash.
+        private void FadeBalance()
+        {
+            if (_balanceErrorTimer <= 0f) return;
+            _balanceErrorTimer = Mathf.Max(0f, _balanceErrorTimer - Time.unscaledDeltaTime);
+            balanceLabel.color = Color.Lerp(_balanceTextColor, balanceErrorColor,
+                _balanceErrorTimer / balanceErrorDuration);
         }
     }
 }
