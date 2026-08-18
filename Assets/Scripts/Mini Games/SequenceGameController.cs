@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Entities.Objectives;
+using Generation;
 using Menu;
 using Run;
 using Settings;
@@ -10,10 +11,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Hacking
+namespace Mini_Games
 {
-    // The key order hacking screen. Opens when the player uses an objective.
-    // The objective completes once the order is entered without a slip. The game does not pause for it.
+    // The key order hacking screen. Opens when the player uses an objective. The game does not pause.
+    // The objective completes once the order is entered without a mistake. 
     public class SequenceGameController : MonoBehaviour
     {
         [Header("UI Game Objects")]
@@ -25,6 +26,7 @@ namespace Hacking
         [Header("Input Actions")]
         [SerializeField] private InputActionReference[] keyActions; // the order is drawn from these
         [SerializeField] private InputActionReference pauseAction;
+        [SerializeField] private InputActionReference useAction;
         [SerializeField] private InputDeviceState deviceState;
 
         [Header("Slot Colours")]
@@ -32,13 +34,18 @@ namespace Hacking
         [SerializeField] private Color nextColour = Color.yellow;
         [SerializeField] private Color enteredColour = Color.cyan;
         [SerializeField] private Color wrongColour = Color.red;
+        [SerializeField] private Color hoverColour = Color.white; // the clicked key under the cursor
         [SerializeField, Min(0f)] private float resetFlash = 0.25f; // seconds a wrong key holds before the order restarts
         [SerializeField, Min(0f)] private float winFlash = 0.15f;
 
         private RunContext _run;
         private Objective _objective; // the objective being hacked while the order is up
-        private int[] _order; // indices into keyActions
-        private readonly List<TMP_Text> _slots = new(); // the key label of each slot, the part that tints
+        private int[] _order; // typed variant: indices into keyActions
+        private int[] _steps; // clicked variant: the place in the order each row position fills
+        private bool _pointer; // opened with the mouse, so the row is clicked rather than typed
+
+        // The key label of each slot, the part that tints. Held in entry order, which the scramble undoes.
+        private readonly List<TMP_Text> _slots = new();
         private int _entered; // how far in the player has got
         private bool _running;
         private bool _flashing; // a flash is playing; the order is read-only
@@ -71,7 +78,7 @@ namespace Hacking
                 return;
             }
 
-            if (_flashing || Time.frameCount == _openedFrame) return;
+            if (_pointer || _flashing || Time.frameCount == _openedFrame) return;
             ReadKeys();
         }
 
@@ -82,8 +89,8 @@ namespace Hacking
             if (_running) Close();
         }
 
-        // Presents the objective's order.
-        // The seed was stamped at spawn time, so reopening after an abort presents the same order again.
+        // Presents the objective's order in the variant the control that used it calls for.
+        // The seed was stamped at spawn time, so each variant reopens on the order it always had.
         private void Open(Objective objective)
         {
             if (_running || objective.Hack != HackKind.Sequence) return;
@@ -92,7 +99,13 @@ namespace Hacking
             _openedFrame = Time.frameCount;
             InputCapture.Acquire();
 
-            _order = Draw(new System.Random(objective.hackSeed), _run.DifficultyProfile.sequenceLength);
+            // The control that fired the use, not the last device seen: a nudged mouse must not swing the variant.
+            _pointer = useAction && useAction.action.activeControl?.device is Mouse;
+
+            var rng = new System.Random(objective.hackSeed);
+            var length = Mathf.Max(2, _run.DifficultyProfile.sequenceLength);
+            if (_pointer) _steps = Scramble(rng, length);
+            else _order = Draw(rng, length);
             _entered = 0;
 
             panel.SetActive(true);
@@ -100,10 +113,19 @@ namespace Hacking
             BuildSlots();
         }
 
+        // The clicked row: every place in the order once, dealt to scrambled positions.
+        private static int[] Scramble(System.Random rng, int length)
+        {
+            var steps = new int[length];
+            for (var i = 0; i < length; i++) steps[i] = i;
+            Shuffle.InPlace(steps, rng);
+            return steps;
+        }
+
         // A run of keys, never repeating one back to back: a doubled key reads as a single long press.
         private int[] Draw(System.Random rng, int length)
         {
-            var order = new int[Mathf.Max(2, length)];
+            var order = new int[length];
             var previous = -1;
             for (var i = 0; i < order.Length; i++)
             {
@@ -122,18 +144,35 @@ namespace Hacking
             for (var i = 0; i < keyActions.Length; i++)
             {
                 if (!keyActions[i].action.WasPressedThisFrame()) continue;
-                if (i == _order[_entered]) Advance();
-                else StartCoroutine(FailRun());
+                Step(i == _order[_entered]);
                 return;
             }
+        }
+
+        // The key whose place is next steps on; any other resets the order.
+        public void OnKeyClicked(int step) => Step(step == _entered);
+
+        // Marks the key under the cursor. Only what is still to come lights up.
+        public void OnKeyHovered(int step, bool inside)
+        {
+            if (!_pointer || !_running || _flashing || step < _entered) return;
+            _slots[step].color = inside ? hoverColour : pendingColour;
+        }
+
+        // Both variants land here. A click arrives outside Update, so it repeats the guards.
+        private void Step(bool correct)
+        {
+            if (!_running || _flashing || GameLock.Locked || Time.frameCount == _openedFrame) return;
+            if (correct) Advance();
+            else StartCoroutine(FailRun());
         }
 
         private void Advance()
         {
             _slots[_entered].color = enteredColour;
             _entered++;
-            if (_entered >= _order.Length) StartCoroutine(CompleteRun());
-            else _slots[_entered].color = nextColour;
+            if (_entered >= _slots.Count) StartCoroutine(CompleteRun());
+            else if (!_pointer) _slots[_entered].color = nextColour; // clicked, finding the next key is the game
         }
 
         private IEnumerator FailRun()
@@ -154,23 +193,39 @@ namespace Hacking
             Close();
         }
 
-        // Rebuilds one slot per key in the order.
+        // Rebuilds one slot per key, left to right. A clicked row fills _slots through its scramble.
         private void BuildSlots()
         {
             var root = slotRow.transform;
             for (var i = root.childCount - 1; i >= 0; i--) Destroy(root.GetChild(i).gameObject);
 
+            var length = _pointer ? _steps.Length : _order.Length;
             _slots.Clear();
-            foreach (var _ in _order) _slots.Add(Instantiate(slotPrefab, root).GetComponentInChildren<TMP_Text>());
+            for (var i = 0; i < length; i++) _slots.Add(null);
+
+            for (var position = 0; position < length; position++)
+            {
+                var slot = Instantiate(slotPrefab, root);
+                var step = _pointer ? _steps[position] : position;
+                _slots[step] = slot.GetComponentInChildren<TMP_Text>();
+                if (_pointer) slot.AddComponent<SequenceKeyButton>().Bind(this, step);
+            }
+
             RefreshLabels();
             RefreshTints();
         }
 
-        // Labels each slot for the device in use.
+        // Labels each slot with the key to press, or with the place it fills when clicked.
         private void RefreshLabels()
         {
             for (var i = 0; i < _slots.Count; i++)
             {
+                if (_pointer)
+                {
+                    _slots[i].text = (i + 1).ToString();
+                    continue;
+                }
+
                 var action = keyActions[_order[i]].action;
                 var index = BindingIndex(action);
                 _slots[i].text = index < 0
@@ -181,18 +236,21 @@ namespace Hacking
             }
         }
 
-        // Entered, waiting, and still to come.
+        // Entered, waiting, and still to come. A clicked row never marks what is next.
         private void RefreshTints()
         {
             for (var i = 0; i < _slots.Count; i++)
             {
-                _slots[i].color = i < _entered ? enteredColour : i == _entered ? nextColour : pendingColour;
+                _slots[i].color = i < _entered ? enteredColour
+                    : i == _entered && !_pointer ? nextColour
+                    : pendingColour;
             }
         }
 
+        // Only the typed variant labels off the device; a clicked row is numbered either way.
         private void OnDeviceChanged(InputDevice device)
         {
-            if (_running) RefreshLabels();
+            if (_running && !_pointer) RefreshLabels();
         }
 
         private int BindingIndex(InputAction action)
