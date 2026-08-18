@@ -26,10 +26,6 @@ namespace Guards
         public int HearingRangeCells => hearingRangeCells;
         public int ViewRangeCells => viewRangeCells;
 
-        // True when the alarm is sounding and a switch is within earshot.
-        public bool HearsAlarm(WorldContext world, GridMotor motor) =>
-            world.Alarm.Active && world.Alarm.AnySwitchWithin(motor.Cell, hearingRangeCells);
-
         public void Sense(WorldContext world, GridMotor motor, GuardMemory memory)
         {
             var player = world.Player;

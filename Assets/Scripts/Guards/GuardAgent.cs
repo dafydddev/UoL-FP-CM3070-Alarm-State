@@ -153,6 +153,7 @@ namespace Guards
         }
 
         // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps the escape line.
+        // A relayed contact reaches every guard, earshot or not.
         // Responders string out across where the player likely fled.
         private void HearAlarm()
         {
@@ -161,16 +162,16 @@ namespace Guards
             if (!Memory.SeesPlayer) Memory.MarkAlarmSought();
 
             if (Memory.SeesPlayer || Memory.LeadIsPlayerTrail) return;
-            if (Memory.HasAnsweredAlarm(alarm.ContactCell)) return;
+            if (!alarm.ContactRelayed && !alarm.AudibleAt(Motor.Cell)) return;
+            if (Memory.HasAnsweredAlarm(alarm.SoundingId, alarm.ContactCell)) return;
 
             var slot = SweepCell(alarm.ContactCell, alarm.ContactHeading);
             if (IsNear(Motor.Cell, slot))
             {
-                Memory.MarkAlarmAnswered(alarm.ContactCell);
+                Memory.MarkAlarmAnswered(alarm.SoundingId, alarm.ContactCell);
                 return;
             }
 
-            if (!senses.HearsAlarm(World, Motor)) return;
             Memory.OfferLead(slot, LeadKind.Alarm);
         }
 
