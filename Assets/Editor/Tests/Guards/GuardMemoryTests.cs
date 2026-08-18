@@ -209,29 +209,31 @@ namespace Editor.Tests.Guards
         {
             var memory = new GuardMemory();
             var contact = new Vector2Int(6, 2);
-            Assert.IsFalse(memory.HasAnsweredAlarm(contact));
+            Assert.IsFalse(memory.HasAnsweredAlarm(1, contact));
 
-            memory.MarkAlarmAnswered(contact);
+            memory.MarkAlarmAnswered(1, contact);
 
-            Assert.IsTrue(memory.HasAnsweredAlarm(contact));
+            Assert.IsTrue(memory.HasAnsweredAlarm(1, contact));
         }
 
         [Test]
         public void AMovedContactHasNotBeenAnswered()
         {
             var memory = new GuardMemory();
-            memory.MarkAlarmAnswered(new Vector2Int(6, 2));
+            memory.MarkAlarmAnswered(1, new Vector2Int(6, 2));
 
-            Assert.IsFalse(memory.HasAnsweredAlarm(new Vector2Int(6, 3)));
+            Assert.IsFalse(memory.HasAnsweredAlarm(1, new Vector2Int(6, 3)));
         }
 
         [Test]
-        public void AnAlarmRaisedAgainAtTheSameContactStaysAnswered()
+        public void AnAlarmRaisedAgainAtTheSameContactIsAnsweredAfresh()
         {
             var memory = new GuardMemory();
             var contact = new Vector2Int(6, 2);
-            memory.MarkAlarmAnswered(contact);
-            Assert.IsTrue(memory.HasAnsweredAlarm(contact), "the guard should not re-sweep ground it has covered");
+            memory.MarkAlarmAnswered(1, contact);
+
+            Assert.IsFalse(memory.HasAnsweredAlarm(2, contact),
+                "silencing the alarm makes covered ground worth sweeping again");
         }
 
         [Test]

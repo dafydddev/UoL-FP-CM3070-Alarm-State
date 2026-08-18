@@ -16,12 +16,21 @@ namespace Simulation
     // A guard raises it at a switch, broadcasting the player's last-seen cell and heading direction.
     public sealed class AlarmState
     {
+        // How far the sirens carry, in cells.
+        public const int BroadcastRadiusCells = 25;
+
         // True while the alarm is sounding.
         public bool Active { get; private set; }
 
         // The escape line the alarm points guards at: where the intruder was last seen, and which way they went.
         public Vector2Int ContactCell { get; private set; }
         public Vector2Int ContactHeading { get; private set; }
+
+        // Which sounding this is; each raise is a new one. Guards remember which one they answered.
+        public int SoundingId { get; private set; }
+
+        // True once a guard has refreshed the contact from a live sighting.
+        public bool ContactRelayed { get; private set; }
 
         // Fires whenever the alarm turns on or off. Static so the HUD can subscribe once.
         public static event Action<bool> ActiveChanged;
@@ -36,6 +45,9 @@ namespace Simulation
         {
             if (alarmSwitch != null && !_switches.Contains(alarmSwitch)) _switches.Add(alarmSwitch);
         }
+
+        // Whether a sounding alarm reaches a cell.
+        public bool AudibleAt(Vector2Int cell) => Active && AnySwitchWithin(cell, BroadcastRadiusCells);
 
         // Whether a switch stands within a straight-line range of a cell, for range checks like earshot.
         // Skips destroyed switches as a MonoBehaviour lifetime guard.
@@ -87,15 +99,18 @@ namespace Simulation
         {
             if (Active) return;
             Active = true;
+            SoundingId++;
+            ContactRelayed = false;
             ContactCell = contactCell;
             ContactHeading = contactHeading;
             ActiveChanged?.Invoke(true);
         }
 
-        // Refreshes the broadcast to a live position while the alarm sounds.
+        // Refreshes the broadcast to a live position while the alarm sounds, and marks it relayed.
         public void UpdateContact(Vector2Int contactCell, Vector2Int contactHeading)
         {
             if (!Active) return;
+            ContactRelayed = true;
             ContactCell = contactCell;
             ContactHeading = contactHeading;
         }
