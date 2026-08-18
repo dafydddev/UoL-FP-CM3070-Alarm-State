@@ -18,6 +18,7 @@ namespace Hacking
     {
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
+        [SerializeField] private Button backdrop;
         [SerializeField] private HorizontalLayoutGroup slotRow;
         [SerializeField] private GameObject slotPrefab;
 
@@ -49,6 +50,7 @@ namespace Hacking
             foreach (var action in keyActions) action.action.Enable();
             pauseAction.action.Enable();
             deviceState.InputTypeChanged += OnDeviceChanged;
+            if (backdrop) backdrop.onClick.AddListener(Close);
         }
 
         private void OnDisable()
@@ -57,6 +59,7 @@ namespace Hacking
             foreach (var action in keyActions) action.action.Disable();
             pauseAction.action.Disable();
             deviceState.InputTypeChanged -= OnDeviceChanged;
+            if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
 
         private void Update()
@@ -93,6 +96,7 @@ namespace Hacking
             _entered = 0;
 
             panel.SetActive(true);
+            if (backdrop) backdrop.gameObject.SetActive(true);
             BuildSlots();
         }
 
@@ -206,6 +210,7 @@ namespace Hacking
             _objective = null;
             _running = false;
             panel.SetActive(false);
+            if (backdrop) backdrop.gameObject.SetActive(false);
             InputCapture.Release();
         }
     }
