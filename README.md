@@ -1,6 +1,8 @@
 # Alarm State: Procedural Stealth-Action Roguelite
 
-University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Generation in Roguelike Games). A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C#). The player infiltrates a procedurally generated facility, evades GOAP-driven guards, completes mission objectives, and reaches an exit, over a run of 10, 20, or 30 escalating levels.
+University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Generation in Roguelike Games). 
+
+A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C#). The player infiltrates a procedurally generated facility, evades GOAP-driven guards, completes mission objectives, and reaches an exit, over a run of 10, 20, or 30 escalating levels.
 
 ---
 
@@ -29,10 +31,10 @@ The most interesting scripts, grouped by system. Paths are relative to [`Assets/
 | Stage | Script | What it does |
 |-------|--------|--------------|
 | 0 - Orchestration | [`Generation/Facility/FacilityOrchestrator.cs`](Assets/Scripts/Generation/Facility/FacilityOrchestrator.cs) | Runs the pipeline in order and wires the spawners together. **Best entry point for reading the system.** |
-| 1 - Mission | [`Graphs/Missions/MissionGenerator.cs`](Assets/Scripts/Graphs/Missions/MissionGenerator.cs) | Seeded RNG picks a mission type (Assassination / Theft / Sabotage) and builds a directed acyclic graph of objectives and their dependencies. |
-| 2 - Rooms | [`Graphs/Rooms/RoomGraphGenerator.cs`](Assets/Scripts/Graphs/Rooms/RoomGraphGenerator.cs) | Expands the mission graph into a room graph under a four-door-per-room budget, adding guard posts, extra exits, and locked doors. |
+| 1 - Mission | [`Graphs/Missions/MissionGenerator.cs`](Assets/Scripts/Graphs/Missions/MissionGenerator.cs) | Seeded RNG picks a mission type and builds a directed acyclic graph of objectives and their dependencies. |
+| 2 - Rooms | [`Graphs/Rooms/RoomGraphGenerator.cs`](Assets/Scripts/Graphs/Rooms/RoomGraphGenerator.cs) | Expands the mission graph into a room graph, adding guard posts, extra exits, and locked doors. |
 | 3 - Layout | [`Generation/Tiles/TileLayoutGenerator.cs`](Assets/Scripts/Generation/Tiles/TileLayoutGenerator.cs) | Places the rooms on a tile grid, paints walls and floor, and carves doorways between connected rooms. |
-| 4 - Exterior | [`Generation/Terrain/ExteriorGenerator.cs`](Assets/Scripts/Generation/Terrain/ExteriorGenerator.cs) | Layered Perlin noise (fractal Brownian motion), thresholded by elevation and moisture into biomes, painted around and between the facility footprint. |
+| 4 - Exterior | [`Generation/Terrain/ExteriorGenerator.cs`](Assets/Scripts/Generation/Terrain/ExteriorGenerator.cs) | Layered Perlin noise (fractal Brownian motion) that creates an outside terrain, painted around and between the facility. |
 | 5 - Population | The spawners (below) | Instantiates the player, guards, items, doors, objectives, and exits. |
 
 Two layout strategies, chosen per run ([`TileLayoutStyle`](Assets/Scripts/Generation/Tiles/TileLayoutStyle.cs)):
@@ -55,7 +57,7 @@ Supporting systems:
 - [`Guards/GuardMemory.cs`](Assets/Scripts/Guards/GuardMemory.cs): what a guard has seen, and the strongest lead it is currently following.
 - [`Guards/GuardSenses.cs`](Assets/Scripts/Guards/GuardSenses.cs): view range, facing cone, and hearing, with Bresenham line of sight over the tile grid.
 - [`Pathfinding/AStarPathfinder.cs`](Assets/Scripts/Pathfinding/AStarPathfinder.cs): 4-connected A* with a Manhattan heuristic and a binary min-heap frontier.
-- [`Guards/GridMotor.cs`](Assets/Scripts/Guards/GridMotor.cs): steps a guard one cell per N ticks along its A* route.
+- [`Guards/GridMotor.cs`](Assets/Scripts/Guards/GridMotor.cs): steps a guard one cell per `N` ticks along its A* route.
 - [`Guards/PatrolRouteDeriver.cs`](Assets/Scripts/Guards/PatrolRouteDeriver.cs): derives patrol routes from the room graph's adjacency.
 - [`Guards/GuardVisionField.cs`](Assets/Scripts/Guards/GuardVisionField.cs): draws the guards' vision cones in the game view.
 
@@ -82,7 +84,7 @@ Supporting systems:
 ### 5: Run Structure & Meta-Progression
 
 - [`Run/RunController.cs`](Assets/Scripts/Run/RunController.cs): builds each level and advances the run as the player exits.
-- [`Run/RunContext.cs`](Assets/Scripts/Run/RunContext.cs): the live run's difficulty, length, progress, and points.
+- [`Run/RunContext.cs`](Assets/Scripts/Run/RunContext.cs): the current run's difficulty, length, progress, and points.
 - [`Menu/ShopMenu.cs`](Assets/Scripts/Menu/ShopMenu.cs), [`PlayMenu.cs`](Assets/Scripts/Menu/PlayMenu.cs), [`ResultsController.cs`](Assets/Scripts/Menu/ResultsController.cs): the shop, run setup, and results screen.
 - [`Settings/SaveSystem.cs`](Assets/Scripts/Settings/SaveSystem.cs): the player's banked points, owned items, upgrades, skins, and settings, saved as JSON under `persistentDataPath`.
 - [`Analytics/Telemetry.cs`](Assets/Scripts/Analytics/Telemetry.cs): sends the run's progress to Unity Analytics.
@@ -124,7 +126,7 @@ Assets/
 │   ├── Mini Games/   # Pipe circuit and key sequence mini games
 │   ├── Spawners/     # Level population
 │   ├── Run/          # Run context, difficulty profiles, performance tracking, loadout
-│   ├── HUD/ Menu/    # In-game HUD (incl. minimap) and menus (play, shop, pause, results)
+│   ├── HUD/ Menu/    # In-game HUD (e.g. minimap) and menus (play, shop, pause, results, etc.)
 │   ├── Settings/     # Save system, audio/resolution/binding/upgrade/currency settings
 │   └── Audio/ Camera/ Effects/ Analytics/
 └── Editor/
