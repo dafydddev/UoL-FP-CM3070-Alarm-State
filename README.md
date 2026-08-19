@@ -4,13 +4,9 @@ University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Gen
 
 A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C#). The player infiltrates a procedurally generated facility, evades GOAP-driven guards, completes mission objectives, and reaches an exit, over a run of 10, 20, or 30 escalating levels.
 
----
-
 ## Playable Build
 
 A WebGL build is available on Itch.io (password: `finalproject`): <https://asdasdasduu.itch.io/cm3070-final-project-roguelike-prototype>
-
----
 
 ## The Loop
 
