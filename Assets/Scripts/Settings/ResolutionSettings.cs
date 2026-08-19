@@ -15,7 +15,7 @@ namespace Settings
 
         public static bool Fullscreen
         {
-            get => PlayerPrefs.GetInt(FullscreenKey, 1) == 1;
+            get => PlayerPrefs.GetInt(FullscreenKey, 0) == 1;
             set => PlayerPrefs.SetInt(FullscreenKey, value ? 1 : 0);
         }
 
