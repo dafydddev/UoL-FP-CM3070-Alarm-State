@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Hacking;
+using Mini_Games;
 using NUnit.Framework;
 using UnityEngine;
 
 namespace Editor.Tests.Mini_Games
 {
-    // Solvability of the generated hacking board.
+    // Solvability of the generated pipe game board.
     // An unsolvable board would strand the player on an objective with no way to finish it.
     public class PipePuzzleGeneratorTests
     {

@@ -14,7 +14,7 @@ namespace Generation
         public const int Distraction = 5;
         public const int Terrain = 6;
         public const int Tiles = 7;
-        public const int Hacking = 8;
+        public const int MiniGames = 8;
         public const int Drops = 9;
         public const int Adaptive = 10;
         public const int Lasers = 11;

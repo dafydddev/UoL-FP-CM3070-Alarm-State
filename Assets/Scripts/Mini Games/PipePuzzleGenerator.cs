@@ -3,9 +3,9 @@ using System.Linq;
 using Generation;
 using UnityEngine;
 
-namespace Hacking
+namespace Mini_Games
 {
-    // Builds a hacking board from a seeded RNG so every puzzle is reproducible.
+    // Builds a game board from a seeded RNG so every puzzle is reproducible.
     public static class PipePuzzleGenerator
     {
         private const int MinSize = 3; // below this a board can't hold a non-trivial circuit

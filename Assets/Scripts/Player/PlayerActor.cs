@@ -175,7 +175,7 @@ namespace Player
         }
 
         // Presses the use key to interact with whatever the player is standing on.
-        // The cell activates first, so an alarm or an unhacked objective takes the key rather than an item.
+        // The cell activates first, so an alarm or an incomplete objective takes the key rather than an item.
         private void ReadUse()
         {
             if (!useAction.action.WasPressedThisFrame()) return;

@@ -2,7 +2,6 @@
 using Generation.Tiles;
 using Graphs.Missions;
 using Graphs.Rooms;
-using Hacking;
 using HUD.MiniMap;
 using Mini_Games;
 using Run;
@@ -33,7 +32,7 @@ namespace Generation.Facility
         [Header("UI")]
         [SerializeField] private MinimapHud minimap;
         
-        [Header("Hacking Game Controllers")]
+        [Header("Mini Game Controllers")]
         [SerializeField] private PipeGameController pipeGameController;
         [SerializeField] private SequenceGameController sequenceGameController;
 
@@ -132,7 +131,7 @@ namespace Generation.Facility
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
-            pipeGameController?.Prepare(run); // Hand the hacking screens the run state.
+            pipeGameController?.Prepare(run); // Hand the minigame screens the run state.
             sequenceGameController?.Prepare(run);
             minimap?.Fit(); // Scale the mini-map for the generated level.
         }

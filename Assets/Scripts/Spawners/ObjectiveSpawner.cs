@@ -24,8 +24,8 @@ namespace Spawners
         // Places an objective in each objective room, tinted with that room's role colour.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
-            // Seed each objective's hacking puzzle from the graph so boards are repeatable per level.
-            var rng = new System.Random(Seeds.For(graph.seed, Seeds.Hacking, graph.level));
+            // Seed each objective's minigame from the graph so boards are repeatable per level.
+            var rng = new System.Random(Seeds.For(graph.seed, Seeds.MiniGames, graph.level));
 
             // Rewards roll on their own stream, so retuning the puzzles never reshuffles the drops.
             var dropRng = new System.Random(Seeds.For(graph.seed, Seeds.Drops, graph.level));
@@ -48,7 +48,7 @@ namespace Spawners
                 var objective = go.GetComponent<Objective>();
                 objective.id = room.id;
                 objective.text = room.text;
-                objective.hackSeed = rng.Next();
+                objective.miniGameSeed = rng.Next();
                 if (objective is SecondaryObjective secondary) secondary.dropSeed = dropRng.Next();
                 objective.Init(world);
                 // Tint to the room's role colour so the primary objective stands out.

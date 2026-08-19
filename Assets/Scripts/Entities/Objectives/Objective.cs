@@ -3,36 +3,37 @@ using Generation.Cells;
 using Player;
 using Simulation;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Entities.Objectives
 {
-    // A mission objective the player completes with the use key while standing on or beside it.
-    // Using it opens a hacking minigame; the objective completes once the hack is done.
-    // What that completion is worth is left to the two kinds: see PrimaryObjective and SecondaryObjective.
+    // A mission objective the player completes with the use action while standing on or beside it.
+    // Using it opens a minigame; the objective completes once the minigame is done.
+    // What that completion is worth is left to the two types: see PrimaryObjective and SecondaryObjective.
     public abstract class Objective : MonoBehaviour, IUseHandler
     {
-        // Fires when the player uses an unhacked objective, so the hacking screen can open for it.
-        public static event Action<Objective> HackRequested;
+        // Fires when the player uses an incomplete objective, so the minigame screen can open for it.
+        public static event Action<Objective> MiniGameRequested;
 
-        // Fires once an objective's hack is won, so the HUD can tick its row off. Covers both kinds.
-        public static event Action<Objective> Hacked;
+        // Fires once an objective's minigame is won, so the HUD can tick its row off. Covers both types.
+        public static event Action<Objective> Complete;
 
         public string id;
 
         // The mission's wording for this objective, stamped by the spawner for the HUD to show.
         public string text;
 
-        public abstract HackKind Hack { get; }
+        public abstract MiniGameType Game { get; }
 
-        // Seed for this objective's hacking puzzle, stamped by the spawner so the same level always presents the same boards.
-        public int hackSeed;
+        // Seed for this objective's puzzle, stamped by the spawner so the same level always presents the same boards.
+        public int miniGameSeed;
 
-        // True once this objective's hack has been won; it can't be hacked twice.
-        private bool _hacked;
+        // True once this objective's minigame has been won; it can't be won twice.
+        private bool _complete;
 
         private Vector2Int _cell;
 
-        // The level this objective sits in, for the kinds to act on once they are hacked.
+        // The level this objective sits in.
         protected WorldContext World { get; private set; }
 
         // Called by the spawner after Instantiate, so the use key can find us on the grid.
@@ -43,24 +44,24 @@ namespace Entities.Objectives
             world.Occupancy.Place(_cell, gameObject);
         }
 
-        // Used by the player to start the hack; completion arrives via CompleteHack once the minigame validates a circuit.
+        // Used by the player to start the minigame.
         public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || _hacked) return false;
-            HackRequested?.Invoke(this);
+            if (user is not PlayerActor || _complete) return false;
+            MiniGameRequested?.Invoke(this);
             return true;
         }
 
-        // Called by the minigame when the circuit activates.
-        public void CompleteHack()
+        // Called by the minigame when the game has been completed.
+        public void CompleteMiniGame()
         {
-            _hacked = true;
-            OnHacked(); // pay out first, so the world is settled by the time the HUD hears about it
-            Hacked?.Invoke(this);
+            _complete = true;
+            OnWon(); // pay out first, so the world is settled by the time the HUD hears about it
+            Complete?.Invoke(this);
         }
 
-        // What winning this objective's hack is worth.
-        protected abstract void OnHacked();
+        // What winning this objective's minigame is worth.
+        protected abstract void OnWon();
 
         private void OnDestroy()
         {

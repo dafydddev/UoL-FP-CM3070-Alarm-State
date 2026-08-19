@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Entities.Objectives
 {
-    // The reward a secondary objective leaves behind when it is hacked.
-    // Rolled from the seed the spawner stamped, so a level rewards the same way however many times it is played.
+    // The reward a secondary objective leaves behind when complete.
     public class ObjectiveDrop : MonoBehaviour
     {
         // Where a drop can land, searched in this order for the first cell that is free.

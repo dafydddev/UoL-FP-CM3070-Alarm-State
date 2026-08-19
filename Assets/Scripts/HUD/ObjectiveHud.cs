@@ -20,13 +20,13 @@ namespace HUD
         private void OnEnable()
         {
             ObjectiveSpawner.ObjectivesSpawned += Rebuild;
-            Objective.Hacked += Complete;
+            Objective.Complete += Complete;
         }
 
         private void OnDisable()
         {
             ObjectiveSpawner.ObjectivesSpawned -= Rebuild;
-            Objective.Hacked -= Complete;
+            Objective.Complete -= Complete;
         }
 
         // A fresh level replaces the whole list, one pending row per objective it placed.
@@ -45,7 +45,7 @@ namespace HUD
             }
         }
 
-        // Strikes the hacked objective's row through and brings it up to full strength.
+        // Strikes the completed objective's row through and brings it up to full strength.
         private void Complete(Objective objective)
         {
             if (!_rows.TryGetValue(objective, out var row)) return;

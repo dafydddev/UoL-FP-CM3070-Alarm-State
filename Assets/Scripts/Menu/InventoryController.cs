@@ -66,7 +66,7 @@ namespace Menu
         {
             if (!_open)
             {
-                // Opens on its own key, but only when nothing else holds the game (a pause, a hack, etc.).
+                // Opens on its own key, but only when nothing else holds the game (a pause, a minigame, etc.).
                 if (openAction.action.WasPressedThisFrame() && CanOpen) Open();
                 return;
             }

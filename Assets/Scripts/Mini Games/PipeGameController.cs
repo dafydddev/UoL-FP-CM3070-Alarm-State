@@ -4,13 +4,14 @@ using Entities.Objectives;
 using Menu;
 using Run;
 using Simulation;
+using Tutorials;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Hacking
+namespace Mini_Games
 {
-    // The pipe hacking screen. Opens when the player uses an objective.
+    // The pipe minigame. Opens when the player activates a primary objective.
     // The objective completes once the pipes are rotated into a circuit from the feed to the outlet.
     public class PipeGameController : MonoBehaviour
     {
@@ -50,16 +51,16 @@ namespace Hacking
         [SerializeField, Min(0f)] private float surgeStep = 0.08f; // seconds the activation surge spends per tile
 
         private RunContext _run;
-        private Objective _objective; // the objective being hacked while the panel is open
+        private Objective _objective; // the objective being attempted
         private PipeBoard _board;
         private PipeTileButton[,] _buttons;
         private Vector2Int _selected; // the tile the move keys are parked on
-        private bool _hacking; // a hack is on screen and holding the game lock
+        private bool _attempting; // a minigame is on screen and holding the game lock
         private bool _surging; // the win animation is playing; the board is read-only
 
         private void OnEnable()
         {
-            Objective.HackRequested += Open;
+            Objective.MiniGameRequested += Open;
             upAction.action.Enable();
             downAction.action.Enable();
             leftAction.action.Enable();
@@ -71,7 +72,7 @@ namespace Hacking
 
         private void OnDisable()
         {
-            Objective.HackRequested -= Open;
+            Objective.MiniGameRequested -= Open;
             upAction.action.Disable();
             downAction.action.Disable();
             leftAction.action.Disable();
@@ -83,7 +84,7 @@ namespace Hacking
 
         private void Update()
         {
-            if (!_hacking || _surging) return;
+            if (!_attempting || _surging) return;
             if (upAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.up);
             if (downAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.down);
             if (leftAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.left);
@@ -97,25 +98,30 @@ namespace Hacking
         public void Prepare(RunContext run)
         {
             _run = run;
-            if (_hacking) Close();
+            if (_attempting) Close();
         }
 
         // Presents the objective's puzzle.
         // The seed was stamped at spawn time, so reopening after an abort presents the same board again.
         private void Open(Objective objective)
         {
-            if (_hacking) return; // already hacking
-            if (objective.Hack != HackKind.Pipes) return;
+            if (_attempting) return; // already attempting
+            if (objective.Game != MiniGameType.Pipes) return;
+            Tutorial.ShowOnce(TutorialTopic.PipeMiniGame, () => Begin(objective));
+        }
+
+        private void Begin(Objective objective)
+        {
             _objective = objective;
-            _hacking = true;
+            _attempting = true;
             GameLock.Acquire();
 
-            var rng = new System.Random(objective.hackSeed);
+            var rng = new System.Random(objective.miniGameSeed);
             var profile = _run.DifficultyProfile;
-            var size = profile.HackingBoardSize(_run.CurrentLevel, _run.TotalLevels, rng);
-            var complexity = profile.HackingComplexity(_run.CurrentLevel, _run.TotalLevels, rng);
-            var decoys = profile.HackingDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
-            var scramble = profile.HackingScrambleChance(_run.CurrentLevel, _run.TotalLevels, rng);
+            var size = profile.PipeGameBoardSize(_run.CurrentLevel, _run.TotalLevels, rng);
+            var complexity = profile.PipeGameComplexity(_run.CurrentLevel, _run.TotalLevels, rng);
+            var decoys = profile.PipeGameDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
+            var scramble = profile.PipeGameScrambleChance(_run.CurrentLevel, _run.TotalLevels, rng);
             _board = PipePuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
             
             startMarkerImage.color = pipeColour;
@@ -219,18 +225,18 @@ namespace Hacking
                 yield return new WaitForSeconds(surgeStep);
             }
             endMarkerImage.color = poweredColour;
-            _objective.CompleteHack();
+            _objective.CompleteMiniGame();
             Close();
         }
 
         // Backing out leaves the process incomplete. Using the objective again reopens the same puzzle.
         private void Close()
         {
-            if (!_hacking) return; // several paths can fire on one frame, and the shared backdrop calls this for both screens
+            if (!_attempting) return; // several paths can fire on one frame, and the shared backdrop calls this for both screens
             StopAllCoroutines(); // a rebuild can close us mid-surge
             _surging = false;
             _objective = null;
-            _hacking = false;
+            _attempting = false;
             panel.SetActive(false);
             if (backdrop) backdrop.gameObject.SetActive(false);
             GameLock.Release();

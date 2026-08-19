@@ -2,10 +2,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Hacking
+namespace Mini_Games
 {
-    // One cell of the hacking board's UI:
-    // a button showing its tile's pipe sprite at the tile's current rotation.
+    // One cell of the game board's UI: a button showing its tile's pipe sprite at the tile's current rotation.
     // The minigame builds these and re-reads the board after every click; the button itself never touches puzzle logic.
     [RequireComponent(typeof(Button))]
     public class PipeTileButton : MonoBehaviour, IPointerClickHandler
