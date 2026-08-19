@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Hacking
+namespace Mini_Games
 {
     // The four sides of a pipe tile, as a mask so a tile's open ends can be tested together.
     // Bits run clockwise from North, which is what lets Rotated() spin a mask with a shift.
@@ -63,7 +63,7 @@ namespace Hacking
         };
     }
 
-    // One rotatable pipe piece on the hacking board.
+    // One rotatable pipe piece on the game board.
     public class PipeTile
     {
         public Vector2Int Cell;

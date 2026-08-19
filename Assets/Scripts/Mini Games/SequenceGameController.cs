@@ -7,13 +7,14 @@ using Run;
 using Settings;
 using Simulation;
 using TMPro;
+using Tutorials;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Mini_Games
 {
-    // The key order hacking screen. Opens when the player uses an objective. The game does not pause.
+    // The sequence minigame. Opens when the player activates a secondary objective.
     // The objective completes once the order is entered without a mistake. 
     public class SequenceGameController : MonoBehaviour
     {
@@ -39,7 +40,7 @@ namespace Mini_Games
         [SerializeField, Min(0f)] private float winFlash = 0.15f;
 
         private RunContext _run;
-        private Objective _objective; // the objective being hacked while the order is up
+        private Objective _objective; // the objective being attempted
         private int[] _order; // typed variant: indices into keyActions
         private int[] _steps; // clicked variant: the place in the order each row position fills
         private bool _pointer; // opened with the mouse, so the row is clicked rather than typed
@@ -53,7 +54,7 @@ namespace Mini_Games
 
         private void OnEnable()
         {
-            Objective.HackRequested += Open;
+            Objective.MiniGameRequested += Open;
             foreach (var action in keyActions) action.action.Enable();
             pauseAction.action.Enable();
             deviceState.InputTypeChanged += OnDeviceChanged;
@@ -62,7 +63,7 @@ namespace Mini_Games
 
         private void OnDisable()
         {
-            Objective.HackRequested -= Open;
+            Objective.MiniGameRequested -= Open;
             foreach (var action in keyActions) action.action.Disable();
             pauseAction.action.Disable();
             deviceState.InputTypeChanged -= OnDeviceChanged;
@@ -93,16 +94,21 @@ namespace Mini_Games
         // The seed was stamped at spawn time, so each variant reopens on the order it always had.
         private void Open(Objective objective)
         {
-            if (_running || objective.Hack != HackKind.Sequence) return;
+            if (_running || objective.Game != MiniGameType.Sequence) return;
+            // The control that fired the use, so that the right input options can be shown
+            var pointer = useAction && useAction.action.activeControl?.device is Mouse;
+            Tutorial.ShowOnce(TutorialTopic.SequenceMiniGame, () => Begin(objective, pointer));
+        }
+
+        private void Begin(Objective objective, bool pointer)
+        {
             _objective = objective;
             _running = true;
             _openedFrame = Time.frameCount;
+            _pointer = pointer;
             InputCapture.Acquire();
 
-            // The control that fired the use, not the last device seen: a nudged mouse must not swing the variant.
-            _pointer = useAction && useAction.action.activeControl?.device is Mouse;
-
-            var rng = new System.Random(objective.hackSeed);
+            var rng = new System.Random(objective.miniGameSeed);
             var length = Mathf.Max(2, _run.DifficultyProfile.sequenceLength);
             if (_pointer) _steps = Scramble(rng, length);
             else _order = Draw(rng, length);
@@ -113,7 +119,7 @@ namespace Mini_Games
             BuildSlots();
         }
 
-        // The clicked row: every place in the order once, dealt to scrambled positions.
+        // The clicked row: every place in the order once, dealt with scrambled positions.
         private static int[] Scramble(System.Random rng, int length)
         {
             var steps = new int[length];
@@ -189,7 +195,7 @@ namespace Mini_Games
         {
             _flashing = true;
             yield return new WaitForSeconds(winFlash);
-            _objective.CompleteHack();
+            _objective.CompleteMiniGame();
             Close();
         }
 

@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hacking
+namespace Mini_Games
 {
-    // The state of one hacking puzzle: a grid of rotatable pipe tiles plus the two fixed nodes power flows between.
+    // A grid of rotatable pipe tiles plus the two fixed nodes power flows between.
     // Power feeds into the start tile from the west, off the board, and the circuit completes when it can leave the end tile eastward.
-    // Validation lives here on the board state, so rendering only ever reads results.
     public class PipeBoard
     {
         private readonly PipeTile[,] _tiles;

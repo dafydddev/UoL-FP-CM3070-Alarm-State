@@ -60,12 +60,12 @@ namespace Run
         public Range lockChance;
         public Range guardChance;
 
-        // Hacking minigame balance: board cells per side, how much the solution wanders,
+        // Pipe minigame balance: board cells per side, how much the solution wanders,
         // dead-end branch count, and the odds each tile starts twisted out of place.
-        public Range hackingBoardSize;
-        public Range hackingComplexity;
-        public Range hackingDecoyPaths;
-        public Range hackingScrambleChance;
+        public Range pipeGameBoardSize;
+        public Range pipeGameComplexity;
+        public Range pipeGameDecoyPaths;
+        public Range pipGameScrambleChance;
 
         // Sequence minigame balance: how many bound keys the order runs to.
         public int sequenceLength = 3;
@@ -116,35 +116,35 @@ namespace Run
             return min + (float)rng.NextDouble() * (max - min);
         }
 
-        public int HackingBoardSize(int level, int totalLevels, Random rng)
+        public int PipeGameBoardSize(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);
-            var min = CurrentMin(hackingBoardSize, p);
-            var max = Mathf.Max(CurrentMax(hackingBoardSize, p), min);
+            var min = CurrentMin(pipeGameBoardSize, p);
+            var max = Mathf.Max(CurrentMax(pipeGameBoardSize, p), min);
             return rng.Next(Mathf.RoundToInt(min), Mathf.RoundToInt(max) + 1);
         }
 
-        public float HackingComplexity(int level, int totalLevels, Random rng)
+        public float PipeGameComplexity(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);
-            var min = CurrentMin(hackingComplexity, p);
-            var max = Mathf.Max(CurrentMax(hackingComplexity, p), min);
+            var min = CurrentMin(pipeGameComplexity, p);
+            var max = Mathf.Max(CurrentMax(pipeGameComplexity, p), min);
             return min + (float)rng.NextDouble() * (max - min);
         }
 
-        public int HackingDecoyPathCount(int level, int totalLevels, Random rng)
+        public int PipeGameDecoyPathCount(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);
-            var min = CurrentMin(hackingDecoyPaths, p);
-            var max = Mathf.Max(CurrentMax(hackingDecoyPaths, p), min);
+            var min = CurrentMin(pipeGameDecoyPaths, p);
+            var max = Mathf.Max(CurrentMax(pipeGameDecoyPaths, p), min);
             return rng.Next(Mathf.RoundToInt(min), Mathf.RoundToInt(max) + 1);
         }
 
-        public float HackingScrambleChance(int level, int totalLevels, Random rng)
+        public float PipeGameScrambleChance(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);
-            var min = CurrentMin(hackingScrambleChance, p);
-            var max = Mathf.Max(CurrentMax(hackingScrambleChance, p), min);
+            var min = CurrentMin(pipGameScrambleChance, p);
+            var max = Mathf.Max(CurrentMax(pipGameScrambleChance, p), min);
             return min + (float)rng.NextDouble() * (max - min);
         }
     }
