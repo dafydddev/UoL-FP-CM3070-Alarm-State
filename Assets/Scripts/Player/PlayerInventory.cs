@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tutorials;
 using UnityEngine;
 
 namespace Player
@@ -39,6 +40,7 @@ namespace Player
         {
             var wasEmpty = _items.Count == 0;
             _items.Add(item);
+            Tutorial.ShowOnce(item.Kind.Topic());
             if (!wasEmpty) return;
             Selected = item.Kind;
             OnSlotChanged?.Invoke(Selected);

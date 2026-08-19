@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Player;
+using Tutorials;
 using UnityEngine;
 
 namespace Settings
@@ -23,6 +24,9 @@ namespace Settings
 
         // The skin the player appears in.
         public SkinKind equippedSkin;
+
+        // Serialized by enum value, so TutorialTopic is append-only too.
+        public List<TutorialTopic> seenTutorials = new();
     }
 
     // Reads and writes the profile as JSON under persistentDataPath.
