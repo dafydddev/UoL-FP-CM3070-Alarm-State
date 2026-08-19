@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace Generation.Tiles
 {
-    // Lays rooms out with a seeded self-avoiding random walk:
-    // each room lands in a randomly chosen free cell orthogonally adjacent to its parent, so the layout wanders instead of following a straight spine.
-    //// Placement is a backtracking search, so a dead end retries other cells rather than failing the level.
-    /// Upholds the same contract the shared door carver relies on — one distinct cell per room, doored pairs always adjacent.
-    /// Stays deterministic per seed + level via its own Seeds stream.
+    // Lays rooms out with a seeded self-avoiding random walk.
+    // Each room lands in a randomly chosen free cell orthogonally adjacent to its parent, so the layout wanders instead of following a straight spine.
+    // Placement is a backtracking search, so a dead end retries other cells rather than failing the level.
+    // Stays deterministic per seed + level via its own Seeds stream.
     internal static class RandomWalkLayout
     {
         // The step budget is a worst-case time cap, not a tuning target.
