@@ -16208,6 +16208,7 @@ GameObject:
   - component: {fileID: 1308133432}
   - component: {fileID: 1308133433}
   - component: {fileID: 1308133434}
+  - component: {fileID: 1308133435}
   m_Layer: 5
   m_Name: Full Screen Toggle
   m_TagString: Untagged
@@ -16322,6 +16323,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a64f63c94a0d44a985377c2d800d77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Menu.SelectOnHover
+--- !u!114 &1308133435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308133429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c82627cc2cca97848b4df99e95d1066c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.DisableOnWebGL
 --- !u!1 &1315479780
 GameObject:
   m_ObjectHideFlags: 0
