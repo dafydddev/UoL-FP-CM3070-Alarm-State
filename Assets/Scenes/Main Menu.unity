@@ -7010,7 +7010,6 @@ GameObject:
   - component: {fileID: 567173437}
   - component: {fileID: 567173436}
   - component: {fileID: 567173435}
-  - component: {fileID: 567173434}
   - component: {fileID: 567173433}
   - component: {fileID: 567173432}
   - component: {fileID: 567173438}
@@ -7071,18 +7070,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0.78431374, b: 0.9098039, a: 0}
   m_EffectDistance: {x: 2, y: 2}
   m_UseGraphicAlpha: 1
---- !u!114 &567173434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 567173430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c82627cc2cca97848b4df99e95d1066c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Menu.DisableOnWebGL
 --- !u!114 &567173435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11965,6 +11952,7 @@ GameObject:
   - component: {fileID: 948384057}
   - component: {fileID: 948384059}
   - component: {fileID: 948384060}
+  - component: {fileID: 948384061}
   m_Layer: 5
   m_Name: Resolution Dropdown
   m_TagString: Untagged
@@ -12153,6 +12141,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a64f63c94a0d44a985377c2d800d77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Menu.SelectOnHover
+--- !u!114 &948384061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948384052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c82627cc2cca97848b4df99e95d1066c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Menu.DisableOnWebGL
 --- !u!1 &956559697
 GameObject:
   m_ObjectHideFlags: 0
@@ -20497,7 +20497,6 @@ GameObject:
   - component: {fileID: 1737791613}
   - component: {fileID: 1737791612}
   - component: {fileID: 1737791611}
-  - component: {fileID: 1737791614}
   - component: {fileID: 1737791615}
   - component: {fileID: 1737791616}
   - component: {fileID: 1737791617}
@@ -20623,18 +20622,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1737791609}
   m_CullTransparentMesh: 1
---- !u!114 &1737791614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1737791609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c82627cc2cca97848b4df99e95d1066c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Menu.DisableOnWebGL
 --- !u!114 &1737791615
 MonoBehaviour:
   m_ObjectHideFlags: 0
