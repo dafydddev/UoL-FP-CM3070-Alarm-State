@@ -108,6 +108,8 @@ namespace Menu
 
         private void ApplyResolution()
         {
+            // The page owns the canvas size on web.
+#if !UNITY_WEBGL || UNITY_EDITOR
             var resolution = _supportedResolutions[_appliedIndex];
 
             Screen.SetResolution(
@@ -115,6 +117,7 @@ namespace Menu
                 resolution.y,
                 _appliedFullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed
             );
+#endif
         }
 
         private void SetApplyInteractable()
