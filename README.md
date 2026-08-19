@@ -86,8 +86,6 @@ Supporting systems:
 - [`Analytics/Telemetry.cs`](Assets/Scripts/Analytics/Telemetry.cs): sends the run's progress to Unity Analytics.
 - [`Effects/BlueprintSchematic.cs`](Assets/Scripts/Effects/BlueprintSchematic.cs): the generated floor-plan that drifts behind the menu.
 
----
-
 ## Verification & Tooling
 
 ### Editor tools
@@ -105,25 +103,23 @@ Supporting systems:
 - **AI:** GOAP planner, guard memory.
 - **Systems:** A* pathfinding, alarm state, GOAP world state, pipe mini game generation, run performance scoring.
 
----
-
 ## Project Structure
 
 ```
 Assets/
 ├── Scripts/
-│   ├── Generation/   # Facility orchestration, tile layout strategies, terrain, lasers, seeding
-│   ├── Graphs/       # Mission graph and room graph generators
-│   ├── Simulation/   # Tick scheduler, clock, entry rules, occupancy, alarm, world context
-│   ├── Guards/       # Senses, memory, grid motor, patrol routes, GOAP system
-│   ├── Pathfinding/  # A*, navigator, debug drawing
-│   ├── Player/       # Actor, inventory, hiding, disguise, health, keyring, skins
-│   ├── Entities/     # Doors, keycards, objectives, items, cover, lasers, alarm switches, exits
-│   ├── Mini Games/   # Pipe circuit and key sequence mini games
-│   ├── Spawners/     # Level population
-│   ├── Run/          # Run context, difficulty profiles, performance tracking, loadout
-│   ├── HUD/ Menu/    # In-game HUD (e.g. minimap) and menus (play, shop, pause, results, etc.)
-│   ├── Settings/     # Save system, audio/resolution/binding/upgrade/currency settings
+│   ├── Generation/            # Facility orchestration, tile layout strategies, terrain, lasers, seeding
+│   ├── Graphs/                # Mission graph and room graph generators
+│   ├── Simulation/            # Tick scheduler, clock, entry rules, occupancy, alarm, world context
+│   ├── Guards/                # Senses, memory, grid motor, patrol routes, GOAP system
+│   ├── Pathfinding/           # A*, navigator, debug drawing
+│   ├── Player/                # Actor, inventory, hiding, disguise, health, keyring, skins
+│   ├── Entities/              # Doors, keycards, objectives, items, cover, lasers, alarm switches, exits
+│   ├── Mini Games/            # Pipe circuit and key sequence mini games
+│   ├── Spawners/              # Level population
+│   ├── Run/                   # Run context, difficulty profiles, performance tracking, loadout
+│   ├── HUD/ Menu/             # In-game HUD (e.g. minimap) and menus (play, shop, pause, results, etc.)
+│   ├── Settings/              # Save system, audio/resolution/binding/upgrade/currency settings
 │   └── Audio/ Camera/ Effects/ Analytics/
 └── Editor/
     ├── GraphEditorWindow.cs   # Mission + room graph visualiser
