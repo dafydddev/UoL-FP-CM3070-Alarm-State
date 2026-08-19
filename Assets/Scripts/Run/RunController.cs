@@ -10,6 +10,7 @@ using Menu;
 using Player;
 using Settings;
 using Simulation;
+using Tutorials;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -212,6 +213,7 @@ namespace Run
             FacilityOrchestrator.Generate(_run);
             FacilityOrchestrator.World.Mission.PrimaryCompleted += OnPrimaryCompleted;
             Telemetry.LevelStarted(_run);
+            Tutorial.ShowOnce(TutorialTopic.FirstLevel);
         }
 
         // The cleared run: the completion bonus lands, and the inventory cashes which items weren't used.
