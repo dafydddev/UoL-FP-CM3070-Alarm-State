@@ -1,6 +1,7 @@
 using Generation.Cells;
 using Player;
 using Simulation;
+using Tutorials;
 using UnityEngine;
 
 namespace Entities.Keycards
@@ -26,6 +27,7 @@ namespace Entities.Keycards
             keyring.Collect(keyId);
             _world.Occupancy.Remove(_cell);
             Destroy(gameObject);
+            Tutorial.ShowOnce(TutorialTopic.KeycardFound);
         }
 
         private void OnDestroy()
