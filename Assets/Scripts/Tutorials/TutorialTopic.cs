@@ -9,6 +9,8 @@ namespace Tutorials
         ItemLockPick,
         ItemHealthPack,
         PipeMiniGame,
-        SequenceMiniGame
+        SequenceMiniGame,
+        CoverEntered,
+        KeycardFound
     }
 }
