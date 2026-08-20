@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Menu;
+using Player;
 using Settings;
 using Simulation;
 using TMPro;
@@ -23,16 +24,23 @@ namespace Tutorials
         [Header("Dismissal")]
         [SerializeField] private Button continueButton;
 
+        [Header("Timing")]
+        [SerializeField] private SimulationClock clock;
+
         private readonly Queue<(TutorialEntry entry, Action onDismissed)> _queue = new();
 
         private bool _showing;
         private int _openedFrame = -1; // the key that opened the panel is still down this frame
         private Action _onDismissed;
 
+        private float _alpha; // the clock's alpha last frame
+        private bool _stepped; // a tick has landed since the request was made
+
         private void OnEnable()
         {
             Tutorial.Handler = Enqueue;
             AlarmState.ActiveChanged += OnAlarmChanged;
+            PlayerHiding.OnHiddenChanged += OnHiddenChanged;
             if (continueButton) continueButton.onClick.AddListener(Dismiss);
         }
 
@@ -40,8 +48,8 @@ namespace Tutorials
         {
             Tutorial.Handler = null;
             AlarmState.ActiveChanged -= OnAlarmChanged;
+            PlayerHiding.OnHiddenChanged -= OnHiddenChanged;
             if (continueButton) continueButton.onClick.RemoveListener(Dismiss);
-
             if (!_showing) return; // torn down mid-tutorial
             _showing = false;
             GameLock.Release();
@@ -57,7 +65,15 @@ namespace Tutorials
             var entry = catalogue ? catalogue.Find(topic) : null;
             if (!entry || !TutorialSettings.TryMarkSeen(topic)) return false;
             _queue.Enqueue((entry, onDismissed));
+            WaitOutStep();
             return true;
+        }
+
+        // Requests are raised inside the tick, so the step they interrupt still has to finish drawing.
+        private void WaitOutStep()
+        {
+            _alpha = clock ? clock.Alpha : 0f;
+            _stepped = false;
         }
 
         // The lock stays held for the rest of the frame it was dropped on, so a follow-up waits a frame.
@@ -73,7 +89,13 @@ namespace Tutorials
                 return;
             }
 
-            if (_queue.Count > 0) Present(_queue.Dequeue());
+            if (_queue.Count == 0) return; // nothing waiting: no clock to watch
+
+            var alpha = clock ? clock.Alpha : 0f;
+            if (alpha < _alpha) _stepped = true; // alpha only falls when a tick lands
+            _alpha = alpha;
+
+            if (!clock || _stepped) Present(_queue.Dequeue()); // an unwired clock shows straight away rather than never
         }
 
         private void Present((TutorialEntry entry, Action onDismissed) request)
@@ -81,6 +103,7 @@ namespace Tutorials
             _onDismissed = request.onDismissed;
             _showing = true;
             _openedFrame = Time.frameCount;
+            WaitOutStep(); // so anything still queued waits out its own step rather than inheriting this one
 
             titleText.text = request.entry.title;
             bodyText.text = request.entry.body;
@@ -100,6 +123,11 @@ namespace Tutorials
             _showing = false;
             panel.SetActive(false);
             GameLock.Release();
+        }
+        
+        private static void OnHiddenChanged(bool hidden)
+        {
+            if (hidden) Tutorial.ShowOnce(TutorialTopic.CoverEntered);
         }
     }
 }
