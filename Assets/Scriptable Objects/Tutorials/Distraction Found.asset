@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13892876d49716e4c98cb740ec91a1dd, type: 3}
+  m_Name: Distraction Found
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
+  topic: 2
+  title: Distraction!
+  body: You found a distraction. Use it to lure guards to your location!
+  image: {fileID: 0}
