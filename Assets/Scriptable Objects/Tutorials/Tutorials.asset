@@ -12,4 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c671452d9d76444439d74e92cff9d8ac, type: 3}
   m_Name: Tutorials
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialCatalogue
-  entries: []
+  entries:
+  - {fileID: 11400000, guid: 24897084895479748b32f51c31e8dc27, type: 2}
+  - {fileID: 11400000, guid: 3cefb2e714eb10a42b458acaf255206d, type: 2}
+  - {fileID: 11400000, guid: 8d1f13948d40c17409f6667f8abd1101, type: 2}
+  - {fileID: 11400000, guid: 7cd19f18e8c053b479335f59e63c414c, type: 2}
+  - {fileID: 11400000, guid: cc51223c6c0ef4e4aa8753dc9b07b253, type: 2}
+  - {fileID: 11400000, guid: 84c7ae85cc75ad34488a5d88a20c2300, type: 2}
+  - {fileID: 11400000, guid: 2593c77ddc0fcd4488fe042a8a9fc4bb, type: 2}
+  - {fileID: 11400000, guid: bd3f3111aa4a1be4a9a09a9557e2a8c2, type: 2}
+  - {fileID: 11400000, guid: de48966e33dfb514eb808057bde24c9e, type: 2}
+  - {fileID: 11400000, guid: dfac30f179ccd9d44875f7bfb493da4d, type: 2}
