@@ -182,6 +182,6 @@ Assets/
 - Licence: Creative Commons CC0 1.0, <https://github.com/github/gitignore/blob/main/LICENSE>
 
 **Git Attributes (LFS) for Unity**
-- Pre-made `.gitattributes` for Unity.
+- Pre-made `.gitattributes` for Unity projects.
 - <https://github.com/FrankNine/RepoConfig/blob/master/.gitattributes>
 - Licence: MIT, <https://github.com/FrankNine/RepoConfig?tab=MIT>
