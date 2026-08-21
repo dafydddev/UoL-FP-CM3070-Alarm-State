@@ -162,7 +162,9 @@ namespace Mini_Games
         public void OnKeyHovered(int step, bool inside)
         {
             if (!_pointer || !_running || _flashing || step < _entered) return;
-            _slots[step].color = inside ? hoverColour : pendingColour;
+            _slots[step].color = inside ? hoverColour
+                : step == _entered ? nextColour
+                : pendingColour;
         }
 
         // Both variants land here. A click arrives outside Update, so it repeats the guards.
@@ -178,7 +180,7 @@ namespace Mini_Games
             _slots[_entered].color = enteredColour;
             _entered++;
             if (_entered >= _slots.Count) StartCoroutine(CompleteRun());
-            else if (!_pointer) _slots[_entered].color = nextColour; // clicked, finding the next key is the game
+            else _slots[_entered].color = nextColour;
         }
 
         private IEnumerator FailRun()
@@ -242,13 +244,13 @@ namespace Mini_Games
             }
         }
 
-        // Entered, waiting, and still to come. A clicked row never marks what is next.
+        // Entered, waiting, and still to come.
         private void RefreshTints()
         {
             for (var i = 0; i < _slots.Count; i++)
             {
                 _slots[i].color = i < _entered ? enteredColour
-                    : i == _entered && !_pointer ? nextColour
+                    : i == _entered ? nextColour
                     : pendingColour;
             }
         }
