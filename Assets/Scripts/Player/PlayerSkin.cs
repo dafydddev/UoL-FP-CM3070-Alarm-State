@@ -9,21 +9,21 @@ namespace Player
     {
         [SerializeField] private SpriteRenderer sprite;
 
-        // The looks the shop sells. Each is keyed by the kind it carries, so the order they sit in doesn't matter.
+        // The player skins that the shop sells. 
         [SerializeField] private SkinDefinition[] skins;
 
-        private Dictionary<SkinKind, SkinDefinition> _lookup;
+        private Dictionary<SkinType, SkinDefinition> _lookup;
 
         // Built on first use rather than in Awake, so being asked before (e.g. by PlayerDisguise) is safe.
-        private Dictionary<SkinKind, SkinDefinition> Lookup
+        private Dictionary<SkinType, SkinDefinition> Lookup
         {
             get
             {
                 if (_lookup != null) return _lookup;
-                _lookup = new Dictionary<SkinKind, SkinDefinition>();
+                _lookup = new Dictionary<SkinType, SkinDefinition>();
                 foreach (var skin in skins)
                 {
-                    if (skin) _lookup[skin.kind] = skin;
+                    if (skin) _lookup[skin.type] = skin;
                 }
 
                 return _lookup;

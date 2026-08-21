@@ -25,11 +25,13 @@ namespace HUD
 
         private void OnDisable() => PlayerInventory.OnSlotChanged -= Show;
 
-        // Shows the selected kind's icon and hides the rest; an empty slot shows none of them.
-        private void Show(ItemKind? selected)
+        // Shows the selected item type's icon and hides the rest; an empty slot shows none of them.
+        private void Show(ItemType? selected)
         {
             foreach (var icon in icons)
-                icon.image.gameObject.SetActive(selected.HasValue && icon.definition.kind == selected.Value);
+            {
+                icon.image.gameObject.SetActive(selected.HasValue && icon.definition.type == selected.Value);
+            }
         }
     }
 }

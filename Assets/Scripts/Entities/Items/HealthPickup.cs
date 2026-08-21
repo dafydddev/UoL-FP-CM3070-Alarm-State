@@ -13,14 +13,14 @@ namespace Entities.Items
 
         [SerializeField, Min(1)] private int hearts = 1;
 
-        // What it restores instead once the kind's upgrade has been bought.
+        // What it restores instead once the health upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedHearts = 2;
 
         [SerializeField, Min(0)] private int cashInValue = 125;
 
         public string ItemId => healthPickupId;
 
-        public ItemKind Kind => ItemKind.HealthPack;
+        public ItemType Type => ItemType.HealthPack;
 
         // Restoring hearts uses the whole pack up.
         public bool IsSpent => true;
@@ -29,8 +29,6 @@ namespace Entities.Items
 
         private Vector2Int _cell;
         private WorldContext _world;
-
-        // The player who picked it up, kept so using the item can heal them.
         private PlayerHealth _player;
 
         // Called by the spawner after Instantiate.
@@ -53,10 +51,10 @@ namespace Entities.Items
         }
 
         // Using it restores its hearts and spends it.
-        // Returns false on full hearts, which keeps it in the inventory until it is worth spending.
+        // Returns false on full hearts, which keeps it in the inventory.
         public bool Use(Vector2Int _)
         {
-            if (!_player || !_player.Heal(UpgradeSettings.IsUpgraded(Kind) ? upgradedHearts : hearts)) return false;
+            if (!_player || !_player.Heal(UpgradeSettings.IsUpgraded(Type) ? upgradedHearts : hearts)) return false;
             Destroy(gameObject);
             return true;
         }

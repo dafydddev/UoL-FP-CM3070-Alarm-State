@@ -18,14 +18,14 @@ namespace Entities.Items
         // How long a guard stands looking the distraction over before it resolves it, in ticks.
         [SerializeField, Min(1)] private int lingerTicks = 6;
 
-        // How long it holds the guard there instead once the kind's upgrade has been bought.
+        // How long it holds the guard there instead once the disguise upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedLingerTicks = 15;
 
         [SerializeField, Min(0)] private int cashInValue = 50;
 
         public string ItemId => distractionId;
 
-        public ItemKind Kind => ItemKind.Distraction;
+        public ItemType Type => ItemType.Distraction;
 
         // Using one puts it back into the world, so the inventory is done with it either way.
         public bool IsSpent => true;
@@ -36,7 +36,7 @@ namespace Entities.Items
         public Vector2Int Cell { get; private set; }
 
         // The ticks this one keeps a guard standing over it, which is that much longer once it is upgraded.
-        public int LingerTicks => UpgradeSettings.IsUpgraded(Kind) ? upgradedLingerTicks : lingerTicks;
+        public int LingerTicks => UpgradeSettings.IsUpgraded(Type) ? upgradedLingerTicks : lingerTicks;
 
         private WorldContext _world;
 

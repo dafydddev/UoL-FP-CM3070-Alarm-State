@@ -8,38 +8,38 @@ namespace Menu
     // What the player has chosen but not paid for. Checkout buys the lot; leaving the shop drops it.
     public class Cart
     {
-        private readonly List<ItemKind> _items = new();
-        private readonly List<ItemKind> _upgrades = new();
-        private readonly List<SkinKind> _skins = new();
+        private readonly List<ItemType> _items = new();
+        private readonly List<ItemType> _upgrades = new();
+        private readonly List<SkinType> _skins = new();
 
         // The skin checkout equips, chosen with the buy that pays for it.
-        private SkinKind? _equip;
+        private SkinType? _equip;
 
         public int Total { get; private set; }
 
-        public int CountOf(ItemKind kind) => _items.Count(k => k == kind);
+        public int CountOf(ItemType type) => _items.Count(k => k == type);
 
-        public bool HasUpgrade(ItemKind kind) => _upgrades.Contains(kind);
+        public bool HasUpgrade(ItemType type) => _upgrades.Contains(type);
 
-        public bool HasSkin(SkinKind kind) => _skins.Contains(kind);
+        public bool HasSkin(SkinType type) => _skins.Contains(type);
 
         public void AddItem(ItemDefinition definition)
         {
-            _items.Add(definition.kind);
+            _items.Add(definition.type);
             Total += definition.price;
         }
 
         public void AddUpgrade(ItemDefinition definition)
         {
-            _upgrades.Add(definition.kind);
+            _upgrades.Add(definition.type);
             Total += definition.upgradePrice;
         }
 
         public void AddSkin(SkinDefinition definition)
         {
-            _skins.Add(definition.kind);
+            _skins.Add(definition.type);
             Total += definition.price;
-            _equip = definition.kind;
+            _equip = definition.type;
         }
 
         // Persists the spend and everything it bought together.

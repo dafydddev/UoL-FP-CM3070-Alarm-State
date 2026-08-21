@@ -17,6 +17,12 @@ namespace Player
         // Fires with the new count whenever the hearts change, including the refill on spawn.
         public static event Action<int, int> OnHealthChanged; // (current, max)
 
+        // Fires when an arrest costs a heart, unlike OnHealthChanged, which also fires on a heal and on spawn.
+        public static event Action Damaged;
+
+        // Fires on the arrest that takes the last heart.
+        public static event Action Died;
+
         private int Current { get; set; }
 
         // The hearts remaining.
@@ -70,7 +76,9 @@ namespace Player
             if (!IsAlive || _iFrames > 0f) return;
             Current--;
             _iFrames = iFrameSeconds;
+            Damaged?.Invoke();
             OnHealthChanged?.Invoke(Current, maxHearts);
+            if (!IsAlive) Died?.Invoke();
         }
     }
 }

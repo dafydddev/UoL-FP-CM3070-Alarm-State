@@ -5,7 +5,7 @@ namespace Player
     [CreateAssetMenu(menuName = "Player/Skin Definition")]
     public class SkinDefinition : ScriptableObject
     {
-        public SkinKind kind;
+        public SkinType type;
 
         public string displayName;
 

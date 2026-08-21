@@ -84,7 +84,7 @@ namespace Menu
             if (CanOpen) Open();
         }
 
-        // Presents the slots and focuses the kind already in the use slot.
+        // Presents the slots and focuses the item type already in the use slot.
         private void Open()
         {
             _open = true;
@@ -92,9 +92,8 @@ namespace Menu
             panel.SetActive(true);
             if (backdrop) backdrop.gameObject.SetActive(true);
             if (openButton) openButton.gameObject.SetActive(false);
-
-            // Kinds held none of can't be picked; the disabled tint fades them.
-            foreach (var slot in slots) slot.button.interactable = _inventory.CountOf(slot.definition.kind) > 0;
+            
+            foreach (var slot in slots) slot.button.interactable = _inventory.CountOf(slot.definition.type) > 0;
 
             // Draw the label before the panel's first frame, not on the next poll.
             var selected = SlotFor(_inventory.Selected);
@@ -103,10 +102,10 @@ namespace Menu
             ShowSlot(selected);
         }
 
-        // Puts the picked kind into the use slot and closes.
+        // Puts the picked item into the use slot and closes the inventory.
         private void Choose(Slot slot)
         {
-            _inventory.Select(slot.definition.kind);
+            _inventory.Select(slot.definition.type);
             Close();
         }
 
@@ -134,13 +133,13 @@ namespace Menu
         }
 
         private void ShowSlot(Slot slot) => sharedLabel.text =
-            $"{slot.definition.displayName}: {_inventory.CountOf(slot.definition.kind)}";
+            $"{slot.definition.displayName}: {_inventory.CountOf(slot.definition.type)}";
 
-        // The slot for a kind, defaulting to the first when the use slot is empty.
-        private Slot SlotFor(ItemKind? selected)
+        // The slot for a item type, defaulting to the first when the use slot is empty.
+        private Slot SlotFor(ItemType? selected)
         {
             if (!selected.HasValue) return slots[0];
-            return slots.FirstOrDefault(s => s.definition.kind == selected.Value) ?? slots[0];
+            return slots.FirstOrDefault(s => s.definition.type == selected.Value) ?? slots[0];
         }
     }
 }

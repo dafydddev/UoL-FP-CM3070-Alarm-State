@@ -63,7 +63,7 @@ namespace Run
             if (owned.Count == 0) return;
 
             var loadout = new RunLoadout();
-            foreach (var kind in owned) loadout.Add(kind);
+            foreach (var itemType in owned) loadout.Add(itemType);
             RunLoadout.Pending = loadout;
 
             owned.Clear();
@@ -137,7 +137,7 @@ namespace Run
             var loadout = new RunLoadout();
             if (player.TryGetComponent(out PlayerInventory inventory))
             {
-                foreach (var kind in inventory.Kinds) loadout.Add(kind);
+                foreach (var itemType in inventory.Types) loadout.Add(itemType);
                 loadout.Selection = inventory.Selected;
             }
 

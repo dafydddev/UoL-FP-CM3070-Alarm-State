@@ -3,7 +3,6 @@ using System.Linq;
 using Camera;
 using Generation.Tiles;
 using Graphs.Rooms;
-using HUD;
 using Menu;
 using Player;
 using Run;
@@ -18,7 +17,7 @@ namespace Spawners
         [SerializeField] private CameraFollow cameraFollow;
         [SerializeField] private InventoryController inventoryController;
 
-        // The kinds a loadout can grant, each carrying the prefab the player is handed for it.
+        // The item types a loadout can grant, each carrying the prefab the player is handed for it.
         [SerializeField] private ItemDefinition[] startingItems;
 
         private GameObject _player;
@@ -47,12 +46,12 @@ namespace Spawners
             RunLoadout.Pending = null;
 
             var inventory = world.Player.GetComponent<PlayerInventory>();
-            foreach (var kind in loadout.Items)
+            foreach (var type in loadout.Items)
             {
-                var held = Instantiate(PrefabFor(kind), transform);
+                var held = Instantiate(PrefabFor(type), transform);
                 var item = held.GetComponent<IInventoryItem>();
                 item.Bind(world);
-                inventory.Collect(item);
+                inventory.Grant(item);
                 held.SetActive(false);
             }
 
@@ -68,9 +67,9 @@ namespace Spawners
             }
         }
 
-        private GameObject PrefabFor(ItemKind kind)
+        private GameObject PrefabFor(ItemType type)
         {
-            return (from item in startingItems where item.kind == kind select item.prefab).FirstOrDefault();
+            return (from item in startingItems where item.type == type select item.prefab).FirstOrDefault();
         }
     }
 }

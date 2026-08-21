@@ -13,17 +13,17 @@ namespace Settings
     {
         public int currencyBalance;
 
-        // Serialized by enum value, so ItemKind is append-only: reordering would remap owned items.
-        public List<ItemKind> ownedItems = new();
+        // Serialized by enum value, so ItemType is append-only: reordering would remap owned items.
+        public List<ItemType> ownedItems = new();
 
-        // The kinds whose upgrade has been bought. One entry each: an upgrade is bought once and kept.
-        public List<ItemKind> upgradedItems = new();
+        // The item types whose upgrade has been bought. One entry each: an upgrade is bought once and kept.
+        public List<ItemType> upgradedItems = new();
 
         // The skins bought. One entry each: a skin is bought once and kept.
-        public List<SkinKind> boughtSkins = new();
+        public List<SkinType> boughtSkins = new();
 
         // The skin the player appears in.
-        public SkinKind equippedSkin;
+        public SkinType equippedSkin;
 
         // Serialized by enum value, so TutorialTopic is append-only too.
         public List<TutorialTopic> seenTutorials = new();

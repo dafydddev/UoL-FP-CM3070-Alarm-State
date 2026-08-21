@@ -12,7 +12,7 @@ namespace Menu
     // The shop panel: spends banked currency on the items for the next run, upgrades, and player skins.
     public class ShopMenu : MonoBehaviour
     {
-        // One item kind's offer: the definition it sells and the buttons that buy it and its upgrade.
+        // One item type's offer: the definition it sells and the buttons that buy it and its upgrade.
         // The prices live on the definition; only the scene wiring is authored here.
         [Serializable]
         private class ItemOffer
@@ -123,7 +123,7 @@ namespace Menu
             return true;
         }
 
-        // Carts one of the kind, unless the wallet can't afford it on top of the cart.
+        // Carts one of the item types, unless the wallet can't afford it on top of the cart.
         private void Buy(ItemOffer itemOffer)
         {
             if (Remaining < itemOffer.definition.price)
@@ -138,12 +138,12 @@ namespace Menu
             ShowItem(itemOffer);
         }
 
-        // Carts the kind's upgrade, unless it is already bought or carted, or the wallet can't afford it.
-        // Bought once and kept: every item of the kind is upgraded from then on, this run's and every later one's.
+        // Carts the item type's upgrade, unless it is already bought or carted, or the wallet can't afford it.
+        // Bought once and kept: every item of the type is upgraded from then on, this run's and every later one's.
         private void BuyUpgrade(ItemOffer itemOffer)
         {
-            var kind = itemOffer.definition.kind;
-            if (UpgradeSettings.IsUpgraded(kind) || _cart.HasUpgrade(kind)) return;
+            var itemType = itemOffer.definition.type;
+            if (UpgradeSettings.IsUpgraded(itemType) || _cart.HasUpgrade(itemType)) return;
             if (Remaining < itemOffer.definition.upgradePrice)
             {
                 ShowBalanceError();
@@ -161,13 +161,13 @@ namespace Menu
         // Bought once and kept, so pressing an owned one only equips it.
         private void BuySkin(SkinOffer offer)
         {
-            var kind = offer.definition.kind;
-            if (IsBought(kind))
+            var skinType = offer.definition.type;
+            if (IsBought(skinType))
             {
-                SaveSystem.Data.equippedSkin = kind;
+                SaveSystem.Data.equippedSkin = skinType;
                 SaveSystem.Save();
             }
-            else if (!_cart.HasSkin(kind)) // carting it already chose it to wear
+            else if (!_cart.HasSkin(skinType)) // carting it already chose it to wear
             {
                 if (Remaining < offer.definition.price)
                 {
@@ -221,8 +221,8 @@ namespace Menu
 
         private void ShowItem(ItemOffer itemOffer)
         {
-            itemLabel.text = $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.kind)})";
-            var pending = _cart.CountOf(itemOffer.definition.kind);
+            itemLabel.text = $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.type)})";
+            var pending = _cart.CountOf(itemOffer.definition.type);
             if (pending > 0) itemLabel.text += $" (Pending {pending})";
             if (itemOffer.definition.price > Remaining) itemLabel.text += " Insufficient funds";
         }
@@ -230,8 +230,8 @@ namespace Menu
         private void ShowUpgrade(ItemOffer itemOffer)
         {
             var definition = itemOffer.definition;
-            var status = UpgradeSettings.IsUpgraded(definition.kind) ? "Bought"
-                : _cart.HasUpgrade(definition.kind) ? "Pending"
+            var status = UpgradeSettings.IsUpgraded(definition.type) ? "Bought"
+                : _cart.HasUpgrade(definition.type) ? "Pending"
                 : definition.upgradePrice > Remaining ? $"{definition.upgradePrice} points Insufficient funds"
                 : $"{definition.upgradePrice} points";
             itemLabel.text = $"{definition.displayName} Upgrade: {status}";
@@ -240,24 +240,24 @@ namespace Menu
         private void ShowSkin(SkinOffer offer)
         {
             var definition = offer.definition;
-            var kind = definition.kind;
-            var status = SaveSystem.Data.equippedSkin == kind ? "Equipped"
-                : IsBought(kind) ? "Bought"
-                : _cart.HasSkin(kind) ? "Pending"
+            var skinType = definition.type;
+            var status = SaveSystem.Data.equippedSkin == skinType ? "Equipped"
+                : IsBought(skinType) ? "Bought"
+                : _cart.HasSkin(skinType) ? "Pending"
                 : definition.price > Remaining ? $"{definition.price} points Insufficient funds"
                 : $"{definition.price} points";
             itemLabel.text = $"{definition.displayName}: {status}";
         }
 
-        private static int OwnedCount(ItemKind kind) => SaveSystem.Data.ownedItems.Count(k => k == kind);
+        private static int OwnedCount(ItemType type) => SaveSystem.Data.ownedItems.Count(k => k == type);
 
         // The skin the player starts in is theirs without buying.
-        private static bool IsBought(SkinKind kind) =>
-            kind == SkinKind.Default || SaveSystem.Data.boughtSkins.Contains(kind);
+        private static bool IsBought(SkinType type) =>
+            type == SkinType.Default || SaveSystem.Data.boughtSkins.Contains(type);
 
         private void ShowUpgradeSprite(ItemOffer itemOffer)
         {
-            if (!UpgradeSettings.IsUpgraded(itemOffer.definition.kind)) return;
+            if (!UpgradeSettings.IsUpgraded(itemOffer.definition.type)) return;
             if (itemOffer.upgradeButton.TryGetComponent<Image>(out var image) && unlockedSprite)
                 image.sprite = unlockedSprite;
         }
