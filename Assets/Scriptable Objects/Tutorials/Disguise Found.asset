@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Disguise Found
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 3
-  title: Lock Pick!
+  title: Disguise!
   body: You found a disguise. Use it to temporarily blend in with the guards!
   image: {fileID: 0}
