@@ -4,11 +4,11 @@ namespace Tutorials
 {
     public static class TutorialTopics
     {
-        public static TutorialTopic Topic(this ItemKind kind) => kind switch
+        public static TutorialTopic Topic(this ItemType type) => type switch
         {
-            ItemKind.Distraction => TutorialTopic.ItemDistraction,
-            ItemKind.Disguise => TutorialTopic.ItemDisguise,
-            ItemKind.LockPick => TutorialTopic.ItemLockPick,
+            ItemType.Distraction => TutorialTopic.ItemDistraction,
+            ItemType.Disguise => TutorialTopic.ItemDisguise,
+            ItemType.LockPick => TutorialTopic.ItemLockPick,
             _ => TutorialTopic.ItemHealthPack,
         };
     }

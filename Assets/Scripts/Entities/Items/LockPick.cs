@@ -17,14 +17,14 @@ namespace Entities.Items
 
         [SerializeField, Min(1)] private int uses = 1;
 
-        // How many doors it opens instead once the kind's upgrade has been bought.
+        // How many doors it opens instead once the item's upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedUses = 2;
 
         [SerializeField, Min(0)] private int cashInValue = 75;
 
         public string ItemId => lockPickId;
 
-        public ItemKind Kind => ItemKind.LockPick;
+        public ItemType Type => ItemType.LockPick;
 
         // Used up once the last of its uses has opened a door.
         public bool IsSpent => _remaining <= 0;
@@ -37,7 +37,7 @@ namespace Entities.Items
         // The doors this pick has left in it, taken from the upgrade when it comes into the world.
         private int _remaining;
 
-        private void Awake() => _remaining = UpgradeSettings.IsUpgraded(Kind) ? upgradedUses : uses;
+        private void Awake() => _remaining = UpgradeSettings.IsUpgraded(Type) ? upgradedUses : uses;
 
         // Called by the spawner after Instantiate.
         public void Init(WorldContext world)

@@ -10,17 +10,17 @@ namespace Run
         // Cleared by the consumer once the spawned player has been filled.
         public static RunLoadout Pending;
 
-        private readonly List<ItemKind> _items = new();
+        private readonly List<ItemType> _items = new();
 
         // One entry per purchased or carried unit, in the order they were added.
-        public IReadOnlyList<ItemKind> Items => _items;
+        public IReadOnlyList<ItemType> Items => _items;
 
         // The hearts to start on, or null to refill to full. Only a carry-over sets this.
         public int? StartingHearts;
 
-        // The kind to put back in the use slot, or null to leave it on the first item granted.
-        public ItemKind? Selection;
+        // The item type to put back in the use slot, or null to leave it on the first item granted.
+        public ItemType? Selection;
 
-        public void Add(ItemKind kind) => _items.Add(kind);
+        public void Add(ItemType type) => _items.Add(type);
     }
 }

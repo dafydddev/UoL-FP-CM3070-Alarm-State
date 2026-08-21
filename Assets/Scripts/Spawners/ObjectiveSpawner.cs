@@ -39,7 +39,7 @@ namespace Spawners
                 if (!rects.TryGetValue(room.id, out var rect)) continue;
                 // Spawn in the room centre.
                 var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
-                // Each kind has its own prefab: only the secondary one carries a reward table.
+                // Each item type has its own prefab: only the secondary one carries a reward table.
                 var prefab = room.type == RoomType.PrimaryObjectiveRoom
                     ? primaryObjectivePrefab
                     : secondaryObjectivePrefab;

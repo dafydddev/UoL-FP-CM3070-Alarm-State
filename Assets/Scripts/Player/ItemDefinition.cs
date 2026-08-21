@@ -5,7 +5,7 @@ namespace Player
     [CreateAssetMenu(menuName = "Items/Item Definition")]
     public class ItemDefinition : ScriptableObject
     {
-        public ItemKind kind;
+        public ItemType type;
 
         // Named for the player, since the enum runs uses camel case (e.g. LockPick, not Lock Pick)
         public string displayName;
