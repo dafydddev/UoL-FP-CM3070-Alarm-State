@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 9
   title: Keycard!
-  body: 'You found a keycard. Use it to unlock the colour-coded door! '
+  body: 'You found a keycard. Use it to unlock its colour-coded door! '
   image: {fileID: 0}
