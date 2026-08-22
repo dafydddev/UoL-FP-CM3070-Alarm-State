@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c3b77b77a997a40bf36497ccff66d6, type: 3}
   m_Name: Health Pack
   m_EditorClassIdentifier: Assembly-CSharp::Player.ItemDefinition
-  kind: 3
+  type: 3
   displayName: Health Pack
   price: 250
   upgradePrice: 5000

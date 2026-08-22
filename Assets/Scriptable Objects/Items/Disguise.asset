@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c3b77b77a997a40bf36497ccff66d6, type: 3}
   m_Name: Disguise
   m_EditorClassIdentifier: Assembly-CSharp::Player.ItemDefinition
-  kind: 1
+  type: 1
   displayName: Disguise
   price: 200
   upgradePrice: 4000
