@@ -9,14 +9,17 @@ namespace Settings
         private const string MasterKey = "MasterVolume";
         private const string MusicKey = "MusicVolume";
         private const string SfxKey = "SfxVolume";
+        private const string UiKey = "UiVolume";
         private const float DefaultMaster = 0.8f;
-        private const float DefaultMusic = 0.5f;
-        private const float DefaultSfx = 0.8f;
-
+        private const float DefaultMusic = 0.2f;
+        private const float DefaultUi = 0.5f;
+        private const float DefaultSfx = 0.5f;
+        
         // Raised on change, so the mixer follows without a scene reload.
         public static event Action<float> MasterChanged;
         public static event Action<float> MusicChanged;
         public static event Action<float> SfxChanged;
+        public static event Action<float> UiChanged;
 
         public static float Master
         {
@@ -51,6 +54,18 @@ namespace Settings
                 if (Mathf.Approximately(Sfx, value)) return;
                 PlayerPrefs.SetFloat(SfxKey, value);
                 SfxChanged?.Invoke(value);
+            }
+        }
+        
+        public static float Ui
+        {
+            get => PlayerPrefs.GetFloat(UiKey, DefaultUi);
+            set
+            {
+                value = Mathf.Clamp01(value);
+                if (Mathf.Approximately(Ui, value)) return;
+                PlayerPrefs.SetFloat(UiKey, value);
+                UiChanged?.Invoke(value);
             }
         }
 
