@@ -1,4 +1,5 @@
 using Entities;
+using Guards;
 using Player;
 using Simulation;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Audio
         [SerializeField] private GameplaySfx exitReached;
         [SerializeField] private GameplaySfx doorOpened;
         [SerializeField] private GameplaySfx alarmRaised;
+        [SerializeField] private GameplaySfx playerSpotted;
 
         private AudioSource _source;
 
@@ -24,6 +26,7 @@ namespace Audio
             Exit.Reached += OnExitReached;
             LockedDoor.Opened += OnDoorOpened;
             AlarmState.ActiveChanged += OnAlarmChanged;
+            GuardAgent.PlayerSpotted += OnPlayerSpotted;
         }
 
         private void OnDisable()
@@ -32,6 +35,7 @@ namespace Audio
             Exit.Reached -= OnExitReached;
             LockedDoor.Opened -= OnDoorOpened;
             AlarmState.ActiveChanged -= OnAlarmChanged;
+            GuardAgent.PlayerSpotted -= OnPlayerSpotted;
         }
 
         private void OnDied() => Play(death);
@@ -39,6 +43,8 @@ namespace Audio
         private void OnExitReached() => Play(exitReached);
 
         private void OnDoorOpened() => Play(doorOpened);
+
+        private void OnPlayerSpotted() => Play(playerSpotted);
 
         // The event also carries the all-clear and the reset each level is built with; only the raise sounds.
         private void OnAlarmChanged(bool active)

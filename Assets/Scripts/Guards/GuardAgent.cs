@@ -46,6 +46,9 @@ namespace Guards
         // Fires when any guard arrests the player (same idiom as Exit.Reached).
         public static event Action PlayerCaught;
 
+        // Fires when a guard catches sight of the player, once per sighting rather than every tick they stay in view.
+        public static event Action PlayerSpotted;
+
         // Every live guard, so scene-level systems (e.g. the vision field) can iterate them.
         public static readonly List<GuardAgent> Active = new();
 
@@ -109,7 +112,9 @@ namespace Guards
         {
             if (Motor == null) return;
 
+            var sawPlayer = Memory.SeesPlayer;
             senses.Sense(World, Motor, Memory);
+            if (!sawPlayer && Memory.SeesPlayer) PlayerSpotted?.Invoke();
             BroadcastSighting();
             HearAlarm();
             HearNoise();
