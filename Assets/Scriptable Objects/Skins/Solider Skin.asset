@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac6ba74a605b804aa999586e1396995, type: 3}
   m_Name: Solider Skin
   m_EditorClassIdentifier: Assembly-CSharp::Player.SkinDefinition
-  kind: 1
+  type: 1
   displayName: Solider
   price: 10000
   sprite: {fileID: 1560777998, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}

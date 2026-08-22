@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac6ba74a605b804aa999586e1396995, type: 3}
   m_Name: Default Skin
   m_EditorClassIdentifier: Assembly-CSharp::Player.SkinDefinition
-  kind: 0
+  type: 0
   displayName: Default
   price: 0
   sprite: {fileID: -691668587, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}

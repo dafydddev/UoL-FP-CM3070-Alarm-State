@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c3b77b77a997a40bf36497ccff66d6, type: 3}
   m_Name: Distraction
   m_EditorClassIdentifier: Assembly-CSharp::Player.ItemDefinition
-  kind: 0
+  type: 0
   displayName: Distraction
   price: 100
   upgradePrice: 2000
