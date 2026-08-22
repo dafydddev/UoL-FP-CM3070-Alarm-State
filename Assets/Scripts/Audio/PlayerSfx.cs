@@ -1,0 +1,73 @@
+using Player;
+using UnityEngine;
+
+namespace Audio
+{
+    // The sounds the player's own actions make.
+    // Unlike the scene controllers, this rides the player prefab, so is added and removed to the scene with the player.
+    [RequireComponent(typeof(AudioSource))]
+    public class PlayerSfx : MonoBehaviour
+    {
+        [SerializeField] private GameplaySfx footstep;
+        [SerializeField] private GameplaySfx collect;
+        [SerializeField] private GameplaySfx use;
+        [SerializeField] private GameplaySfx hurt;
+
+        private AudioSource _source;
+        private PlayerActor _actor;
+
+        private Vector2Int _cell;
+        private float _nextStep; // when the next footstep may sound
+
+        private void Awake()
+        {
+            _source = GetComponent<AudioSource>();
+            _actor = GetComponent<PlayerActor>();
+        }
+
+        // The spawn cell only reads true once the spawner has handed the actor its world.
+        private void Start()
+        {
+            if (_actor) _cell = _actor.Cell;
+        }
+
+        private void OnEnable()
+        {
+            PlayerInventory.Collected += OnCollected;
+            PlayerInventory.Used += OnUsed;
+            PlayerKeyring.OnKeycardCollected += OnKeycardCollected;
+            PlayerHealth.Damaged += OnDamaged;
+        }
+
+        private void OnDisable()
+        {
+            PlayerInventory.Collected -= OnCollected;
+            PlayerInventory.Used -= OnUsed;
+            PlayerKeyring.OnKeycardCollected -= OnKeycardCollected;
+            PlayerHealth.Damaged -= OnDamaged;
+        }
+
+        // A footstep for each cell the player moves onto.
+        private void Update()
+        {
+            if (!_actor || _actor.Cell == _cell) return;
+            _cell = _actor.Cell;
+            if (Time.time < _nextStep) return;
+            _nextStep = Time.time + (footstep ? footstep.MinInterval : 0f);
+            Play(footstep);
+        }
+
+        private void OnCollected(ItemType type) => Play(collect);
+
+        private void OnKeycardCollected(string keyId) => Play(collect);
+
+        private void OnUsed(ItemType type) => Play(use);
+
+        private void OnDamaged() => Play(hurt);
+
+        private void Play(GameplaySfx gameplaySfx)
+        {
+            if (gameplaySfx) gameplaySfx.Play(_source);
+        }
+    }
+}
