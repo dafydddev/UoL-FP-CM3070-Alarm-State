@@ -1429,6 +1429,11 @@ MonoBehaviour:
   doorOpened: {fileID: 11400000, guid: ff21b5752bcf0b84598c29aabef6461c, type: 2}
   alarmRaised: {fileID: 11400000, guid: a6276fdbff5657240a2303a33f292f90, type: 2}
   playerSpotted: {fileID: 11400000, guid: 16a1db7d9f9e5124198c051c85a4bbd3, type: 2}
+  objectiveStarted: {fileID: 11400000, guid: cb6db493dab59044d8d3d7eb9ffd6d41, type: 2}
+  objectiveCompleted: {fileID: 11400000, guid: b1953f1453f0e6247b7455e959d350a8, type: 2}
+  sequenceCorrect: {fileID: 11400000, guid: 2e6431a81dc431f4f82f8809f5d7de9f, type: 2}
+  sequenceWrong: {fileID: 11400000, guid: 4dc057fc353e1ac43a36a1654147b4ce, type: 2}
+  tileRotated: {fileID: 11400000, guid: 5accd8d9dbe23784bb2be26b07fc3082, type: 2}
 --- !u!82 &175372617
 AudioSource:
   m_ObjectHideFlags: 0
