@@ -3,7 +3,7 @@
 namespace Audio
 {
     [RequireComponent(typeof(AudioSource))]
-    public class UIAudioController : MonoBehaviour
+    public class UISfxController : MonoBehaviour
     {
         [SerializeField] private AudioClip selectClip;
         [SerializeField] private AudioClip submitClip;
