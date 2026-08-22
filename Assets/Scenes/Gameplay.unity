@@ -1427,7 +1427,8 @@ MonoBehaviour:
   death: {fileID: 11400000, guid: 68747f4f1c9635f4fade9db3a7f5d368, type: 2}
   exitReached: {fileID: 0}
   doorOpened: {fileID: 11400000, guid: ff21b5752bcf0b84598c29aabef6461c, type: 2}
-  alarmRaised: {fileID: 0}
+  alarmRaised: {fileID: 11400000, guid: a6276fdbff5657240a2303a33f292f90, type: 2}
+  playerSpotted: {fileID: 11400000, guid: 16a1db7d9f9e5124198c051c85a4bbd3, type: 2}
 --- !u!82 &175372617
 AudioSource:
   m_ObjectHideFlags: 0
