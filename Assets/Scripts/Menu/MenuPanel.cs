@@ -15,7 +15,7 @@ namespace Menu
             gameObject.SetActive(isActive);
             // If the game object is active and the first button is not null, set focus onto it
             if (!isActive || !firstSelectable) return;
-            var selectableAudio = firstSelectable.GetComponent<SelectableAudio>();
+            var selectableAudio = firstSelectable.GetComponent<SelectableSfx>();
             if (selectableAudio) selectableAudio.ConsumeNextSelect();
             firstSelectable.Select();
         }
