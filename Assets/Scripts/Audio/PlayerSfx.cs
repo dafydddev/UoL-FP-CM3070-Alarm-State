@@ -12,6 +12,7 @@ namespace Audio
         [SerializeField] private GameplaySfx collect;
         [SerializeField] private GameplaySfx use;
         [SerializeField] private GameplaySfx hurt;
+        [SerializeField] private GameplaySfx enterCover;
 
         private AudioSource _source;
         private PlayerActor _actor;
@@ -37,6 +38,7 @@ namespace Audio
             PlayerInventory.Used += OnUsed;
             PlayerKeyring.OnKeycardCollected += OnKeycardCollected;
             PlayerHealth.Damaged += OnDamaged;
+            PlayerHiding.OnHiddenChanged += OnHiddenChanged;
         }
 
         private void OnDisable()
@@ -45,6 +47,7 @@ namespace Audio
             PlayerInventory.Used -= OnUsed;
             PlayerKeyring.OnKeycardCollected -= OnKeycardCollected;
             PlayerHealth.Damaged -= OnDamaged;
+            PlayerHiding.OnHiddenChanged -= OnHiddenChanged;
         }
 
         // A footstep for each cell the player moves onto.
@@ -64,6 +67,11 @@ namespace Audio
         private void OnUsed(ItemType type) => Play(use);
 
         private void OnDamaged() => Play(hurt);
+
+        private void OnHiddenChanged(bool hidden)
+        {
+            if (hidden) Play(enterCover);
+        }
 
         private void Play(GameplaySfx gameplaySfx)
         {
