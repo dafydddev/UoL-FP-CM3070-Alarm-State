@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5b802c5206055408ce4aae17253021, type: 3}
+  m_Name: Player Steps
+  m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
+  clips:
+  - {fileID: 8300000, guid: 16594873080acb34ba510f3b3fe7361d, type: 3}
+  - {fileID: 8300000, guid: 3f10851806b367a49ab6b8b15db83856, type: 3}
+  - {fileID: 8300000, guid: b48466947727aef429e972483ba27cdb, type: 3}
+  - {fileID: 8300000, guid: a551217569530ff4eba72b918bf9c94c, type: 3}
+  - {fileID: 8300000, guid: eb7996d7a90683f4d820393c42489fa4, type: 3}
+  - {fileID: 8300000, guid: bc3c6e7c839138a4399e5eb4a317958a, type: 3}
+  - {fileID: 8300000, guid: bc25669114545ec49880e223cdcefd7d, type: 3}
+  - {fileID: 8300000, guid: 40e0c66882ad6ec489ea9f3d991c2dbf, type: 3}
+  - {fileID: 8300000, guid: ffcdb43c38ff48a47889def39cc7385d, type: 3}
+  - {fileID: 8300000, guid: efe8a2d526abf95498034fe4248d600d, type: 3}
+  volume: 0.1
+  pitchRange: {x: 0.95, y: 1.05}
+  minInterval: 0.2

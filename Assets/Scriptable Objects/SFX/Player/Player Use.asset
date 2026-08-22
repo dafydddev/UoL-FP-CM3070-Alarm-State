@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5b802c5206055408ce4aae17253021, type: 3}
+  m_Name: Player Use
+  m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
+  clips:
+  - {fileID: 8300000, guid: 2f75b50a83869cc4b82908a3a29c1b11, type: 3}
+  - {fileID: 8300000, guid: c06e8d4f991da9746aeb2dbbb001a810, type: 3}
+  - {fileID: 8300000, guid: 8b47c7ed28492314c85d454b98d4569f, type: 3}
+  - {fileID: 8300000, guid: 2896763429d17d942a662f5ba066a3f0, type: 3}
+  volume: 1
+  pitchRange: {x: 0.95, y: 1.05}
+  minInterval: 0
