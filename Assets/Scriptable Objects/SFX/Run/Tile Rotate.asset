@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5b802c5206055408ce4aae17253021, type: 3}
+  m_Name: Tile Rotate
+  m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
+  clips:
+  - {fileID: 8300000, guid: eb33f85d14f030747923baa8d48867b9, type: 3}
+  - {fileID: 8300000, guid: 7866368c3346080498da4a8930df6475, type: 3}
+  - {fileID: 8300000, guid: 2827ac241fbf91241866c5e2ae3cc552, type: 3}
+  - {fileID: 8300000, guid: 202c2d85f456a77488d267b7ace6bba0, type: 3}
+  - {fileID: 8300000, guid: 5ddd164f85712bf46bf4ae7e20b8ed95, type: 3}
+  - {fileID: 8300000, guid: 46215becf1b19eb40a9e0f796c0bf758, type: 3}
+  - {fileID: 8300000, guid: 8f22ebc5259bcd045bacc6b81dfd0b96, type: 3}
+  volume: 0.5
+  pitchRange: {x: 0.95, y: 1.05}
+  minInterval: 0
