@@ -1,3 +1,4 @@
+using System;
 using Entities.Keycards;
 using Generation.Cells;
 using Player;
@@ -8,6 +9,9 @@ namespace Entities
 {
     public class LockedDoor : MonoBehaviour, IEntryBlocker, IEnterHandler
     {
+        // Fires once per door, whether a key or a pick opened it.
+        public static event Action Opened;
+
         public string keyId;
         [SerializeField] private Sprite openSprite;
 
@@ -51,6 +55,7 @@ namespace Entities
             if (_open) return false;
             _open = true;
             if (_sprite && openSprite) _sprite.sprite = openSprite;
+            Opened?.Invoke();
             return true;
         }
 
