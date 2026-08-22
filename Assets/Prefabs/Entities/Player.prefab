@@ -490,6 +490,7 @@ MonoBehaviour:
   collect: {fileID: 11400000, guid: 81ddc0fb1b913204794c1fafc107cd16, type: 2}
   use: {fileID: 11400000, guid: 2fff14aaee57e04438b0345832e88728, type: 2}
   hurt: {fileID: 11400000, guid: d0fae0308e657b640aa85d859b165557, type: 2}
+  enterCover: {fileID: 11400000, guid: ae1df095064bbf640a745bdb85b0085f, type: 2}
 --- !u!82 &3028417256172367525
 AudioSource:
   m_ObjectHideFlags: 0

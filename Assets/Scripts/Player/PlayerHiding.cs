@@ -22,14 +22,14 @@ namespace Player
         public void Enter(Object _)
         {
             _covers++;
-            OnHiddenChanged?.Invoke(IsHidden);
+            if (_covers == 1) OnHiddenChanged?.Invoke(true);
         }
 
         // Called when leaving a cover zone, clamped so the count never goes negative.
         public void Exit(Object _)
         {
             _covers = Mathf.Max(0, _covers - 1);
-            OnHiddenChanged?.Invoke(IsHidden);
+            if (_covers == 0) OnHiddenChanged?.Invoke(false);
         }
     }
 }
