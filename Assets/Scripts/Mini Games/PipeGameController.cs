@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Entities.Objectives;
@@ -15,6 +16,9 @@ namespace Mini_Games
     // The objective completes once the pipes are rotated into a circuit from the feed to the outlet.
     public class PipeGameController : MonoBehaviour
     {
+        // Fires each time the player turns a tile, by click or by the use key.
+        public static event Action TileRotated;
+
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
         [SerializeField] private Button backdrop;
@@ -209,6 +213,7 @@ namespace Mini_Games
             if (_surging) return;
             Select(button.Tile.Cell); // a mouse click also moves the selection
             button.Tile.Rotate();
+            TileRotated?.Invoke();
             button.Refresh();
             if (_board.TryTraceCircuit(out var path)) StartCoroutine(ActivateCircuit(path));
         }

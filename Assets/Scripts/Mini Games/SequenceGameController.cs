@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Entities.Objectives;
@@ -18,6 +19,9 @@ namespace Mini_Games
     // The objective completes once the order is entered without a mistake. 
     public class SequenceGameController : MonoBehaviour
     {
+        // Fires on each key the player enters, with whether it was correct.
+        public static event Action<bool> KeyEntered;
+
         [Header("UI Game Objects")]
         [SerializeField] private MenuPanel panel;
         [SerializeField] private Button backdrop;
@@ -171,6 +175,7 @@ namespace Mini_Games
         private void Step(bool correct)
         {
             if (!_running || _flashing || GameLock.Locked || Time.frameCount == _openedFrame) return;
+            KeyEntered?.Invoke(correct);
             if (correct) Advance();
             else StartCoroutine(FailRun());
         }
