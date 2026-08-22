@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 namespace Audio
 {
     // Puts the saved levels on the mixer. Runtime values do not stick to the asset, so each scene applies them.
-    public class AudioLevelController : MonoBehaviour
+    public class AudioLevelsController : MonoBehaviour
     {
         [SerializeField] private AudioMixer mixer;
 
@@ -13,12 +13,14 @@ namespace Audio
         private const string MasterParameter = "MasterVolume";
         private const string MusicParameter = "MusicVolume";
         private const string SfxParameter = "SfxVolume";
+        private const string UiParameter = "UiVolume";
 
         private void Start()
         {
             SetLevel(MasterParameter, SoundSettings.Master);
             SetLevel(MusicParameter, SoundSettings.Music);
             SetLevel(SfxParameter, SoundSettings.Sfx);
+            SetLevel(UiParameter, SoundSettings.Ui);
         }
 
         private void OnEnable()
@@ -26,6 +28,7 @@ namespace Audio
             SoundSettings.MasterChanged += OnMasterChanged;
             SoundSettings.MusicChanged += OnMusicChanged;
             SoundSettings.SfxChanged += OnSfxChanged;
+            SoundSettings.UiChanged += OnUiChanged;
         }
 
         private void OnDisable()
@@ -33,6 +36,7 @@ namespace Audio
             SoundSettings.MasterChanged -= OnMasterChanged;
             SoundSettings.MusicChanged -= OnMusicChanged;
             SoundSettings.SfxChanged -= OnSfxChanged;
+            SoundSettings.UiChanged -= OnUiChanged;
         }
 
         private void OnMasterChanged(float volume) => SetLevel(MasterParameter, volume);
@@ -40,6 +44,8 @@ namespace Audio
         private void OnMusicChanged(float volume) => SetLevel(MusicParameter, volume);
 
         private void OnSfxChanged(float volume) => SetLevel(SfxParameter, volume);
+        
+        private void OnUiChanged(float volume) => SetLevel(UiParameter, volume);
 
         // Sliders read 0 to 1. The mixer wants decibels: silent at 0, untouched at 1.
         private void SetLevel(string parameter, float volume) =>
