@@ -1,5 +1,7 @@
 using Entities;
+using Entities.Objectives;
 using Guards;
+using Mini_Games;
 using Player;
 using Simulation;
 using UnityEngine;
@@ -15,6 +17,11 @@ namespace Audio
         [SerializeField] private GameplaySfx doorOpened;
         [SerializeField] private GameplaySfx alarmRaised;
         [SerializeField] private GameplaySfx playerSpotted;
+        [SerializeField] private GameplaySfx objectiveStarted;
+        [SerializeField] private GameplaySfx objectiveCompleted;
+        [SerializeField] private GameplaySfx sequenceCorrect;
+        [SerializeField] private GameplaySfx sequenceWrong;
+        [SerializeField] private GameplaySfx tileRotated;
 
         private AudioSource _source;
 
@@ -27,6 +34,10 @@ namespace Audio
             LockedDoor.Opened += OnDoorOpened;
             AlarmState.ActiveChanged += OnAlarmChanged;
             GuardAgent.PlayerSpotted += OnPlayerSpotted;
+            Objective.MiniGameRequested += OnObjectiveStarted;
+            Objective.Complete += OnObjectiveCompleted;
+            SequenceGameController.KeyEntered += OnSequenceKeyEntered;
+            PipeGameController.TileRotated += OnTileRotated;
         }
 
         private void OnDisable()
@@ -36,6 +47,10 @@ namespace Audio
             LockedDoor.Opened -= OnDoorOpened;
             AlarmState.ActiveChanged -= OnAlarmChanged;
             GuardAgent.PlayerSpotted -= OnPlayerSpotted;
+            Objective.MiniGameRequested -= OnObjectiveStarted;
+            Objective.Complete -= OnObjectiveCompleted;
+            SequenceGameController.KeyEntered -= OnSequenceKeyEntered;
+            PipeGameController.TileRotated -= OnTileRotated;
         }
 
         private void OnDied() => Play(death);
@@ -45,6 +60,14 @@ namespace Audio
         private void OnDoorOpened() => Play(doorOpened);
 
         private void OnPlayerSpotted() => Play(playerSpotted);
+
+        private void OnObjectiveStarted(Objective objective) => Play(objectiveStarted);
+
+        private void OnObjectiveCompleted(Objective objective) => Play(objectiveCompleted);
+
+        private void OnSequenceKeyEntered(bool correct) => Play(correct ? sequenceCorrect : sequenceWrong);
+
+        private void OnTileRotated() => Play(tileRotated);
 
         // The event also carries the all-clear and the reset each level is built with; only the raise sounds.
         private void OnAlarmChanged(bool active)
