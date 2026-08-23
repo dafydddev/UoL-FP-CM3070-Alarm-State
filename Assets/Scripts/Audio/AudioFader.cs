@@ -7,12 +7,13 @@ namespace Audio
     public class AudioFader : MonoBehaviour
     {
         [SerializeField] private float duration = 5f;
+        [SerializeField] private float maxVolume = 1f;
 
         private AudioSource _source;
 
         private void Awake() => _source = GetComponent<AudioSource>();
 
-        public void FadeIn() => Fade(1f);
+        public void FadeIn() => Fade(maxVolume);
         public void FadeOut() => Fade(0f);
 
         private void OnEnable()
