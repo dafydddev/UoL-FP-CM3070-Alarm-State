@@ -83,8 +83,8 @@ namespace Generation.Facility
             // Remove anything spawned by a previous run.
             ClearFacility();
 
-            // Clear any alarm left latched by the previous level (resets the HUD).
-            AlarmState.Reset();
+            // Turn off any alarm the previous level ended on (resets the HUD).
+            World?.Alarm.Disable();
 
             // Generate the mission, expand it into a room graph, then into a structural grid.
             var mission = MissionGenerator.Generate(run.DifficultyProfile, run.CurrentLevel, run.TotalLevels);

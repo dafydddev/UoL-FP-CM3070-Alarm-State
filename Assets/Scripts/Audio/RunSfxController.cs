@@ -16,6 +16,7 @@ namespace Audio
         [SerializeField] private GameplaySfx exitReached;
         [SerializeField] private GameplaySfx doorOpened;
         [SerializeField] private GameplaySfx alarmRaised;
+        [SerializeField] private GameplaySfx alarmDisabled;
         [SerializeField] private GameplaySfx playerSpotted;
         [SerializeField] private GameplaySfx objectiveStarted;
         [SerializeField] private GameplaySfx objectiveCompleted;
@@ -69,11 +70,7 @@ namespace Audio
 
         private void OnTileRotated() => Play(tileRotated);
 
-        // The event also carries the all-clear and the reset each level is built with; only the raise sounds.
-        private void OnAlarmChanged(bool active)
-        {
-            if (active) Play(alarmRaised);
-        }
+        private void OnAlarmChanged(bool active) => Play(active ? alarmRaised : alarmDisabled);
 
         private void Play(GameplaySfx gameplaySfx)
         {
