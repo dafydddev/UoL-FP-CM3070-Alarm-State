@@ -17,22 +17,22 @@ namespace Simulation
     public sealed class AlarmState
     {
         // How far the sirens carry, in cells.
-        public const int BroadcastRadiusCells = 25;
+        private const int BroadcastRadiusCells = 25;
 
         // True while the alarm is sounding.
         public bool Active { get; private set; }
 
-        // The escape line the alarm points guards at: where the intruder was last seen, and which way they went.
+        // The escape line the alarm points guards at. Where the intruder was last seen, and which way they went.
         public Vector2Int ContactCell { get; private set; }
         public Vector2Int ContactHeading { get; private set; }
 
-        // Which sounding this is; each raise is a new one. Guards remember which one they answered.
+        // Which sounding this is; each raise is new. Guards remember which one they answered.
         public int SoundingId { get; private set; }
 
         // True once a guard has refreshed the contact from a live sighting.
         public bool ContactRelayed { get; private set; }
 
-        // Fires whenever the alarm turns on or off. Static so the HUD can subscribe once.
+        // Fires when the alarm turns on or off. Static so the HUD can subscribe once.
         public static event Action<bool> ActiveChanged;
 
         private readonly List<IAlarmSwitch> _switches = new();
