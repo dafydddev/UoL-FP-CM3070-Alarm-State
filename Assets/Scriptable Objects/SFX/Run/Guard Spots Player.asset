@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Guard Spots Player
   m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
   clips:
-  - {fileID: 8300000, guid: 6710cee6e9302c84d8bb3330e1e9b9c9, type: 3}
-  - {fileID: 8300000, guid: d704e82020ea3fd4499124c35a54d051, type: 3}
-  - {fileID: 8300000, guid: 372f47701b8a57f41bfd6d21a95dfeca, type: 3}
-  - {fileID: 8300000, guid: 650845a61bcf39a4baea13a48df2e1ca, type: 3}
-  volume: 0.2
+  - {fileID: 8300000, guid: 084cb1aab0cdd2d41a78ae894f86e6a7, type: 3}
+  - {fileID: 8300000, guid: 182622f3c2e9d564aab4cc03b643ba68, type: 3}
+  - {fileID: 8300000, guid: 80ffa2582dcf877438665b57d9da5a59, type: 3}
+  - {fileID: 8300000, guid: b4fae4cd26ff5fa4fa8f6d7d9c41afb1, type: 3}
+  - {fileID: 8300000, guid: dcb4a4b19a9a8554fba3c377c86a4fdc, type: 3}
+  volume: 0.4
   pitchRange: {x: 0.95, y: 1.05}
-  minInterval: 0
+  minInterval: 1

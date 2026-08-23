@@ -10,15 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac5b802c5206055408ce4aae17253021, type: 3}
-  m_Name: Door Opened
+  m_Name: Alarm Disabled
   m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
   clips:
-  - {fileID: 8300000, guid: 32131283a290270408aded1855fdd813, type: 3}
-  - {fileID: 8300000, guid: b036602eaf5492a49bd5957b36bf55f2, type: 3}
-  - {fileID: 8300000, guid: 7e72ec5f74c8e7d409bd7aed03ca14ca, type: 3}
-  - {fileID: 8300000, guid: 2023abe3d9ff801468323618d9fcb3d5, type: 3}
-  - {fileID: 8300000, guid: 1cef404c3dd0f0949b8231827da2f4ec, type: 3}
-  - {fileID: 8300000, guid: bdfa9f698e4113a4aa668d26677dfa68, type: 3}
-  volume: 0.4
+  - {fileID: 8300000, guid: 571b152ca6ac73b48aee1a714c340eb0, type: 3}
+  - {fileID: 8300000, guid: 6298ca8728b61414a9fc9e05d8f42d9e, type: 3}
+  volume: 0.5
   pitchRange: {x: 0.95, y: 1.05}
   minInterval: 0

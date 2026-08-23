@@ -1425,9 +1425,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.RunSfxController
   death: {fileID: 11400000, guid: 68747f4f1c9635f4fade9db3a7f5d368, type: 2}
-  exitReached: {fileID: 0}
+  exitReached: {fileID: 11400000, guid: d9a523206ed04474da7806c4620c89f3, type: 2}
   doorOpened: {fileID: 11400000, guid: ff21b5752bcf0b84598c29aabef6461c, type: 2}
   alarmRaised: {fileID: 11400000, guid: a6276fdbff5657240a2303a33f292f90, type: 2}
+  alarmDisabled: {fileID: 11400000, guid: aa7cf7e42de2b934f81beffff2d2dc4b, type: 2}
   playerSpotted: {fileID: 11400000, guid: 16a1db7d9f9e5124198c051c85a4bbd3, type: 2}
   objectiveStarted: {fileID: 11400000, guid: cb6db493dab59044d8d3d7eb9ffd6d41, type: 2}
   objectiveCompleted: {fileID: 11400000, guid: b1953f1453f0e6247b7455e959d350a8, type: 2}
@@ -2685,6 +2686,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.AudioFader
   duration: 5
+  maxVolume: 0.3
 --- !u!1 &331585041
 GameObject:
   m_ObjectHideFlags: 0
