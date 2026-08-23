@@ -18,7 +18,6 @@ namespace Audio
         private PlayerActor _actor;
 
         private Vector2Int _cell;
-        private float _nextStep; // when the next footstep may sound
 
         private void Awake()
         {
@@ -55,8 +54,6 @@ namespace Audio
         {
             if (!_actor || _actor.Cell == _cell) return;
             _cell = _actor.Cell;
-            if (Time.time < _nextStep) return;
-            _nextStep = Time.time + (footstep ? footstep.MinInterval : 0f);
             Play(footstep);
         }
 
