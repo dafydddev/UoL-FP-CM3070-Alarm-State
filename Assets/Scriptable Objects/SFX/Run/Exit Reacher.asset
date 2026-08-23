@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac5b802c5206055408ce4aae17253021, type: 3}
+  m_Name: Exit Reacher
+  m_EditorClassIdentifier: Assembly-CSharp::Audio.GameplaySfx
+  clips:
+  - {fileID: 8300000, guid: b404b5c2b6cb38f4bbf8999992a83993, type: 3}
+  - {fileID: 8300000, guid: f019dadddc37c4544bcab81420c42909, type: 3}
+  - {fileID: 8300000, guid: 625c11a4a1e2a2b43836e8991855fd2a, type: 3}
+  - {fileID: 8300000, guid: 8c6ce1faafeecf549919e15cf50b76b4, type: 3}
+  - {fileID: 8300000, guid: 71b539c99933d8a40b80832c2e1198f1, type: 3}
+  - {fileID: 8300000, guid: c888019319b71a343ba7ee7bd0f7377e, type: 3}
+  - {fileID: 8300000, guid: 135f1b8d20818ad4186dbafc729208de, type: 3}
+  - {fileID: 8300000, guid: e931337d7547e7b4e94d9facf4ea322b, type: 3}
+  - {fileID: 8300000, guid: f647736da90c80c4ba32d5556e68623e, type: 3}
+  - {fileID: 8300000, guid: f3c843487b82925448c2844866cf3d4c, type: 3}
+  - {fileID: 8300000, guid: feee8b7e1ccc1e245b29b3942bf2dde5, type: 3}
+  - {fileID: 8300000, guid: 66ebe92639d599147aff8e798c5f6b21, type: 3}
+  volume: 1
+  pitchRange: {x: 0.95, y: 1.05}
+  minInterval: 0

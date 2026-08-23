@@ -23,6 +23,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 40e0c66882ad6ec489ea9f3d991c2dbf, type: 3}
   - {fileID: 8300000, guid: ffcdb43c38ff48a47889def39cc7385d, type: 3}
   - {fileID: 8300000, guid: efe8a2d526abf95498034fe4248d600d, type: 3}
-  volume: 0.1
+  volume: 0.2
   pitchRange: {x: 0.95, y: 1.05}
   minInterval: 0.2
