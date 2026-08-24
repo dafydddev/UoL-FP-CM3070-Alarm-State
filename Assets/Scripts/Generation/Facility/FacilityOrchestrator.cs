@@ -43,7 +43,6 @@ namespace Generation.Facility
         [SerializeField] private ObjectiveSpawner objectiveSpawner;
         [SerializeField] private ExitSpawner exitSpawner;
         [SerializeField] private CoverSpawner coverSpawner;
-        [SerializeField] private DistractionSpawner distractionSpawner;
         [SerializeField] private GuardSpawner guardSpawner;
         [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
         [SerializeField] private SupplyRoomSpawner supplyRoomSpawner;
@@ -127,7 +126,6 @@ namespace Generation.Facility
             objectiveSpawner?.Spawn(rooms, rects, World);
             exitSpawner?.Spawn(rooms, rects, World);
             coverSpawner?.Spawn(rooms, rects, World);
-            distractionSpawner?.Spawn(rooms, rects, World);
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
@@ -145,7 +143,6 @@ namespace Generation.Facility
             exitSpawner?.ClearChildren();
             objectiveSpawner?.ClearChildren();
             coverSpawner?.ClearChildren();
-            distractionSpawner?.ClearChildren();
             guardSpawner?.ClearChildren();
             alarmSwitchSpawner?.ClearChildren();
             supplyRoomSpawner?.ClearChildren();
