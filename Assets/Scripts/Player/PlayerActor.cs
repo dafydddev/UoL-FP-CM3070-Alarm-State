@@ -103,7 +103,15 @@ namespace Player
         protected override void Act()
         {
             _prevCell = _cell;
+            Step();
 
+            // Only at a standstill, so it does not flash on cells walked across.
+            var stopped = _cell == _prevCell;
+            if (_prompt) _prompt.Show(stopped && World.Entry.CanUse(_cell, this));
+        }
+
+        private void Step()
+        {
             // Ticks keep coming while a minigame has the keys; stand still rather than walk a queued route.
             if (InputCapture.Captured) return;
 
@@ -128,7 +136,6 @@ namespace Player
             _cell = target;
             World.Entry.HandleEntered(target, this);
             World.Entry.HandleExited(_prevCell, this);
-            if (_prompt) _prompt.Show(World.Entry.CanUse(target, this));
         }
 
         // Takes the next step of a queued route, replanning if the world changed underneath it.
@@ -143,7 +150,6 @@ namespace Player
                 _cell = next;
                 World.Entry.HandleEntered(next, this);
                 World.Entry.HandleExited(_prevCell, this);
-                if (_prompt) _prompt.Show(World.Entry.CanUse(next, this));
             }
             else PlanRoute(_routeGoal); // something now blocks the step — route around it or stop
         }
