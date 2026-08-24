@@ -13,11 +13,12 @@ namespace Spawners
     public class CoverSpawner : EntitySpawner
     {
         public GameObject coverPrefab;
-        public int count = 6;
+        public int count = 6; // fewest rooms to place cover in
+        [Range(0f, 1f)] public float roomFraction = 0.75f; // portion of the eligible rooms to place cover in
         private const int WallCount = 4;
         private const int MaxAttempts = 8;
 
-        // Places up to count cover objects in randomly chosen eligible rooms.
+        // Places one cover object in each of the rooms drawn at random from the eligible pool.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             var tilemap = world.Tilemap;
@@ -25,17 +26,17 @@ namespace Spawners
             // Seed from the graph so cover placement is repeatable per level.
             var rng = new System.Random(Seeds.For(graph.seed, Seeds.Cover, graph.level));
 
-            // Eligible rooms: corridors, objective rooms, and guard posts that have a rectangle.
+            // Every room, except exits and pressure rooms.
             var candidates = graph.rooms
-                .Where(r => r.type.IsObjective() || r.type is RoomType.Corridor or RoomType.GuardPost)
+                .Where(r => r.type is not (RoomType.Exit or RoomType.PressureRoom))
                 .Where(r => rects.ContainsKey(r.id))
                 .ToList();
 
             // Fisher yates shuffle so the chosen rooms vary.
             Shuffle.InPlace(candidates, rng);
 
-            // Spawn one cover object per room, up to the requested count.
-            var n = Mathf.Min(count, candidates.Count);
+            // How many rooms get a cover object: scales with the level, floored at count, capped by the candidates.
+            var n = Mathf.Min(Mathf.Max(count, Mathf.CeilToInt(candidates.Count * roomFraction)), candidates.Count);
             for (var i = 0; i < n; i++)
             {
                 var rect = rects[candidates[i].id];
@@ -60,8 +61,7 @@ namespace Spawners
             };
         }
 
-        // Returns a random value in [lo, hi] that isn't `mid`, so cover never lands on the doorway.
-        // Tries a few times, then falls back to an endpoint.
+        // Returns a random value in [lo, hi] that isn't the middle (e.g. where the objectives and exits spawn).
         private static int AvoidMid(System.Random rng, int lo, int hi, int mid)
         {
             if (hi <= lo) return lo;
