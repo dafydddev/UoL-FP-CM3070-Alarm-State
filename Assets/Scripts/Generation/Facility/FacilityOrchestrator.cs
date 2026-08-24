@@ -47,7 +47,8 @@ namespace Generation.Facility
         [SerializeField] private AlarmSwitchSpawner alarmSwitchSpawner;
         [SerializeField] private SupplyRoomSpawner supplyRoomSpawner;
         [SerializeField] private PressureRoomSpawner pressureRoomSpawner;
-        
+        [SerializeField] private LightSpawner lightSpawner;
+
         [Header("Preview Level in Editor")]
         [SerializeField] private int previewLevel = 1;
         [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
@@ -129,6 +130,7 @@ namespace Generation.Facility
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
+            lightSpawner?.Spawn(rooms, rects, tilemap);
             pipeGameController?.Prepare(run); // Hand the minigame screens the run state.
             sequenceGameController?.Prepare(run);
             minimap?.Fit(); // Scale the mini-map for the generated level.
@@ -147,6 +149,7 @@ namespace Generation.Facility
             alarmSwitchSpawner?.ClearChildren();
             supplyRoomSpawner?.ClearChildren();
             pressureRoomSpawner?.ClearChildren();
+            lightSpawner?.ClearChildren();
         }
     }
 }
