@@ -35,6 +35,7 @@ namespace Player
         private UnityEngine.Camera _camera;
 
         private PlayerInventory _inventory;
+        private UsePrompt _prompt;
 
         public override Vector2Int Cell => _cell;
 
@@ -46,6 +47,7 @@ namespace Player
         {
             _camera = UnityEngine.Camera.main;
             _inventory = GetComponent<PlayerInventory>();
+            _prompt = GetComponent<UsePrompt>();
         }
 
         protected override void OnEnable()
@@ -126,6 +128,7 @@ namespace Player
             _cell = target;
             World.Entry.HandleEntered(target, this);
             World.Entry.HandleExited(_prevCell, this);
+            if (_prompt) _prompt.Show(World.Entry.CanUse(target, this));
         }
 
         // Takes the next step of a queued route, replanning if the world changed underneath it.
@@ -140,6 +143,7 @@ namespace Player
                 _cell = next;
                 World.Entry.HandleEntered(next, this);
                 World.Entry.HandleExited(_prevCell, this);
+                if (_prompt) _prompt.Show(World.Entry.CanUse(next, this));
             }
             else PlanRoute(_routeGoal); // something now blocks the step — route around it or stop
         }
