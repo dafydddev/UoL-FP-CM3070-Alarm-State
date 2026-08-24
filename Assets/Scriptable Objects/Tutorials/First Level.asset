@@ -16,4 +16,4 @@ MonoBehaviour:
   title: Good Luck!
   body: Welcome to your first mission. Move with WASD, joystick, or mouse click.
     Find objectives, avoid guards, and escape to the next level!
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: 015edcab07664f74ab1595ee22db14e0, type: 3}

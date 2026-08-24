@@ -15,5 +15,5 @@ MonoBehaviour:
   topic: 1
   title: Alarm!
   body: A guard has triggered the alarm. While it's active, guards will chase you
-    aggressively. The exit will be locked until you disabled the alarm.
+    aggressively. As well, the exit will be locked until you disabled the alarm.
   image: {fileID: 21300000, guid: f976611e0e895454ca74adaccef15ded, type: 3}

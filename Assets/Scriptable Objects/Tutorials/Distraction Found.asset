@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Distraction Found
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 2
-  title: Distraction!
-  body: You found a distraction. Use it to lure guards to your location!
-  image: {fileID: 21300000, guid: 015edcab07664f74ab1595ee22db14e0, type: 3}
+  title: Distract the Guards!
+  body: You found a distraction. Use it to lure guards to your location! Drop it
+    and guards will investigate that area!
+  image: {fileID: 21300000, guid: c6ab7aeead6d8924aaca36b3e02f048d, type: 3}
