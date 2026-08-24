@@ -44,10 +44,13 @@ namespace Entities.Objectives
             world.Occupancy.Place(_cell, gameObject);
         }
 
+        // A won objective has no minigame left to open.
+        public bool CanUse(Actor user) => user is PlayerActor && !_complete;
+
         // Used by the player to start the minigame.
         public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || _complete) return false;
+            if (!CanUse(user)) return false;
             MiniGameRequested?.Invoke(this);
             return true;
         }

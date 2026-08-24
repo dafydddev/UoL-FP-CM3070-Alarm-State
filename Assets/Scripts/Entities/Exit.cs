@@ -55,10 +55,11 @@ namespace Entities
             if (_sprite && lockedSprite) _sprite.sprite = Locked ? lockedSprite : _openSprite;
         }
 
+        public bool CanUse(Actor user) => user is PlayerActor && !Locked;
+
         public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor) return false;
-            if (Locked) return false;
+            if (!CanUse(user)) return false;
             Reached?.Invoke();
             return true;
         }

@@ -51,6 +51,13 @@ namespace Simulation
             if (occupant && occupant.TryGetComponent(out IExitHandler handler)) handler.OnExited(mover);
         }
 
+        // Whether an occupant on the cell would react to being used, without using it.
+        public bool CanUse(Vector2Int cell, Actor user)
+        {
+            var occupant = _occupancy.At(cell);
+            return occupant && occupant.TryGetComponent(out IUseHandler handler) && handler.CanUse(user);
+        }
+
         // Runs the use reaction of any occupant on the cell, reporting whether one activated.
         public bool HandleUsed(Vector2Int cell, Actor user)
         {
