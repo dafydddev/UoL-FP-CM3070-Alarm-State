@@ -7,7 +7,7 @@ namespace Mini_Games
     // One cell of the game board's UI: a button showing its tile's pipe sprite at the tile's current rotation.
     // The minigame builds these and re-reads the board after every click; the button itself never touches puzzle logic.
     [RequireComponent(typeof(Button))]
-    public class PipeTileButton : MonoBehaviour, IPointerClickHandler
+    public class PipeTileButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
         private PipeGameController _controller;
 
@@ -37,11 +37,14 @@ namespace Mini_Games
         // Tints the pipe: the selection highlight and the activation surge both use this.
         public void Tint(Color colour) => pipeImage.color = colour;
 
-        // Makes the button responsible for the click event.
-        // Stops conflict with the puzzle's tile selection happening with gamepad
+        // Stops conflict between the use key (right mouse button) and selecting the tiles.
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left) return;
             _controller?.OnTileClicked(this);
         }
+
+        // Hovering a tile selects it, the same as the move keys do.
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) => _controller?.Select(Tile.Cell);
     }
 }

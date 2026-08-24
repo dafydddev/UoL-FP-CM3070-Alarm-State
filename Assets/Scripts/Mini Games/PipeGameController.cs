@@ -198,9 +198,10 @@ namespace Mini_Games
             Select(next);
         }
 
-        // Parks the selection on a tile, tinting it so the current pipe is unmistakable.
-        private void Select(Vector2Int cell)
+        // Select the tile, tinting it. The move keys and the cursor both come through here.
+        public void Select(Vector2Int cell)
         {
+            if (_surging) return; // the surge owns the colours
             _buttons[_selected.x, _selected.y].Tint(pipeColour); // clear the old highlight
             _selected = cell;
             _buttons[cell.x, cell.y].Tint(selectedColour);
