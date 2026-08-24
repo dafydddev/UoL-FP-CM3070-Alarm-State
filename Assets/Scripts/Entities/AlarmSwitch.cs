@@ -37,10 +37,13 @@ namespace Entities
         public void Activate(Vector2Int contactCell, Vector2Int contactHeading) =>
             _world.Alarm.Raise(contactCell, contactHeading);
 
+        // Only a sounding alarm has anything to switch off.
+        public bool CanUse(Actor user) => user is PlayerActor && _world != null && _world.Alarm.Active;
+
         // The player disables the alarm by using any switch while it sounds. Guards do the raising.
         public bool OnUsed(Actor user)
         {
-            if (user is not PlayerActor || !_world.Alarm.Active) return false;
+            if (!CanUse(user)) return false;
             _world.Alarm.Disable();
             return true;
         }
