@@ -7,6 +7,15 @@ namespace Player
     {
         [SerializeField] private SpriteRenderer prompt;
 
-        public void Show(bool shown) => prompt.enabled = shown;
+        private bool _shown;
+
+        private void Awake() => _shown = prompt.enabled;
+
+        public void Show(bool shown)
+        {
+            if (shown == _shown) return;
+            _shown = shown;
+            prompt.enabled = shown;
+        }
     }
 }
