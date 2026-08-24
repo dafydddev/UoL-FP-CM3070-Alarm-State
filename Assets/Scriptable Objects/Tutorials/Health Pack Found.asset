@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 5
   title: Health Pack!
-  body: 'You found a health pack. Use it to restore lost hearts! '
-  image: {fileID: 0}
+  body: You found a health pack. Use it to restore lost hearts! Keep track of your
+    health in the top left!
+  image: {fileID: 21300000, guid: 78429fd295917054f8a220733644aa0c, type: 3}
