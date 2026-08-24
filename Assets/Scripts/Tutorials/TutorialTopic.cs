@@ -11,6 +11,7 @@ namespace Tutorials
         PipeMiniGame,
         SequenceMiniGame,
         CoverEntered,
-        KeycardFound
+        KeycardFound,
+        PlayerSpotted
     }
 }

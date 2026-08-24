@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Guards;
 using Menu;
 using Player;
 using Settings;
@@ -40,6 +41,7 @@ namespace Tutorials
         {
             Tutorial.Handler = Enqueue;
             AlarmState.ActiveChanged += OnAlarmChanged;
+            GuardAgent.PlayerSpotted += OnPlayerSpotted;
             PlayerHiding.OnHiddenChanged += OnHiddenChanged;
             if (continueButton) continueButton.onClick.AddListener(Dismiss);
         }
@@ -48,6 +50,7 @@ namespace Tutorials
         {
             Tutorial.Handler = null;
             AlarmState.ActiveChanged -= OnAlarmChanged;
+            GuardAgent.PlayerSpotted -= OnPlayerSpotted;
             PlayerHiding.OnHiddenChanged -= OnHiddenChanged;
             if (continueButton) continueButton.onClick.RemoveListener(Dismiss);
             if (!_showing) return; // torn down mid-tutorial
@@ -59,6 +62,8 @@ namespace Tutorials
         {
             if (active) Tutorial.ShowOnce(TutorialTopic.AlarmRaised);
         }
+
+        private static void OnPlayerSpotted() => Tutorial.ShowOnce(TutorialTopic.PlayerSpotted);
 
         private bool Enqueue(TutorialTopic topic, Action onDismissed)
         {
