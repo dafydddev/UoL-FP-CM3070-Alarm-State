@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 4
   title: Lock Pick
-  body: 'You found a lock pick. Use it to open a locked door without needing a keycard! '
-  image: {fileID: 0}
+  body: You found a lock pick. Use it in front of a locked door to open it without
+    needing a keycard!
+  image: {fileID: 21300000, guid: 1cc80c1f6af72e14faaedb0aac0ff1cd, type: 3}

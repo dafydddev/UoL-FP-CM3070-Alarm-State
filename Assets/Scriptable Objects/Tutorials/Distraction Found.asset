@@ -15,4 +15,4 @@ MonoBehaviour:
   topic: 2
   title: Distraction!
   body: You found a distraction. Use it to lure guards to your location!
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: 015edcab07664f74ab1595ee22db14e0, type: 3}
