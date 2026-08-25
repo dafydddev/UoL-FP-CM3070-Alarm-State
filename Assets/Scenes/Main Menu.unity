@@ -6770,6 +6770,7 @@ MonoBehaviour:
   resetCartButton: {fileID: 336747182}
   checkoutButton: {fileID: 1398539343}
   unlockedSprite: {fileID: 1163200939, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
+  uiSfxController: {fileID: 1360909891}
   balanceErrorColor: {r: 1, g: 0, b: 0, a: 0}
   balanceErrorDuration: 2
 --- !u!1 &516928097
@@ -17420,6 +17421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Audio.MenuAudio
   selectClip: {fileID: 8300000, guid: 8ed5f0c87db083445a097fab7afbccd9, type: 3}
   submitClip: {fileID: 8300000, guid: 34fedb7ce2f4f5b40b9a035331474f4d, type: 3}
+  purchaseClip: {fileID: 8300000, guid: c1d3c2bea5978b64a982dea8df4c527c, type: 3}
 --- !u!82 &1360909892
 AudioSource:
   m_ObjectHideFlags: 0
