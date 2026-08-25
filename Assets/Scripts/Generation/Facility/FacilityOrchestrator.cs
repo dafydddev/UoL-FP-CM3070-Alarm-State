@@ -48,6 +48,7 @@ namespace Generation.Facility
         [SerializeField] private SupplyRoomSpawner supplyRoomSpawner;
         [SerializeField] private PressureRoomSpawner pressureRoomSpawner;
         [SerializeField] private LightSpawner lightSpawner;
+        [SerializeField] private FloorDetailSpawner floorDetailSpawner;
 
         [Header("Preview Level in Editor")]
         [SerializeField] private int previewLevel = 1;
@@ -131,6 +132,7 @@ namespace Generation.Facility
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
             supplyRoomSpawner?.Spawn(rooms, rects, World);
             lightSpawner?.Spawn(rooms, rects, tilemap);
+            floorDetailSpawner?.Spawn(rooms, rects, tilemap);
             pipeGameController?.Prepare(run); // Hand the minigame screens the run state.
             sequenceGameController?.Prepare(run);
             minimap?.Fit(); // Scale the mini-map for the generated level.
@@ -150,6 +152,7 @@ namespace Generation.Facility
             supplyRoomSpawner?.ClearChildren();
             pressureRoomSpawner?.ClearChildren();
             lightSpawner?.ClearChildren();
+            floorDetailSpawner?.ClearChildren();
         }
     }
 }
