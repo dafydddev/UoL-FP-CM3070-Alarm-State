@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Audio;
 using Player;
 using Settings;
 using TMPro;
@@ -37,6 +38,7 @@ namespace Menu
         [SerializeField] private Button resetCartButton;
         [SerializeField] private Button checkoutButton;
         [SerializeField] private Sprite unlockedSprite;
+        [SerializeField] private UISfxController uiSfxController;
         [SerializeField] private Color balanceErrorColor;
         [SerializeField] private float balanceErrorDuration = 0.5f;
 
@@ -185,7 +187,9 @@ namespace Menu
 
         private void Checkout()
         {
+            var paid = _cart.Total > 0;
             _cart.Commit();
+            if (paid && uiSfxController) uiSfxController.PlayPurchase();
             ShowBalance();
             ShowCartButtons();
             ShowOffer(_shown);
@@ -274,8 +278,7 @@ namespace Menu
         {
             if (_balanceErrorTimer <= 0f) return;
             _balanceErrorTimer = Mathf.Max(0f, _balanceErrorTimer - Time.unscaledDeltaTime);
-            balanceLabel.color = Color.Lerp(_balanceTextColor, balanceErrorColor,
-                _balanceErrorTimer / balanceErrorDuration);
+            balanceLabel.color = Color.Lerp(_balanceTextColor, balanceErrorColor,_balanceErrorTimer / balanceErrorDuration);
         }
     }
 }
