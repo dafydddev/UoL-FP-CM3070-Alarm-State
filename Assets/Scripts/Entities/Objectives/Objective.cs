@@ -3,7 +3,6 @@ using Generation.Cells;
 using Player;
 using Simulation;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Entities.Objectives
 {
@@ -22,6 +21,9 @@ namespace Entities.Objectives
 
         // The mission's wording for this objective, stamped by the spawner for the HUD to show.
         public string text;
+
+        // The colour this objective turns once completed: its room's role colour, stamped by the spawner.
+        public Color completedColour;
 
         public abstract MiniGameType Game { get; }
 

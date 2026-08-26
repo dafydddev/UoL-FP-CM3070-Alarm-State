@@ -21,7 +21,7 @@ namespace Spawners
         // Static so the scene's HUD can rebuild its rows without holding a reference to the spawner.
         public static event Action<IReadOnlyList<Objective>> ObjectivesSpawned;
 
-        // Places an objective in each objective room, tinted with that room's role colour.
+        // Places an objective in each objective room.
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             // Seed each objective's minigame from the graph so boards are repeatable per level.
@@ -50,11 +50,10 @@ namespace Spawners
                 objective.text = room.text;
                 objective.miniGameSeed = rng.Next();
                 if (objective is SecondaryObjective secondary) secondary.dropSeed = dropRng.Next();
+                // Falls back to white, leaving the completed sprite untinted, for a room role with no colour.
+                objective.completedColour = RoomColour.TryFor(room.type, out var colour) ? colour : Color.white;
                 objective.Init(world);
 
-                // Tint to the room's role colour so the primary objective stands out.
-                var spriteRend = go.GetComponentInChildren<SpriteRenderer>();
-                if (spriteRend && RoomColour.TryFor(room.type, out var colour)) spriteRend.color = colour;
                 go.name = $"Objective_{room.id}";
                 placed.Add(objective);
             }

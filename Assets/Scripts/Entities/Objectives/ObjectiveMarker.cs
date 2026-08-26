@@ -33,8 +33,14 @@ namespace Entities.Objectives
 
             if (blip) blip.SetActive(false);
             if (!_sprite) return;
-            if (completedSprite) _sprite.sprite = completedSprite;
-            else _sprite.enabled = false;
+            if (!completedSprite)
+            {
+                _sprite.enabled = false;
+                return;
+            }
+
+            _sprite.sprite = completedSprite;
+            _sprite.color = _objective.completedColour;
         }
     }
 }
