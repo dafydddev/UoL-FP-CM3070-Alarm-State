@@ -22,6 +22,7 @@ namespace Settings
             }
         }
 
+        // The setter only writes to the in-memory prefs, so a change is lost unless this is called.
         public static void Save() => PlayerPrefs.Save();
     }
 }

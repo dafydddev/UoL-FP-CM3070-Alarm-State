@@ -28,8 +28,10 @@ namespace Settings
             set => PlayerPrefs.SetInt(DeviceIndexKey, value);
         }
 
+        // The setters only write to the in-memory prefs, so a change is lost unless this is called.
         public static void Save() => PlayerPrefs.Save();
 
+        // Drops the overrides alone; the device settings stand.
         public static void Clear() => PlayerPrefs.DeleteKey(OverridesKey);
     }
 }

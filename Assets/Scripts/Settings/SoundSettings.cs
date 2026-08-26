@@ -14,13 +14,14 @@ namespace Settings
         private const float DefaultMusic = 0.2f;
         private const float DefaultUi = 0.5f;
         private const float DefaultSfx = 0.5f;
-        
+
         // Raised on change, so the mixer follows without a scene reload.
         public static event Action<float> MasterChanged;
         public static event Action<float> MusicChanged;
         public static event Action<float> SfxChanged;
         public static event Action<float> UiChanged;
 
+        // Stored 0 to 1 as the sliders read them; the mixer converts to decibels.
         public static float Master
         {
             get => PlayerPrefs.GetFloat(MasterKey, DefaultMaster);
@@ -56,7 +57,7 @@ namespace Settings
                 SfxChanged?.Invoke(value);
             }
         }
-        
+
         public static float Ui
         {
             get => PlayerPrefs.GetFloat(UiKey, DefaultUi);

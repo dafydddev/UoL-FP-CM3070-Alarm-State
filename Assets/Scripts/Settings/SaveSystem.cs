@@ -65,6 +65,7 @@ namespace Settings
             }
             catch
             {
+                // Last resort on a platform or filesystem without a replace method.
                 File.WriteAllText(Path, json);
             }
         }
@@ -77,6 +78,8 @@ namespace Settings
             Data = new SaveData();
             Save();
         }
+
+        // Debug: not written until something else saves.
         [UnityEditor.MenuItem("Tools/Gift Currency")]
         public static void GiftCurrency() => Data.currencyBalance += 10000;
 #endif
