@@ -44,10 +44,11 @@ namespace Audio
         private void OnMusicChanged(float volume) => SetLevel(MusicParameter, volume);
 
         private void OnSfxChanged(float volume) => SetLevel(SfxParameter, volume);
-        
+
         private void OnUiChanged(float volume) => SetLevel(UiParameter, volume);
 
         // Sliders read 0 to 1. The mixer wants decibels: silent at 0, untouched at 1.
+        // The floor keeps the logarithm off zero, which would hand the mixer negative infinity.
         private void SetLevel(string parameter, float volume) =>
             mixer.SetFloat(parameter, Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f);
     }
