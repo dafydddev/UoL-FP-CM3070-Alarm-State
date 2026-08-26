@@ -19,7 +19,7 @@ namespace Mini_Games
         // Fires each time the player turns a tile, by click or by the use key.
         public static event Action TileRotated;
 
-        [Header("UI Game Objects")]
+        [Header("UI Game Objects")] 
         [SerializeField] private MenuPanel panel;
         [SerializeField] private Button backdrop;
         [SerializeField] private GridLayoutGroup boardLayout;
@@ -48,7 +48,7 @@ namespace Mini_Games
         [SerializeField] private Sprite teeSprite;
         [SerializeField] private Sprite crossSprite;
 
-        [Header("Pipe Colours")]
+        [Header("Pipe Colours")] 
         [SerializeField] private Color pipeColour = Color.white;
         [SerializeField] private Color selectedColour = Color.yellow;
         [SerializeField] private Color poweredColour = Color.cyan;
@@ -97,7 +97,7 @@ namespace Mini_Games
             if (pauseAction.action.WasPressedThisFrame()) Close();
         }
 
-        // Called by the facility orchestrator on every time a level is generated.
+        // Called by the facility orchestrator every time a level is generated.
         // Boards scale with the run's difficulty profile and level.
         public void Prepare(RunContext run)
         {
@@ -120,6 +120,7 @@ namespace Mini_Games
             _attempting = true;
             GameLock.Acquire();
 
+            // One stream, drawn in this order, so a board is settled by its seed alone.
             var rng = new System.Random(objective.miniGameSeed);
             var profile = _run.DifficultyProfile;
             var size = profile.PipeGameBoardSize(_run.CurrentLevel, _run.TotalLevels, rng);
@@ -127,7 +128,7 @@ namespace Mini_Games
             var decoys = profile.PipeGameDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
             var scramble = profile.PipeGameScrambleChance(_run.CurrentLevel, _run.TotalLevels, rng);
             _board = PipePuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
-            
+
             startMarkerImage.color = pipeColour;
             endMarkerImage.color = pipeColour;
 
@@ -140,10 +141,11 @@ namespace Mini_Games
         }
 
         // Rebuilds the grid of tile buttons for the board.
-        // The cell size, recomputed so any board dimensions fill the same panel space.
+        // The cell size is recomputed, so any board dimensions fill the same panel space.
         private void BuildBoardUi()
         {
             var root = (RectTransform)boardLayout.transform;
+            // The markers live under the same root as the tiles, so they are spared the clear-out.
             for (var i = root.childCount - 1; i >= 0; i--)
             {
                 var child = root.GetChild(i);
@@ -230,6 +232,7 @@ namespace Mini_Games
                 _buttons[cell.x, cell.y].Tint(poweredColour);
                 yield return new WaitForSeconds(surgeStep);
             }
+
             endMarkerImage.color = poweredColour;
             _objective.CompleteMiniGame();
             Close();
@@ -238,7 +241,8 @@ namespace Mini_Games
         // Backing out leaves the process incomplete. Using the objective again reopens the same puzzle.
         private void Close()
         {
-            if (!_attempting) return; // several paths can fire on one frame, and the shared backdrop calls this for both screens
+            // several paths can fire on one frame, and the shared backdrop calls this for both screens
+            if (!_attempting) return;
             StopAllCoroutines(); // a rebuild can close us mid-surge
             _surging = false;
             _objective = null;

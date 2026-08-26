@@ -22,25 +22,31 @@ namespace Mini_Games
         // Fires on each key the player enters, with whether it was correct.
         public static event Action<bool> KeyEntered;
 
-        [Header("UI Game Objects")]
-        [SerializeField] private MenuPanel panel;
+        [Header("UI Game Objects")] [SerializeField]
+        private MenuPanel panel;
+
         [SerializeField] private Button backdrop;
         [SerializeField] private HorizontalLayoutGroup slotRow;
         [SerializeField] private GameObject slotPrefab;
 
-        [Header("Input Actions")]
-        [SerializeField] private InputActionReference[] keyActions; // the order is drawn from these
+        [Header("Input Actions")] [SerializeField]
+        private InputActionReference[] keyActions; // the order is drawn from these
+
         [SerializeField] private InputActionReference pauseAction;
         [SerializeField] private InputActionReference useAction;
         [SerializeField] private InputDeviceState deviceState;
 
-        [Header("Slot Colours")]
-        [SerializeField] private Color pendingColour = Color.grey;
+        [Header("Slot Colours")] [SerializeField]
+        private Color pendingColour = Color.grey;
+
         [SerializeField] private Color nextColour = Color.yellow;
         [SerializeField] private Color enteredColour = Color.cyan;
         [SerializeField] private Color wrongColour = Color.red;
         [SerializeField] private Color hoverColour = Color.white; // the clicked key under the cursor
-        [SerializeField, Min(0f)] private float resetFlash = 0.25f; // seconds a wrong key holds before the order restarts
+
+        [SerializeField, Min(0f)]
+        private float resetFlash = 0.25f; // seconds a wrong key holds before the order restarts
+
         [SerializeField, Min(0f)] private float winFlash = 0.15f;
 
         private RunContext _run;
@@ -74,6 +80,7 @@ namespace Mini_Games
             if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
 
+        // Only the keys are captured, so the world ticks on behind the panel.
         private void Update()
         {
             if (!_running) return;
@@ -87,7 +94,7 @@ namespace Mini_Games
             ReadKeys();
         }
 
-        // Called by the facility orchestrator on every time a level is generated.
+        // Called by the facility orchestrator every time a level is generated.
         public void Prepare(RunContext run)
         {
             _run = run;
@@ -254,11 +261,16 @@ namespace Mini_Games
         {
             for (var i = 0; i < _slots.Count; i++)
             {
-                _slots[i].color = i < _entered ? enteredColour
-                    : i == _entered ? nextColour
-                    : pendingColour;
+                _slots[i].color = TintFor(i);
             }
         }
+
+        private Color TintFor(int index) => index.CompareTo(_entered) switch
+        {
+            < 0 => enteredColour,
+            0 => nextColour,
+            _ => pendingColour
+        };
 
         // Only the typed variant labels off the device; a clicked row is numbered either way.
         private void OnDeviceChanged(InputDevice device)

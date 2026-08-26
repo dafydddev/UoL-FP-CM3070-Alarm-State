@@ -50,9 +50,9 @@ namespace Mini_Games
 
     public static class PipeTypeExtensions
     {
-        // Each shape's open ends before any rotation is applied, matching how the sprites
-        // are drawn: the cap points down, the straight runs top to bottom, the elbow joins
-        // bottom to right, the tee opens up, down and right, the cross opens everywhere.
+        // Each shape's open ends before any rotation is applied, matching how the sprites are drawn.
+        // The cap points down, the straight runs top to bottom, the elbow joins bottom to right,
+        // the tee opens up, down and right, the cross opens everywhere.
         public static PipeDirection Ends(this PipeType type) => type switch
         {
             PipeType.Cap => PipeDirection.South,

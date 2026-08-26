@@ -26,6 +26,7 @@ namespace Pathfinding
         public Vector3 CellToWorld(Vector2Int cell) => _tilemap.GetCellCenterWorld((Vector3Int)cell);
 
         // World-space path for the given mover, ready to feed to an agent. Null if unreachable.
+        // Starts on the cell the mover stands on, so an agent walking it steps to the second point first.
         public List<Vector3> FindWorldPath(Vector3 from, Vector3 to, Actor mover)
         {
             var cells = Pathfinder.FindPath(WorldToCell(from), WorldToCell(to), mover);
