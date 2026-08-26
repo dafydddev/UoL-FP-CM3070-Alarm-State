@@ -13,7 +13,7 @@ namespace Generation.Tiles
         {
             CellRole.Wall => wall,
             CellRole.Floor => floor,
-            _ => null, // None / void → no tile
+            _ => null, // None / void / no tile
         };
     }
 }

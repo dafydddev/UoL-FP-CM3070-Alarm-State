@@ -1,17 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using Graphs.Rooms;
 using UnityEngine;
 
 namespace Generation.Tiles
 {
-    // The original layout: the root-to-primary path laid left-to-right as a straight spine,
-    // with each spine room's off-spine subtrees hung alternately above and below.
+    // The root-to-primary path laid left-to-right as a straight spine.
+    // Each spine room's off-spine subtrees are hung alternately above and below.
     // Subtrees are placed with backtracking, so crowded branches reroute instead of stacking two rooms on the same cell.
-    // Using a greedy overlap is used as a last resort when no arrangement exists at all.
     internal static class SpineLayout
     {
-        // The step budget is a worst-case time cap, not a tuning target.
-        // Sized per room; the factor reproduces the values a 32,000-level sweep validated (zero degraded layouts) at typical sizes.
         private const int JointStepsPerRoom = 5000; // whole-level search: ~150k tries at ~30 rooms
         private const int RescueStepsPerRoom = 400; // per-subtree rescue
         private const int JointRetries = 4; // seeded reshuffles
@@ -24,12 +22,13 @@ namespace Generation.Tiles
             Dictionary<string, Vector2Int> cell,
             List<(string a, string b)> connections)
         {
-            // The "spine" is the path from root to the primary objective room, laid out in a straight line.
+            // The spine is the path from root to the primary objective room, laid out in a straight line.
             var primary = graph.rooms.Find(r => r.type == RoomType.PrimaryObjectiveRoom)?.id;
             var spine = PathTo(primary, parent, root) ?? new List<string> { root };
             var onSpine = new HashSet<string>(spine);
             var byNeed = SubtreePlacer.BySubtreeSize(children); // biggest branches placed first
             var rng = new System.Random(Seeds.For(graph.seed, Seeds.Tiles, graph.level));
+            // Null rng: the first passes take candidates in their declared order, so an easy level lays out the same way every time.
             var state = new SubtreePlacer.State { Cell = cell, Connections = connections, Rng = null };
             // Lay the spine left-to-right along y = 0, connecting each room to the previous.
             for (var i = 0; i < spine.Count; i++)
@@ -43,9 +42,8 @@ namespace Generation.Tiles
             {
                 if (!byNeed.TryGetValue(s, out var kids)) continue;
                 var side = 1;
-                foreach (var child in kids)
+                foreach (var child in kids.Where(child => !onSpine.Contains(child)))
                 {
-                    if (onSpine.Contains(child)) continue;
                     hangs.Add((s, child, side));
                     side = -side; // alternate sides for the next child
                 }
@@ -72,8 +70,8 @@ namespace Generation.Tiles
             return clean;
         }
 
-        // Hangs one subtree off a spine room: the preferred side first, the other side if the preferred one can't fit it,
-        // then seeded reshuffles, and only then the pre-backtracking greedy placement, so a level always generates.
+        // Hangs one subtree off a spine room: the preferred side first, the other side if the preferred one can't fit it.
+        // Seeded reshuffles, and only then the pre-backtracking greedy placement, so a level always generates.
         // False reports that the greedy last resort was needed.
         private static bool Hang(string parentId, string node, int side,
             Dictionary<string, List<string>> children, SubtreePlacer.State state, System.Random rng, int budget)
@@ -98,7 +96,9 @@ namespace Generation.Tiles
             return false;
         }
 
-        // Last resort: the original greedy placement, kept for the (measured ~never) case where no overlap-free arrangement exists within budget.
+        // Last resort: the original greedy placement.
+        // Kept for the (measured almost never) case where no overlap-free arrangement exists within budget.
+        // It never backtracks, so it always places every room, at the cost of possibly stacking them.
         private static void GreedyPlaceSubtree(string parentId, string node, int dirY,
             Dictionary<string, List<string>> children, SubtreePlacer.State state)
         {
@@ -126,7 +126,7 @@ namespace Generation.Tiles
                 if (!used.Contains(c)) return c;
             }
 
-            // All neighbours taken — fall back to the preferred cell (may overlap).
+            // All neighbours taken. Fall back to the preferred cell (may overlap).
             return from + new Vector2Int(0, dirY);
         }
 

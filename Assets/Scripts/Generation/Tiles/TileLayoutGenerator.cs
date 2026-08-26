@@ -44,8 +44,8 @@ namespace Generation.Tiles
         private const int StackedReliefRounds = 16; // extra rounds, run only on levels that stacked above
 
         // Builds the structural grid and outputs each room's tile rectangle.
-        public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style,
-            out Dictionary<string, RoomRect> roomRects)
+        // The graph is mutated as relief corridors are added, and restored only if the level still stacks.
+        public static CellRole[,] Generate(RoomGraph graph, TileLayoutStyle style, out Dictionary<string, RoomRect> roomRects)
         {
             Dictionary<string, List<string>> children;
             Dictionary<string, string> parent;
@@ -66,7 +66,7 @@ namespace Generation.Tiles
                     ? RandomWalkLayout.Place(graph, root, children, cell, connections)
                     : SpineLayout.Place(graph, root, parent, children, cell, connections);
                 if (clean) break;
-                
+
                 if (useWalk && round >= WalkReliefRounds)
                 {
                     useWalk = false;
@@ -106,6 +106,7 @@ namespace Generation.Tiles
                     }
                 }
 
+                // Still stacked: the layered corridors bought nothing, so the graph goes back as it was.
                 if (Stacked())
                 {
                     graph.rooms = rooms;
@@ -132,6 +133,7 @@ namespace Generation.Tiles
             }
 
             // Carve a doorway (floor cell in the shared wall) for every connection.
+            // Doors sit at the midpoint of the shared wall, which is what the wall placement passes rely on.
             foreach (var (a, b) in connections)
             {
                 var ca = pos[a];
@@ -225,14 +227,13 @@ namespace Generation.Tiles
             foreach (var edge in new List<RoomEdge>(graph.edges))
             {
                 if (edge.fromId != target.id) continue;
-                var corridor = new RoomNode
-                    { id = $"room_relief_{target.id}_{relief++}{idSuffix}", type = RoomType.Corridor };
+                // The lock moves to the far half, so the key still opens the way into the room beyond.
+                var corridor = new RoomNode { id = $"room_relief_{target.id}_{relief++}{idSuffix}", type = RoomType.Corridor };
                 graph.rooms.Add(corridor);
                 var idx = graph.edges.IndexOf(edge);
                 if (idx != -1) graph.edges.RemoveAt(idx);
                 graph.edges.Add(new RoomEdge { fromId = edge.fromId, toId = corridor.id });
-                graph.edges.Add(new RoomEdge
-                    { fromId = corridor.id, toId = edge.toId, locked = edge.locked, keyRoomId = edge.keyRoomId });
+                graph.edges.Add(new RoomEdge { fromId = corridor.id, toId = edge.toId, locked = edge.locked, keyRoomId = edge.keyRoomId });
             }
 
             return true;
@@ -242,11 +243,13 @@ namespace Generation.Tiles
         private static void FillRect(CellRole[,] g, int x, int y, int w, int h, CellRole role)
         {
             for (var dx = 0; dx < w; dx++)
-            for (var dy = 0; dy < h; dy++)
             {
-                var px = x + dx;
-                var py = y + dy;
-                if (px >= 0 && py >= 0 && px < g.GetLength(0) && py < g.GetLength(1)) g[px, py] = role;
+                for (var dy = 0; dy < h; dy++)
+                {
+                    var px = x + dx;
+                    var py = y + dy;
+                    if (px >= 0 && py >= 0 && px < g.GetLength(0) && py < g.GetLength(1)) g[px, py] = role;
+                }
             }
         }
     }
