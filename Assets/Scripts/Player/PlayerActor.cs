@@ -18,6 +18,7 @@ namespace Player
         [SerializeField] private InputActionReference pointAction;
         [SerializeField] private InputActionReference useAction;
 
+        // How long a direction must be held before it repeats.
         [Header("Movement Settings")] [SerializeField, Min(0f)]
         private float repeatDelay = 0.2f;
 
@@ -154,6 +155,7 @@ namespace Player
             else PlanRoute(_routeGoal); // something now blocks the step — route around it or stop
         }
 
+        // The direction pressed last owns the movement, so a new key takes over without the old being let go.
         private void ReadInput()
         {
             Track(Vector2Int.up, upAction.action.IsPressed());
@@ -220,7 +222,7 @@ namespace Player
                 routePreview.SetPosition(i++, World.Tilemap.GetCellCenterWorld((Vector3Int)cell));
             }
         }
-        
+
         // Sits the marker on the clicked cell while the route lasts.
         private void DrawRouteMarker()
         {

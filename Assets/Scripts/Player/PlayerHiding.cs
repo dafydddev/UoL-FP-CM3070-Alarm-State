@@ -26,6 +26,7 @@ namespace Player
         }
 
         // Called when leaving a cover zone, clamped so the count never goes negative.
+        // An unmatched exit therefore fires as though cover was left, so callers must pair their calls.
         public void Exit(Object _)
         {
             _covers = Mathf.Max(0, _covers - 1);

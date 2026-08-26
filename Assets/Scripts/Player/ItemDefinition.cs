@@ -7,7 +7,7 @@ namespace Player
     {
         public ItemType type;
 
-        // Named for the player, since the enum runs uses camel case (e.g. LockPick, not Lock Pick)
+        // Named for the player, since the enum uses camel case (e.g. LockPick, not Lock Pick)
         public string displayName;
 
         [Header("Shop")] [Min(0)] public int price;

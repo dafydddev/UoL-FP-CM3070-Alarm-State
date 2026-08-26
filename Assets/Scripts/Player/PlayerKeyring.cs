@@ -16,6 +16,7 @@ namespace Player
 
         public bool HasKey(string keyId) => keyId != null && _keys.Contains(keyId);
 
+        // Fires on every collection, including a key already held, so the HUD refreshes either way.
         public void Collect(string keyId)
         {
             _keys.Add(keyId);

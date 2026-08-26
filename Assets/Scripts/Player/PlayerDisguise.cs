@@ -27,6 +27,7 @@ namespace Player
         // How much of the disguise being worn is left, 0 to 1.
         public float Remaining => _span > 0f ? Mathf.Clamp01(_worn / _span) : 0f;
 
+        // Read here rather than in PlayerSkin's own Awake, which may not have run yet.
         private void Awake()
         {
             _sprite = GetComponentInChildren<SpriteRenderer>();
@@ -51,9 +52,8 @@ namespace Player
         {
             if (GameLock.Locked) return;
             if (_worn <= 0f) return;
-
             _worn -= Time.deltaTime;
-            if (_worn <= 0f) Show(_plainSprite); // lapsed, so the player is themselves again
+            if (_worn <= 0f) Show(_plainSprite); // lapsed, so the player uses the original sprite again
         }
 
         private void Show(Sprite sprite)

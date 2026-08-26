@@ -62,7 +62,7 @@ namespace Player
             OnSlotChanged?.Invoke(Selected);
         }
 
-        // Puts a item into the use slot; called by the inventory screen.
+        // Puts an item into the use slot; called by the inventory screen.
         public void Select(ItemType type)
         {
             Selected = type;
@@ -82,7 +82,7 @@ namespace Player
                 Used?.Invoke(type);
                 if (!_items[i].IsSpent) return true; // it acted but has uses left; keep it in hand
                 _items.RemoveAt(i);
-                if (CountOf(type) != 0) return true; // that was the last of it; empty the slot
+                if (CountOf(type) != 0) return true; // more of it in hand; the slot stands
                 Selected = null;
                 OnSlotChanged?.Invoke(Selected);
                 return true;
