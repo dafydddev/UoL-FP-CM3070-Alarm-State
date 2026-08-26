@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Pathfinding
 {
-    // Editor gizmo helper: visualises the navigation grid and a test path between two transforms.
+    // Editor gizmo helper. This visualises the navigation grid and a test path between two transforms.
     public class NavigationDebugDrawer : MonoBehaviour
     {
         [Header("Facility")] [SerializeField] private FacilityOrchestrator orchestrator;
@@ -60,14 +60,14 @@ namespace Pathfinding
             var path = world.Navigator.FindWorldPath(from.position, to.position, mover);
             if (path == null) return;
             if (!drawPath) return;
-            // Draw the path as yellow line segments between consecutive waypoints.
+            // Draw the path as line segments between consecutive waypoints.
             Gizmos.color = pathColor;
             for (var i = 0; i < path.Count - 1; i++)
             {
                 Gizmos.DrawLine(path[i], path[i + 1]);
             }
 
-            // Mark each waypoint with a green sphere.
+            // Mark each waypoint with a sphere.
             Gizmos.color = waypointColor;
             foreach (var p in path)
             {

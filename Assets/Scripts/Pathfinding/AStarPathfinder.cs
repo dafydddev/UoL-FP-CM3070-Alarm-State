@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace Pathfinding
 {
-    // A* over the world's entry rules:
+    // A* over the world's entry rules. Movement is 4-connected (no diagonals).
     // A cell is walkable exactly when the mover could step into it (terrain walkable, no blocking occupant),
     // so paths automatically respect locked doors, keys held, and anything else the rules learn later.
-    // Movement is 4-connected (no diagonals).
     public class AStarPathfinder
     {
         private readonly EntryRules _entry;
@@ -44,6 +43,7 @@ namespace Pathfinding
                     if (gScore.TryGetValue(nb, out var existing) && tentative >= existing) continue;
 
                     // Record this cheaper route and queue the neighbour by f = g + heuristic.
+                    // A cell already on the frontier is queued again rather than updated.
                     cameFrom[nb] = current;
                     gScore[nb] = tentative;
                     open.Push(nb, tentative + Heuristic(nb, goal));
