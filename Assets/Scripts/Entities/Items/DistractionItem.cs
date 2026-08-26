@@ -11,6 +11,7 @@ namespace Entities.Items
     {
         // Every distraction currently lying dropped in the world.
         // A dropped distraction keeps sounding until something takes it out of the world.
+        // Static, so it must be emptied by OnDisable as the level is torn down.
         private static readonly List<DistractionItem> Sounding = new();
 
         public string distractionId;
@@ -18,7 +19,7 @@ namespace Entities.Items
         // How long a guard stands looking the distraction over before it resolves it, in ticks.
         [SerializeField, Min(1)] private int lingerTicks = 6;
 
-        // How long it holds the guard there instead once the disguise upgrade has been bought.
+        // How long it holds the guard there instead once the distraction upgrade has been bought.
         [SerializeField, Min(1)] private int upgradedLingerTicks = 15;
 
         [SerializeField, Min(0)] private int cashInValue = 50;

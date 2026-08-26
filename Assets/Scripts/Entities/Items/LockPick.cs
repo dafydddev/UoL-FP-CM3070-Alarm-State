@@ -10,8 +10,7 @@ namespace Entities.Items
     public class LockPick : MonoBehaviour, IEnterHandler, IInventoryItem, ISpawnedEntity
     {
         // The cells a pick can reach from where the user stands, matching how the player steps.
-        private static readonly Vector2Int[] Reach =
-            { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        private static readonly Vector2Int[] Reach = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         public string lockPickId;
 
@@ -37,6 +36,7 @@ namespace Entities.Items
         // The doors this pick has left in it, taken from the upgrade when it comes into the world.
         private int _remaining;
 
+        // Read here, so a pick already in hand keeps the count it was made with when the upgrade is bought.
         private void Awake() => _remaining = UpgradeSettings.IsUpgraded(Type) ? upgradedUses : uses;
 
         // Called by the spawner after Instantiate.
@@ -73,6 +73,7 @@ namespace Entities.Items
             return false;
         }
 
+        // A collected item is deactivated rather than destroyed, so the cell is cleared here too.
         private void OnDestroy()
         {
             if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
