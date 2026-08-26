@@ -24,6 +24,7 @@ namespace Analytics
                 EndUserConsent.SetConsentState(new ConsentState { AnalyticsIntent = ConsentStatus.Granted });
 
                 // The SDK tracks the session itself (gameStarted, gameEnded on quit, final flush);
+                // Taken only once consent is in place, so nothing can be recorded before then.
                 _analytics = AnalyticsService.Instance;
             }
             catch
