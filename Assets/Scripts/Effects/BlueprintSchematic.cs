@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 namespace Effects
 {
-    // A facility floor-plan schematic that drifts slowly behind the black menu:
-    // rooms of varying sizes linked by corridors over a faint grid, in blueprint blue.
+    // A floor-plan schematic that drifts slowly behind the black menu.
+    // Rooms of varying sizes, linked by corridors over a faint grid.
     [RequireComponent(typeof(RawImage))]
     public class BlueprintSchematic : MonoBehaviour
     {
@@ -15,7 +15,7 @@ namespace Effects
         private const int LineThickness = 1;
 
         [Header("Resolution")]
-        // Canvas units per schematic pixel. The canvas base is 640x360, so 1 draws the plan on the UI grid.
+        // Canvas units per schematic pixel. The canvas base is 640x360.
         [SerializeField, Range(1, 8)]
         private int pixelSize = 1;
 
@@ -63,9 +63,9 @@ namespace Effects
             _image.uvRect = new Rect(0f, 0f, 1f, 1f);
         }
 
-        // Cached rather than read per frame, and kept live by the event so a toggle elsewhere takes effect immediately.
         private void OnEnable()
         {
+            // Cached rather than read per frame and kept live by the event, so a toggle elsewhere takes effect immediately.
             _scrolling = BackgroundSettings.Scrolling;
             BackgroundSettings.ScrollingChanged += OnScrollingChanged;
         }
@@ -169,7 +169,7 @@ namespace Effects
             return tex;
         }
 
-        // Nearest divisor of length to the desired spacing.
+        // Nearest divisor of length to the desired spacing, or the desired spacing where none falls near it.
         private static int NearestDivisor(int length, int desired)
         {
             desired = Mathf.Max(1, desired);

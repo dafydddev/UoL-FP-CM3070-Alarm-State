@@ -40,6 +40,7 @@ namespace Effects
             _verts.Clear();
             _tris.Clear();
 
+            // Centres arrive in world space. The quads are built locally to their roots.
             foreach (var center in centers)
             {
                 var c = _root.InverseTransformPoint(center);
