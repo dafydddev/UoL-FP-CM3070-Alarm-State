@@ -9,6 +9,7 @@ namespace Settings
             set => SaveSystem.Data.currencyBalance = value;
         }
 
+        // The setter only writes to the loaded profile, so a change is lost unless this is called.
         public static void Save() => SaveSystem.Save();
     }
 }

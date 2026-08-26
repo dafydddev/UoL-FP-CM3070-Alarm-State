@@ -5,7 +5,8 @@ namespace Settings
     // Which briefings the player has been shown, from the shared save profile.
     public static class TutorialSettings
     {
-        // Claims a topic for its one showing.
+        // Claims a topic for its one showing. Records as it tests,
+        // so a caller that declines the showing has still spent it; the topic never comes up again.
         public static bool TryMarkSeen(TutorialTopic topic)
         {
             if (SaveSystem.Data.seenTutorials.Contains(topic)) return false;
