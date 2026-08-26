@@ -46,8 +46,6 @@ namespace Mini_Games
         }
 
         // Breadth-first flood from the start node over connected tiles.
-        // True once the flow can leave the end tile eastward,
-        // with the cells the charge runs through in order the activation surge plays back exactly this path.
         public bool TryTraceCircuit(out List<Vector2Int> path)
         {
             path = null;
@@ -64,6 +62,8 @@ namespace Mini_Games
             while (frontier.Count > 0)
             {
                 var current = frontier.Dequeue();
+                // The east side belongs to the tile, not to the route that reached it,
+                // so the end node failing this once settles it; the flood never comes back.
                 if (current == EndCell && (At(current).Connections & PipeDirection.East) != 0)
                 {
                     path = Reconstruct(cameFrom, current);

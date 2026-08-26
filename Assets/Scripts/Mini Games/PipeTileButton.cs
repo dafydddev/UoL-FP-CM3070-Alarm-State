@@ -30,8 +30,7 @@ namespace Mini_Games
             Refresh();
         }
 
-        // Spins the sprite to match the tile. Sprites are authored unrotated (see PipeTypeExtensions.Ends),
-        // so each clockwise quarter turn is -90 around z.
+        // Spins the sprite to match the tile. Sprites are authored unrotated, so each turn is -90 around z.
         public void Refresh() => pipeImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -90f * Tile.Rotation);
 
         // Tints the pipe: the selection highlight and the activation surge both use this.

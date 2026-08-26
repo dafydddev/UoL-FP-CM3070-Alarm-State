@@ -10,7 +10,7 @@ namespace Mini_Games
     {
         private const int MinSize = 3; // below this a board can't hold a non-trivial circuit
         private const int MaxDecoyLength = 3;
-        private const int MaxAttempts = 8; // bounded retries for the passes that hunt for a free cell
+        private const int MaxAttempts = 8; // bounded retries for the passes that hunt for a free cell or a fault
 
         // The carve's step budget is a worst-case time cap, not a tuning target;
         // the direct fallback below keeps generation infallible when it runs out.
@@ -65,7 +65,7 @@ namespace Mini_Games
             return board;
         }
 
-        // Self-avoiding walk from start to end, backtracking out of dead ends so it always arrives.
+        // Self-avoiding walk from start to end, backtracking out of dead ends.
         // Complexity is the chance each step wanders instead of heading for the end node, so harder boards carry longer, twistier circuits.
         private static List<Vector2Int> CarveSolution(System.Random rng, int size, Vector2Int start, Vector2Int end,
             float complexity)
@@ -199,7 +199,7 @@ namespace Mini_Games
                 if (type.Ends().Rotated(rotation) == sides)
                     return new PipeTile { Cell = cell, Type = type, Rotation = rotation };
 
-            return new PipeTile { Cell = cell, Type = type }; // unreachable: every 2-4 side mask has a rotation
+            return new PipeTile { Cell = cell, Type = type }; // unreachable: every 1-4 side mask has a rotation
         }
 
         // How many of a mask's four sides are open.
@@ -238,10 +238,12 @@ namespace Mini_Games
             float scrambleChance)
         {
             for (var x = 0; x < board.Width; x++)
-            for (var y = 0; y < board.Height; y++)
             {
-                if (rng.NextDouble() >= scrambleChance) continue;
-                board.At(new Vector2Int(x, y)).Rotation = rng.Next(4);
+                for (var y = 0; y < board.Height; y++)
+                {
+                    if (rng.NextDouble() >= scrambleChance) continue;
+                    board.At(new Vector2Int(x, y)).Rotation = rng.Next(4);
+                }
             }
 
             // A board that arrives solved isn't a puzzle: twist solution tiles until it holds a fault.
