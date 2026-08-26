@@ -38,9 +38,10 @@ namespace Menu
             SetFocused(false);
         }
 
+        // The outline stays on and is hidden by its alpha.
         private void SetFocused(bool focused)
         {
-            if (_outline == null) return;
+            if (!_outline) return;
             var colour = focusColour;
             colour.a = focused ? 1f : 0f;
             _outline.effectColor = colour;

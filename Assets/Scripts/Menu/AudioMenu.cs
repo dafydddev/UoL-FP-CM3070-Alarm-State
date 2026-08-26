@@ -90,12 +90,14 @@ namespace Menu
             var events = EventSystem.current;
             var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
             SetApplyInteractable();
+            // Dimming the button under the focus drops it, so the focus is put back.
             if (!hadFocus || events.currentSelectedGameObject) return;
             events.SetSelectedGameObject(applyButton.gameObject);
         }
 
         private void SetApplyInteractable()
         {
+            // Uses Mathf.Approximately to account for floating point errors.
             applyButton.interactable = !Mathf.Approximately(_master, SoundSettings.Master) ||
                                        !Mathf.Approximately(_music, SoundSettings.Music) ||
                                        !Mathf.Approximately(_sfx, SoundSettings.Sfx) ||

@@ -12,7 +12,7 @@ namespace Menu
         private readonly List<ItemType> _upgrades = new();
         private readonly List<SkinType> _skins = new();
 
-        // The skin checkout equips, chosen with the buy that pays for it.
+        // The skin that the checkout equips, chosen with the buy action that pays for it.
         private SkinType? _equip;
 
         public int Total { get; private set; }

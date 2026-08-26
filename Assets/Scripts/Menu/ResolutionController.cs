@@ -18,6 +18,7 @@ namespace Menu
         private int _appliedIndex;
         private bool _appliedFullscreen;
 
+        // The saved index points into this, so entries are append-only: reordering would remap saved settings.
         private readonly Vector2Int[] _supportedResolutions =
         {
             new(640, 360),
@@ -98,10 +99,11 @@ namespace Menu
 
             ApplyResolution();
             ResolutionSettings.Save();
-            
+
             var events = EventSystem.current;
             var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
             SetApplyInteractable();
+            // Dimming the button under the focus drops it, so the focus is put back.
             if (!hadFocus || events.currentSelectedGameObject) return;
             events.SetSelectedGameObject(applyButton.gameObject);
         }

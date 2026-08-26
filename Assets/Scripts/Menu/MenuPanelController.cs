@@ -4,7 +4,7 @@ namespace Menu
 {
     public class MenuPanelController : MonoBehaviour
     {
-        // The menu panels know to the scene
+        // The menu panels known to the scene
         [SerializeField] private MenuPanel[] menuPanels;
 
         // The default panel to show on scene load
@@ -24,7 +24,7 @@ namespace Menu
         {
             // Early exit when there are no menu panels
             if (menuPanels == null || menuPanels.Length == 0) return;
-            // Hide all the menu panels know to the script
+            // Show the requested panel
             ShowPanel(panel);
         }
 

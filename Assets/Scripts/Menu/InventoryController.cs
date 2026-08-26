@@ -21,20 +21,17 @@ namespace Menu
             public Button button;
         }
 
-        [Header("UI Game Objects")] [SerializeField]
-        private MenuPanel panel;
-
+        [Header("UI Game Objects")]
+        [SerializeField] private MenuPanel panel;
         [SerializeField] private Slot[] slots;
         [SerializeField] private TMP_Text sharedLabel; // UI label for the highlighted item
 
-        [Header("UI Buttons")] [SerializeField]
-        private Button openButton;
-
+        [Header("UI Buttons")]
+        [SerializeField] private Button openButton;
         [SerializeField] private Button backdrop;
 
-        [Header("Input Actions")] [SerializeField]
-        private InputActionReference openAction;
-
+        [Header("Input Actions")]
+        [SerializeField] private InputActionReference openAction;
         [SerializeField] private InputActionReference pauseAction;
 
         private PlayerInventory _inventory; // bound to the spawned player each level
@@ -135,7 +132,7 @@ namespace Menu
         private void ShowSlot(Slot slot) => sharedLabel.text =
             $"{slot.definition.displayName}: {_inventory.CountOf(slot.definition.type)}";
 
-        // The slot for a item type, defaulting to the first when the use slot is empty.
+        // The slot for an item type, defaulting to the first when the use slot is empty.
         private Slot SlotFor(ItemType? selected)
         {
             if (!selected.HasValue) return slots[0];

@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-    // The play panel: presents the game's run options and hands the player's
-    // selection to the gameplay scene as the pending RunContext.
+    // Presents the game's run options and hands the player's selection to the gameplay scene as the pending RunContext.
     public class PlayMenu : MonoBehaviour
     {
         // What the game offers; the menu only renders it.
@@ -59,7 +58,8 @@ namespace Menu
 
         private void Play()
         {
-            // Stash the selection for LevelOrchestrator, then enter the gameplay scene.
+            // Stash the selection for RunController, then enter the gameplay scene.
+            // Each dropdown was filled from its source in order, so its value indexes straight back into it.
             RunContext.Pending = new RunContext(
                 options.profiles[difficultyDropdown.value],
                 1,
