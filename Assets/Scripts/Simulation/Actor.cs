@@ -4,6 +4,7 @@ namespace Simulation
 {
     public abstract class Actor : MonoBehaviour
     {
+        // How many of the clock's ticks pass between this actor's actions; higher is slower.
         [SerializeField] private int ticksPerAction = 1;
         private int _counter;
 

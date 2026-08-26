@@ -10,7 +10,8 @@ namespace Simulation
         private static int _holds;
         private static int _releasedFrame = -1;
 
-        // Stays true for the rest of the frame the last hold was dropped on.
+        // Stays true for the rest of the frame the last hold was dropped on,
+        // so the key that dismissed one holder cannot be read by the next thing to open.
         public static bool Locked => _holds > 0 || _releasedFrame == Time.frameCount;
 
         public static void Acquire() => _holds++;
