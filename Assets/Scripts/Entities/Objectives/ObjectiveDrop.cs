@@ -17,6 +17,7 @@ namespace Entities.Objectives
 
         // Rolls for a reward and places it beside the objective.
         // Does nothing if the roll fails, there is nothing to drop, or no cell alongside is free.
+        // The seed is stamped per objective, so the same level always leaves the same reward.
         public void Roll(WorldContext world, int seed)
         {
             if (rewardPrefabs == null || rewardPrefabs.Length == 0) return;
@@ -36,8 +37,8 @@ namespace Entities.Objectives
                 if (world.Occupancy.At(cell) || !world.Entry.CanEnter(cell, null)) continue;
 
                 // Parented alongside the objective, so the drop is torn down with the rest of the level.
-                var go = Instantiate(prefab, world.Tilemap.GetCellCenterWorld((Vector3Int)cell),
-                    Quaternion.identity, transform.parent);
+                var go = Instantiate(prefab, world.Tilemap.GetCellCenterWorld((Vector3Int)cell), Quaternion.identity,
+                    transform.parent);
                 go.GetComponent<ISpawnedEntity>()?.Init(world);
                 return;
             }
