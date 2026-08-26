@@ -12,21 +12,18 @@ using UnityEngine.UI;
 namespace Tutorials
 {
     // Holds the game lock while a tutorial is being shown, like the pause menu.
-    // Requests only queue: the queue drains on the first frame nothing else holds the lock.
+    // Requests only queue: the queue drains on the first frame nothing else holds the lock and the step has finished.
     public class TutorialController : MonoBehaviour
     {
-        [Header("Content")]
-        [SerializeField] private MenuPanel panel;
+        [Header("Content")] [SerializeField] private MenuPanel panel;
         [SerializeField] private TutorialCatalogue catalogue;
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private TMP_Text bodyText;
         [SerializeField] private Image image;
 
-        [Header("Dismissal")]
-        [SerializeField] private Button continueButton;
+        [Header("Dismissal")] [SerializeField] private Button continueButton;
 
-        [Header("Timing")]
-        [SerializeField] private SimulationClock clock;
+        [Header("Timing")] [SerializeField] private SimulationClock clock;
 
         private readonly Queue<(TutorialEntry entry, Action onDismissed)> _queue = new();
 
@@ -34,7 +31,7 @@ namespace Tutorials
         private int _openedFrame = -1; // the key that opened the panel is still down this frame
         private Action _onDismissed;
 
-        private float _alpha; // the clock's alpha last frame
+        private float _alpha; // the clock's alpha
         private bool _stepped; // a tick has landed since the request was made
 
         private void OnEnable()
@@ -129,7 +126,7 @@ namespace Tutorials
             panel.SetActive(false);
             GameLock.Release();
         }
-        
+
         private static void OnHiddenChanged(bool hidden)
         {
             if (hidden) Tutorial.ShowOnce(TutorialTopic.CoverEntered);
