@@ -39,6 +39,7 @@ namespace Entities.Items
             world.Occupancy.Place(_cell, gameObject);
         }
 
+        // The loadout path: granted at spawn rather than picked up, so the player is taken from the world.
         public void Bind(WorldContext world) => world.Player.TryGetComponent(out _player);
 
         public void OnEntered(Actor mover)
@@ -51,7 +52,7 @@ namespace Entities.Items
         }
 
         // Using it restores its hearts and spends it.
-        // Returns false on full hearts, which keeps it in the inventory.
+        // Returns false on full hearts or on a dead player, which keeps it in the inventory.
         public bool Use(Vector2Int _)
         {
             if (!_player || !_player.Heal(UpgradeSettings.IsUpgraded(Type) ? upgradedHearts : hearts)) return false;
@@ -59,6 +60,7 @@ namespace Entities.Items
             return true;
         }
 
+        // A collected item is deactivated rather than destroyed, so the cell is cleared here too.
         private void OnDestroy()
         {
             if (_world != null && _world.Occupancy.At(_cell) == gameObject) _world.Occupancy.Remove(_cell);
