@@ -16,12 +16,13 @@ using UnityEngine.SceneManagement;
 
 namespace Run
 {
-    // Drives level progression. Builds starting the level and advances level each time the player reaches an exit.
+    // Drives level progression. Builds the starting level and advances a level each time the player reaches an exit.
     [RequireComponent(typeof(FacilityOrchestrator))]
     public class RunController : MonoBehaviour
     {
-        [Header("Run Options")] 
-        [SerializeField, Min(1)] private int startLevel = 1;
+        [Header("Run Options")] [SerializeField, Min(1)]
+        private int startLevel = 1;
+
         [SerializeField, Min(1)] private int totalLevels = 10;
         [SerializeField] private RunDifficulty @default; // used when entering the scene directly
         [SerializeField] private TileLayoutStyle defaultLayoutStyle = TileLayoutStyle.Spine;
@@ -121,6 +122,7 @@ namespace Run
                 StartCoroutine(CompleteRun());
                 return;
             }
+
             CarryOver();
             StartCoroutine(AdvanceLevel());
         }
@@ -154,8 +156,8 @@ namespace Run
                 _run.Performance.RecordLevel(health.Hearts, health.MaxHearts, _alarmsThisLevel);
         }
 
-        // Losing the last heart ends the run. PlayerHealth fires makes sure to only fire this once.
-        // So that the run can't be ended twice by arrests landing in the same burst of ticks.
+        // Losing the last heart ends the run. PlayerHealth makes sure to only fire this once,
+        // so that the run can't be ended twice by arrests landing in the same burst of ticks.
         private void OnHealthChanged(int current, int _)
         {
             if (current == 0) StartCoroutine(EndRun());
@@ -223,7 +225,8 @@ namespace Run
             Telemetry.RunCompleted(_run);
             _run.AwardRunCompleted(_run.RunCompletedReward);
             var player = FacilityOrchestrator.World?.Player;
-            if (player && player.TryGetComponent(out PlayerInventory inventory)) _run.AwardUnusedItems(inventory.CashInValue);
+            if (player && player.TryGetComponent(out PlayerInventory inventory))
+                _run.AwardUnusedItems(inventory.CashInValue);
             GameLock.Acquire();
             if (wipeEffect) yield return wipeEffect.Close();
             if (resultsController)
@@ -234,12 +237,14 @@ namespace Run
                 if (wipeEffect) yield return wipeEffect.Close();
                 resultsController.Hide();
             }
+
             CurrencySettings.Balance += _run.PendingCurrency;
             CurrencySettings.Save();
             SceneManager.LoadScene("Main Menu");
         }
 
         // The lost run, whether the player died or quit.
+        // Nothing is banked, so everything the run had pending is forfeit.
         private IEnumerator EndRun()
         {
             Telemetry.LevelFailed(_run, _levelElapsed, _firstAlarmAt);
