@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace Entities.Keycards
 {
+    // A keycard lying in the world. Walking onto it puts its key on the player's inventory.
     public class Keycard : MonoBehaviour, IEnterHandler
     {
+        // The room the card was placed in, which is what the doors it opens are stamped with.
         public string keyId;
 
         private Vector2Int _cell;

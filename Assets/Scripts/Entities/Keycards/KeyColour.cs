@@ -4,13 +4,12 @@ using UnityEngine;
 namespace Entities.Keycards
 {
     // Maps a key id to a stable, distinct colour so a keycard and the door it opens are shown in the same hue.
-    // Key ids carry their level ordinal ("room_key_0", "room_key_1" each advances the hue by the golden-ratio,
-    // producing well-distributed colours, without requiring knowledge of all keys in the level.
-    // Same id and seed always yield the same colour, empty/null ids default to white.
     public static class KeyColour
     {
+        // Successive ordinals stepped by this land far apart on the wheel, so neighbouring keys never share a hue.
         private const float GoldenRatioConjugate = 0.6180339887f;
 
+        // The seed is the graph's, so a level's palette varies while a key keeps its colour throughout that level.
         public static Color For(string keyId, int seed)
         {
             if (string.IsNullOrEmpty(keyId)) return Color.white;
@@ -20,6 +19,7 @@ namespace Entities.Keycards
         }
 
         // A key's ordinal is the trailing number of its id.
+        // An id with no trailing digits scores 0, so it takes the palette's first hue.
         private static int Ordinal(string keyId)
         {
             var start = keyId.Length;
