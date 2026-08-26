@@ -57,25 +57,36 @@ namespace Generation.Tiles
         }
 
         // Places several subtrees (each with its own hang point and branch direction) as one joint search,
-        // so one subtree can yield a cell that another one needs.
-        // Returns false with the state exactly as it found it.
+        // so one subtree can yield a cell that another one needs. Returns false with the state exactly as it found it.
         public static bool TryPlaceForest(List<(string parentId, string node, int dirY)> roots,
             Dictionary<string, List<string>> children, State state)
         {
+            // One shared seen set, so a room reached from two of these subtrees is placed once.
             var order = new List<(string node, string parent, int dirY)>();
             var extra = new List<(string a, string b)>();
             var seen = new HashSet<string>();
             foreach (var (parentId, node, dirY) in roots)
+            {
                 Collect(parentId, node, dirY, children, state, order, extra, seen);
+            }
+
             return Search(order, extra, state);
         }
 
         // Returns a copy of the child lookup with every list sorted largest subtree first.
-        // The most constrained branch claims space while there is still room, which prunes
-        // most of the backtracking. Deterministic: stable sort, ties keep graph order.
+        // The most constrained branch claims space while there is still room.
+        // Prunes most of the backtracking. Deterministic: stable sort, ties keep graph order.
         public static Dictionary<string, List<string>> BySubtreeSize(Dictionary<string, List<string>> children)
         {
             var sizes = new Dictionary<string, int>();
+
+            var sorted = new Dictionary<string, List<string>>(children.Count);
+            foreach (var (id, kids) in children)
+            {
+                sorted[id] = kids.OrderByDescending(SizeOf).ToList();
+            }
+
+            return sorted;
 
             int SizeOf(string id)
             {
@@ -85,14 +96,6 @@ namespace Generation.Tiles
                 if (children.TryGetValue(id, out var kids)) total += kids.Sum(SizeOf);
                 return sizes[id] = total;
             }
-
-            var sorted = new Dictionary<string, List<string>>(children.Count);
-            foreach (var (id, kids) in children)
-            {
-                sorted[id] = kids.OrderByDescending(SizeOf).ToList();
-            }
-
-            return sorted;
         }
 
         // Flattens the subtree into pre-order placement entries.
@@ -117,6 +120,7 @@ namespace Generation.Tiles
             }
         }
 
+        // The extra edges are read after the search, so they take the cells the backtracking finally settled on.
         private static bool Search(List<(string node, string parent, int dirY)> order, List<(string a, string b)> extra,
             State state)
         {
@@ -145,10 +149,11 @@ namespace Generation.Tiles
                 if (state.Used.Contains(pos)) continue;
                 state.Add(node, pos, parentId);
                 if (PlaceFrom(i + 1, order, state)) return true;
+                // The connection Add appended is the last one, as the deeper calls have undone their own.
                 state.Connections.RemoveAt(state.Connections.Count - 1);
                 state.Used.Remove(pos);
                 state.Cell.Remove(node);
-                if (state.Steps <= 0) return false;
+                if (state.Steps <= 0) return false; // out of budget: stop rather than try the remaining candidates
             }
 
             return false;
