@@ -174,6 +174,14 @@ Assets/
 - <https://kenney.nl/assets/interface-sounds>
 - Licence: Creative Commons CC0 1.0, <https://creativecommons.org/publicdomain/zero/1.0/>
 
+**RPG Audio, by Kenney**
+- <https://kenney.nl/assets/rpg-audio>
+- Licence: Creative Commons CC0 1.0, <https://creativecommons.org/publicdomain/zero/1.0/>
+
+**Pixel UI Sound Effects, by Atelier Magicae**
+- <https://ateliermagicae.itch.io/pixel-ui-sound-effects>
+- Licence: Creative Commons Attribution-ShareAlike 4.0, <https://creativecommons.org/licenses/by-sa/4.0/deed.en>
+
 ### Project Configuration
 
 **Git Ignore for Unity**
