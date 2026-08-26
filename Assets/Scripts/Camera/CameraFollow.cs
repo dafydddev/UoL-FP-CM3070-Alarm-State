@@ -10,7 +10,7 @@ namespace Camera
         // How far back the camera sits from the target.
         [SerializeField] private float zOffset = 10f;
 
-        // Must match the Pixel Perfect Camera's Assets PPU.
+        // Must match the scene's Pixel Perfect Camera's PPU.
         [SerializeField] private int pixelsPerUnit = 8;
 
         private void LateUpdate()
@@ -25,7 +25,7 @@ namespace Camera
             SnapToTarget();
         }
 
-        // Jump straight to the target — used on (re)spawn.
+        // Jump straight to the target (e.g. to the player after a level transition).
         private void SnapToTarget()
         {
             if (!_target) return;
