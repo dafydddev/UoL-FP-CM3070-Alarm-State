@@ -6,8 +6,7 @@ using UnityEngine.Tilemaps;
 
 namespace Generation.Facility
 {
-    // Tints each room's floor tiles a flat colour based on its role, so the
-    // generated layout is readable at a glance during testing/debugging.
+    // Tints each room's floor tiles a flat colour based on its role.
     public class FacilityColourCoder : MonoBehaviour
     {
         // Colours every room in the graph that has both a known rectangle and a known role.
