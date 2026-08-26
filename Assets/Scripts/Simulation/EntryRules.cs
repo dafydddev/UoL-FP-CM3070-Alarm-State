@@ -28,6 +28,7 @@ namespace Simulation
         }
 
         // The terrain must exist and not block, and no occupant may block either.
+        // Actors are not consulted, so this passes on a cell another actor stands in; IsClear covers that.
         public bool CanEnter(Vector2Int cell, Actor mover)
         {
             var tile = _grid.At(cell);
@@ -44,7 +45,8 @@ namespace Simulation
             var occupant = _occupancy.At(cell);
             if (occupant && occupant.TryGetComponent(out IEnterHandler handler)) handler.OnEntered(mover);
         }
-        
+
+        // Only the occupant is told; terrain has no exit reaction to run.
         public void HandleExited(Vector2Int cell, Actor mover)
         {
             var occupant = _occupancy.At(cell);

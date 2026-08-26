@@ -16,10 +16,10 @@ namespace Simulation
         public EntryRules Entry { get; }
         public Navigator Navigator { get; }
 
-        // Mission state for this level (e.g. whether the primary objective has been completed).
+        // Mission state for this level, such as whether the primary objective has been completed.
         public MissionProgress Mission { get; }
 
-        // Alarm state for this level: whether it is sounding and the escape line it is broadcasting.
+        // Alarm state for this level, such as whether the alarm is sounding.
         public AlarmState Alarm { get; }
 
         // The player of this level, bound by the player spawner right after they spawn.

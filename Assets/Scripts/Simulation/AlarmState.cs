@@ -75,7 +75,7 @@ namespace Simulation
                 _ranked.Add((alarmSwitch, Mathf.Abs(offset.x) + Mathf.Abs(offset.y)));
             }
 
-            // Find the best round to the nearest alarm switch.
+            // Cheapest bound first, so the break below drops the rest once no bound can beat the best route found.
             _ranked.Sort((a, b) => a.lowerBound.CompareTo(b.lowerBound));
 
             IAlarmSwitch best = null;
@@ -95,6 +95,7 @@ namespace Simulation
         }
 
         // Raised by a switch once a guard reaches it, with the contact it captured.
+        // A switch tripped while the alarm sounds is dropped, contact and all. A live sighting goes through UpdateContact.
         public void Raise(Vector2Int contactCell, Vector2Int contactHeading)
         {
             if (Active) return;
@@ -106,7 +107,7 @@ namespace Simulation
             ActiveChanged?.Invoke(true);
         }
 
-        // Refreshes the broadcast to a live position while the alarm sounds, and marks it relayed.
+        // Refreshes the broadcast to a live position while the alarm sounds and marks it relayed.
         public void UpdateContact(Vector2Int contactCell, Vector2Int contactHeading)
         {
             if (!Active) return;

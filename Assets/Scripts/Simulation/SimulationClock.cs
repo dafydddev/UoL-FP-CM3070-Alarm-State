@@ -11,7 +11,7 @@ namespace Simulation
         // After a frame hitch, catch up at most this many ticks — beyond it the sim slows
         // rather than bursting a pile of ticks (and leaps) into one frame.
         [SerializeField, Min(1)] private int maxCatchUpTicks = 3;
-        
+
         private Scheduler _scheduler;
         private float _accumulator;
 

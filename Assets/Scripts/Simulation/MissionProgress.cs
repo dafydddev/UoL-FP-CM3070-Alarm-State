@@ -11,6 +11,7 @@ namespace Simulation
         public bool PrimaryComplete { get; private set; }
 
         // Raised the moment the primary objective is completed.
+        // Once only, as a repeat call returns before reaching it.
         public event Action PrimaryCompleted;
 
         public void CompletePrimary()
