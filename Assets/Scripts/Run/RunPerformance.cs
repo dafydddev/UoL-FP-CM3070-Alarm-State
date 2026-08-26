@@ -57,12 +57,12 @@ namespace Run
         }
 
         // True when enough levels have been recorded and the cooldown since the last room has passed.
-
+        // The level just injected at passes too, so a regenerated level keeps the room it already had.
         public bool CanInject(int level) => _recent.Count >= Window &&
                                             (LastInjectedLevel < 0 || level == LastInjectedLevel ||
                                              level - LastInjectedLevel > Cooldown);
 
-        // Scores one level: how much of the health bar was left, minus what the alarms cost.
+        // Scores one level: what the health bar had left after the first heart, minus what the alarms cost.
         private static float Score(LevelOutcome outcome)
         {
             var maxHearts = Mathf.Max(1, outcome.MaxHearts);

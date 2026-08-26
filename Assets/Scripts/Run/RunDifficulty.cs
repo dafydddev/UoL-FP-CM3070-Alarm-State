@@ -9,8 +9,7 @@ namespace Run
     {
         public string label;
 
-        [Header("Rewards")]
-        public int primaryObjectiveReward = 100;
+        [Header("Rewards")] public int primaryObjectiveReward = 100;
 
         public int secondaryObjectiveReward = 50;
 
@@ -43,6 +42,8 @@ namespace Run
             return best.reward;
         }
 
+        // A band that widens or narrows across the run: floor is the value on the first level,
+        // ceiling the value on the last, and the curve shapes the journey between them.
         [Serializable]
         public class Range
         {
@@ -71,10 +72,11 @@ namespace Run
         public int sequenceLength = 3;
 
         // How likely an adaptive room is when RunPerformance.Standing sits at -1 or +1.
-        [Header("Adaptive Rooms")]
-        [Range(0f, 1f)] public float adaptiveRoomChance = 0.5f;
+        [Header("Adaptive Rooms")] [Range(0f, 1f)]
+        public float adaptiveRoomChance = 0.5f;
 
         // How far into the run a level sits, 0 on the first and 1 on the last.
+        // Levels are numbered from 1, and a single-level run counts as the last.
         public static float Progress(int level, int totalLevels) =>
             totalLevels <= 1 ? 1f : Mathf.Clamp01((level - 1) / (float)(totalLevels - 1));
 
@@ -84,6 +86,7 @@ namespace Run
         private static float CurrentMax(Range range, float progress) =>
             range.maxFloor + (range.maxCeiling - range.maxFloor) * range.maxShape.Evaluate(progress);
 
+        // The max is held at or above the min, so a band authored crossed over collapses rather than inverting.
         public int SecondaryObjectiveCount(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);

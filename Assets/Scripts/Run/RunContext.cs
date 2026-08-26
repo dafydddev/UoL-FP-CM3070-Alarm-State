@@ -5,7 +5,7 @@ namespace Run
     public sealed class RunContext
     {
         // Set by the menu before loading the gameplay scene.
-        // Null when the scene was entered directly, LevelOrchestrator builds a default from its inspector values.
+        // Null when the scene was entered directly, RunController builds a default from its inspector values.
         public static RunContext Pending;
 
         public RunDifficulty DifficultyProfile { get; }
@@ -42,6 +42,7 @@ namespace Run
             LayoutStyle = layoutStyle;
         }
 
+        // False on the final level, where there is nothing to advance to. The counter stays put.
         public bool Advance()
         {
             if (IsComplete) return false;
