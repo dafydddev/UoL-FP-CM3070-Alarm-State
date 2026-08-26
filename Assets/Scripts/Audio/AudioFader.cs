@@ -23,7 +23,7 @@ namespace Audio
         }
 
         private void Fade(float target)
-        { 
+        {
             StartCoroutine(FadeTo(target));
         }
 
@@ -41,6 +41,5 @@ namespace Audio
 
             _source.volume = target;
         }
-        
     }
 }

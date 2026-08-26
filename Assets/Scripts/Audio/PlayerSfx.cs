@@ -26,6 +26,7 @@ namespace Audio
         }
 
         // The spawn cell only reads true once the spawner has handed the actor its world.
+        // Seeded here so the first Update does not hear the spawn as a step.
         private void Start()
         {
             if (_actor) _cell = _actor.Cell;

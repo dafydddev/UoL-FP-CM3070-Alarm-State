@@ -14,7 +14,7 @@ namespace Audio
         // Jittered per play, for the same reason as the variations.
         [SerializeField] private Vector2 pitchRange = new(0.95f, 1.05f);
 
-        // The minimum seconds between plays, however many callers ask at once.
+        // The minimum seconds between plays, no matter how many times SFXs are requested.
         [SerializeField, Min(0f)] private float minInterval;
 
         private float _nextPlay; // when this sound may next sound
@@ -29,6 +29,7 @@ namespace Audio
             _nextPlay = Time.time + minInterval;
             var clip = clips[Random.Range(0, clips.Length)];
             if (!clip) return;
+            // PlayOneShot carries no pitch of its own, so it rides on the source.
             source.pitch = Random.Range(pitchRange.x, pitchRange.y);
             source.PlayOneShot(clip, volume);
         }
