@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Generation;
 using Generation.Lasers;
@@ -23,14 +24,14 @@ namespace Spawners
             var rng = new System.Random(Seeds.For(graph.seed, Seeds.Lasers, graph.level));
             var period = Mathf.Max(4, cyclePeriod - cyclePeriod % 2); // an odd period has no equal halves
 
-            foreach (var room in graph.rooms)
+            foreach (var room in graph.rooms.Where(room => room.type == RoomType.PressureRoom))
             {
-                if (room.type != RoomType.PressureRoom) continue;
                 if (!rects.TryGetValue(room.id, out var rect)) continue;
                 var pos = world.Tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(laserGridPrefab, pos, Quaternion.identity, transform);
                 go.name = $"Lasers_{room.id}";
                 var grid = go.GetComponent<LaserGrid>();
+                // The layout is phased against the period, so the grid has to be given the same one.
                 grid.Init(world, rect, LaserGridLayout.For(rect, lasersPerRoom, period, rng), period);
             }
         }

@@ -22,6 +22,7 @@ namespace Spawners
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
             // Gather the distinct key rooms referenced by locked edges.
+            // Distinct, as several locked edges may share the one key room.
             var keyRoomIds = graph.edges
                 .Where(e => e.locked && e.keyRoomId != null)
                 .Select(e => e.keyRoomId)
@@ -32,18 +33,12 @@ namespace Spawners
 
             foreach (var keyId in keyRoomIds)
             {
-                // Skip if we have no rectangle for the key room.
                 if (!rects.TryGetValue(keyId, out var rect)) continue;
-
-                // Spawn the keycard in the room centre.
                 var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(keycardPrefab, worldPos, Quaternion.identity, transform);
-
-                // Ensure it has a Keycard component carrying the key id.
                 var card = go.GetComponent<Keycard>();
                 card.keyId = keyId;
                 card.Init(world);
-
                 // Tint the sprite to match the key/door colour.
                 var spriteRend = go.GetComponent<SpriteRenderer>();
                 if (spriteRend) spriteRend.color = KeyColour.For(keyId, graph.seed);

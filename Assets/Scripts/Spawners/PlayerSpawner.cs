@@ -24,6 +24,7 @@ namespace Spawners
 
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {
+            // The entrance room is required, so a graph without one is a generation fault rather than something to skip.
             var entrance = rects["room_entrance"];
             var playerSpawn = world.Tilemap.GetCellCenterWorld(new Vector3Int(entrance.CenterX, entrance.CenterY, 0));
             _player = Instantiate(playerPrefab, playerSpawn, Quaternion.identity, transform);
@@ -39,6 +40,7 @@ namespace Spawners
         }
 
         // Fills the spawned player from the pending loadout: shop purchases or carried from previous level.
+        // Cleared as it is read, so that the items are not carried over into the next run.
         private void ApplyLoadout(WorldContext world)
         {
             var loadout = RunLoadout.Pending;

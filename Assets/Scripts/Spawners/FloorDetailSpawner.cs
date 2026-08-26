@@ -16,7 +16,7 @@ namespace Spawners
         // Cells between details.
         [SerializeField, Min(2f)] private float spacing = 8f;
 
-        // How far a detail is darkened below its room's colour. Nearer 1 disappears into the floor.
+        // The fraction of its room's colour a detail keeps. Nearer 1 disappears into the floor.
         [SerializeField, Range(0f, 1f)] private float shade = 0.4f;
 
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
@@ -55,7 +55,8 @@ namespace Spawners
                 // Details take their room's colour like every other prop
                 if (!tinted) continue;
                 var sprite = go.GetComponentInChildren<SpriteRenderer>();
-                if (sprite) sprite.color = new Color(colour.r * shade, colour.g * shade, colour.b * shade, sprite.color.a);
+                if (sprite)
+                    sprite.color = new Color(colour.r * shade, colour.g * shade, colour.b * shade, sprite.color.a);
             }
         }
 
@@ -81,7 +82,7 @@ namespace Spawners
                 var r = rooms[i].rect;
                 if (cell.x > r.X && cell.x < r.Right - 1 && cell.y > r.Y && cell.y < r.Bottom - 1) return i;
             }
-            
+
             return -1;
         }
     }

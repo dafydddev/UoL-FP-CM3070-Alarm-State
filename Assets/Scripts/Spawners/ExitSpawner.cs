@@ -8,8 +8,7 @@ using UnityEngine;
 
 namespace Spawners
 {
-    // Spawns an exit at the centre of every room flagged as an Exit room and wires it
-    // into the world so it can detect the player and drive level progression.
+    // Spawns an exit at the centre of every room flagged as an Exit room and wires it into the world
     public class ExitSpawner : EntitySpawner
     {
         [SerializeField] private GameObject exitPrefab;
@@ -24,8 +23,6 @@ namespace Spawners
                 // Convert the room's centre cell to world space and spawn the exit there.
                 var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(exitPrefab, worldPos, Quaternion.identity, transform);
-
-                // Ensure it has an Exit component and hand it the world.
                 var exit = go.GetComponent<Exit>();
                 exit.Init(world);
                 go.name = $"Exit_{room.id}";

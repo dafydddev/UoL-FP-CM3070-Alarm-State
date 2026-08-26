@@ -34,7 +34,7 @@ namespace Spawners
             // Fisher yates shuffle so the chosen rooms vary.
             Shuffle.InPlace(candidates, rng);
 
-            // How many rooms get a cover object: scales with the level, floored at count, capped by the candidates.
+            // How many rooms get a cover object: the fraction of the candidates, floored at count, capped by the candidates.
             var n = Mathf.Min(Mathf.Max(count, Mathf.CeilToInt(candidates.Count * roomFraction)), candidates.Count);
             for (var i = 0; i < n; i++)
             {

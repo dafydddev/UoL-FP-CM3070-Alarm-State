@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Entities.Items;
 using Generation.Tiles;
 using Graphs.Rooms;
@@ -19,9 +20,8 @@ namespace Spawners
             if (!healthPrefab) return;
 
             var placed = 0;
-            foreach (var room in graph.rooms)
+            foreach (var room in graph.rooms.Where(room => room.type == RoomType.SupplyRoom))
             {
-                if (room.type != RoomType.SupplyRoom) continue;
                 if (!rects.TryGetValue(room.id, out var rect)) continue;
 
                 var cells = FreeCells(world, rect);
@@ -44,11 +44,13 @@ namespace Spawners
         {
             var cells = new List<Vector2Int>();
             for (var x = rect.X + 1; x < rect.Right - 1; x++)
-            for (var y = rect.Y + 1; y < rect.Bottom - 1; y++)
             {
-                var cell = new Vector2Int(x, y);
-                var tile = world.Grid.At(cell);
-                if (tile && !tile.BlocksEntry(null) && !world.Occupancy.At(cell)) cells.Add(cell);
+                for (var y = rect.Y + 1; y < rect.Bottom - 1; y++)
+                {
+                    var cell = new Vector2Int(x, y);
+                    var tile = world.Grid.At(cell);
+                    if (tile && !tile.BlocksEntry(null) && !world.Occupancy.At(cell)) cells.Add(cell);
+                }
             }
 
             var centre = new Vector2Int(rect.CenterX, rect.CenterY);

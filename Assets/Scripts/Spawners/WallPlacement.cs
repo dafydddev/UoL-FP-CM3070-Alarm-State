@@ -11,8 +11,8 @@ namespace Spawners
         private const int WallCount = 4;
         private const int MaxAttempts = 16;
 
-        // A random free cell along one of the room's four interior walls, standing the given clearance
-        // clear of every doorway. Cases: 0 bottom wall, 1 top wall, 2 left wall, 3 right wall.
+        // A random free cell along one of the room's four interior walls, standing the given clearance from doorways.
+        // Cases: 0 the -y wall, 1 the +y wall, 2 left wall, 3 right wall.
         // Falls back to the interior corner, which clears every doorway a room can have by four cells.
         public static Vector2Int Pick(WorldContext world, RoomRect r, System.Random rng, int doorClearance)
         {

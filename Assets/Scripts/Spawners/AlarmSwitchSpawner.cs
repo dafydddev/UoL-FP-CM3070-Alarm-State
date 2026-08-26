@@ -9,13 +9,13 @@ using UnityEngine;
 
 namespace Spawners
 {
-    // Places one alarm switch in each guard post, drawn at random along an interior wall and kept clear of the doorways,
+    // Places one alarm switch in each guard post, drawn at random along an interior wall and kept clear of the doorways.
     // Guard posts sit in front of objective and keycard rooms, so switches cluster where intrusions happen.
     public class AlarmSwitchSpawner : EntitySpawner
     {
         [SerializeField] private GameObject alarmSwitchPrefab;
 
-        private const int DoorClearance = 3; // cells a switch must keep from any doorway by this many cells.
+        private const int DoorClearance = 3; // cells a switch must keep away from any doorway
 
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, WorldContext world)
         {

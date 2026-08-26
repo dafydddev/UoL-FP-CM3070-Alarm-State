@@ -27,7 +27,8 @@ namespace Spawners
                 var worldPos = world.Tilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
                 var go = Instantiate(lockedDoorPrefab, worldPos, Quaternion.identity, transform);
 
-                // Ensure the door has a LockedDoor component and stamp it with the required key.
+                // Hand the door component the required key and the world.
+                // The key id is the room the card is found in, so it matches the keycard the spawner tints.
                 var door = go.GetComponent<LockedDoor>();
                 door.keyId = edge.keyRoomId;
                 door.Init(world, graph.seed);
