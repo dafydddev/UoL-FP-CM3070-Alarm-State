@@ -7,11 +7,13 @@ using UnityEngine;
 
 namespace Entities
 {
+    // A door on a locked edge. The player needs its key to pass. Passing through opens it for good.
     public class LockedDoor : MonoBehaviour, IEntryBlocker, IEnterHandler
     {
         // Fires once per door, whether a key or a pick opened it.
         public static event Action Opened;
 
+        // The room the matching keycard is found in, stamped by the spawner.
         public string keyId;
         [SerializeField] private Sprite openSprite;
 
@@ -41,7 +43,7 @@ namespace Entities
             return !(mover && mover.TryGetComponent(out PlayerKeyring keyring) && keyring.HasKey(keyId));
         }
 
-        // Only the player opens the door for good,a guard passing through leaves it locked.
+        // Only the player opens the door for good, a guard passing through leaves it locked.
         public void OnEntered(Actor mover)
         {
             if (mover is not PlayerActor) return;
