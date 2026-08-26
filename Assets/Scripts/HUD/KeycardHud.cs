@@ -35,6 +35,7 @@ namespace HUD
         }
 
         // A fresh level replaces the whole row, one faded slot per key it placed.
+        // The seed is the graph's, so the hues match the cards the spawner tinted with it.
         private void Rebuild(IReadOnlyList<string> keyIds, int seed)
         {
             foreach (var slot in _slots.Values)

@@ -45,7 +45,7 @@ namespace HUD
             }
         }
 
-        // Strikes the completed objective's row through and brings it up to full strength.
+        // Strikes the completed objective's row through.
         private void Complete(Objective objective)
         {
             if (!_rows.TryGetValue(objective, out var row)) return;

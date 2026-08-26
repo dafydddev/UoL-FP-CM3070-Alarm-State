@@ -31,6 +31,7 @@ namespace HUD.MiniMap
 
         private void Update()
         {
+            // Retried each frame, as the minimap camera is built with the level and may not exist yet.
             if (!_minimapCamera && !TryResolveCamera()) return;
 
             // Advance the pulse only while play is running, so it holds still on the pause screen.

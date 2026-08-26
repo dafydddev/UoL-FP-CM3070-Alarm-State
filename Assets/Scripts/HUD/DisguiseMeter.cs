@@ -46,6 +46,7 @@ namespace HUD
             if (!GameLock.Locked) _drawn = Mathf.MoveTowards(_drawn, _disguise.Remaining, fillSpeed * Time.deltaTime);
 
             // Whole pixels of fill, so the draining edge steps cleanly instead of shimmering.
+            // The fill is drawn from its own left edge, so its sprite must be authored with a left pivot.
             var width = Mathf.Round(track.size.x * _drawn * pixelsPerUnit) / pixelsPerUnit;
             fill.size = new Vector2(width, fill.size.y);
             fill.color = Color.Lerp(emptyColour, fullColour, _drawn);

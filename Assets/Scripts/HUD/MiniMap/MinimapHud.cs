@@ -12,6 +12,7 @@ namespace HUD.MiniMap
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private float padding = 2f; // world-unit margin around the facility
 
+        // Called once the level's tiles are laid, as the bounds are read from the tilemap itself.
         public void Fit()
         {
             if (!minimapCamera || !tilemap) return;
@@ -21,6 +22,7 @@ namespace HUD.MiniMap
             var centre = tilemap.transform.TransformPoint(bounds.center);
 
             minimapCamera.transform.position = new Vector3(centre.x, centre.y, minimapCamera.transform.position.z);
+            // The wider of the two fits, so neither axis is cropped whatever the facility's shape.
             minimapCamera.orthographicSize = Mathf.Max(
                 bounds.extents.y + padding,
                 (bounds.extents.x + padding) / minimapCamera.aspect);
