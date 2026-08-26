@@ -1,13 +1,11 @@
 ﻿using Generation.Cells;
 using Player;
 using Simulation;
-using Tutorials;
 using UnityEngine;
 
 namespace Entities
 {
-    // A hiding spot. While the player stands on this cell, they count as hidden
-    // (via PlayerHiding's counter), letting them break the line of sight from guards.
+    // A hiding spot. While the player stands on this cell, they count as hidden, letting them break the line of sight from guards.
     public class CoverItem : MonoBehaviour, IEnterHandler, IExitHandler
     {
         private Vector2Int _cell;

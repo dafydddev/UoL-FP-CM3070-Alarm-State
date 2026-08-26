@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Effects;
 using Generation.Lasers;
 using Generation.Tiles;
@@ -39,6 +40,7 @@ namespace Entities
         }
 
         // Called by the spawner after Instantiate, with the layout it drew for this room.
+        // The period must be the one the layout was phased against.
         public void Init(WorldContext world, RoomRect rect, IReadOnlyList<LaserSpec> lasers, int cyclePeriod)
         {
             _rect = rect;
@@ -50,13 +52,16 @@ namespace Entities
             _surface = new CellSurface(transform, "Lasers", sortingOrder);
             _half = (Vector2)world.Tilemap.cellSize * 0.5f;
 
+            // Beam cells are walked once here, so a door opening later does not lengthen the beam.
             foreach (var spec in lasers)
+            {
                 _beams.Add(new Beam
                 {
                     Spec = spec,
                     Cells = LaserGridLayout.BeamCells(spec, rect, Blocked),
                     Live = LaserGridLayout.IsLive(spec, _tick, _cyclePeriod),
                 });
+            }
 
             Repaint();
         }
@@ -100,11 +105,9 @@ namespace Entities
         private void Repaint()
         {
             _litCentres.Clear();
-            foreach (var beam in _beams)
+            foreach (var cell in _beams.Where(beam => beam.Live).SelectMany(beam => beam.Cells))
             {
-                if (!beam.Live) continue;
-                foreach (var cell in beam.Cells)
-                    _litCentres.Add(World.Tilemap.GetCellCenterWorld((Vector3Int)cell));
+                _litCentres.Add(World.Tilemap.GetCellCenterWorld((Vector3Int)cell));
             }
 
             _surface.Rebuild(_litCentres, _half, beamColour);
@@ -112,10 +115,7 @@ namespace Entities
 
         private bool IsLive(Vector2Int cell)
         {
-            foreach (var beam in _beams)
-                if (beam.Live && beam.Cells.Contains(cell))
-                    return true;
-            return false;
+            return _beams.Any(beam => beam.Live && beam.Cells.Contains(cell));
         }
 
         private bool Blocked(Vector2Int cell)

@@ -15,6 +15,8 @@ namespace Entities
 
         private WorldContext _world;
         private SpriteRenderer _renderer;
+
+        // The authored colour, kept so the switch can be put back to it. Read in Init, not Awake.
         private Color _idleColour = Color.white;
 
         // Called by the spawner after Instantiate.
