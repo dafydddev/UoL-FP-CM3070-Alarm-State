@@ -6,7 +6,7 @@ using Random = System.Random;
 
 namespace Generation.Lasers
 {
-    // One laser: the wall cell it is mounted on, the cardinal it fires along, and where in the cycle it lights.
+    // One laser: the wall cell it is mounted on, the direction it fires, and where in the cycle it lights.
     public readonly struct LaserSpec
     {
         public LaserSpec(Vector2Int emitter, Vector2Int direction, int phase)
@@ -53,6 +53,7 @@ namespace Generation.Lasers
         }
 
         // Evenly spaced pairs either side of the centre line, which is left clear.
+        // Stops early once a pair would fall outside the bounds, so a cramped room yields fewer lines than asked.
         private static IEnumerable<int> Lines(int centre, int lo, int hi, int count)
         {
             var perSide = count / 2;
