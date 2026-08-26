@@ -26,6 +26,9 @@ namespace Guards
         public int HearingRangeCells => hearingRangeCells;
         public int ViewRangeCells => viewRangeCells;
 
+        // Where this guard watched the player hide; null once it sees them out of it.
+        private Vector2Int? _hidInView;
+
         public void Sense(WorldContext world, GridMotor motor, GuardMemory memory)
         {
             var player = world.Player;
@@ -71,7 +74,11 @@ namespace Guards
             // A worn disguise does the same, and just as much stops working once a guard is watching.
             var disguised = player.TryGetComponent(out PlayerDisguise disguise) && disguise.IsDisguised;
 
-            return !(hidden || disguised) || memory.SeesPlayer;
+            // Taking it in plain view blows it for good: breaking the gaze on the way over
+            // doesn't win the trick back, only stepping off that cell unwatched does.
+            if (memory.SeesPlayer) _hidInView = hidden || disguised ? playerCell : null;
+
+            return !(hidden || disguised) || memory.SeesPlayer || playerCell == _hidInView;
         }
 
         // The guard's field of view.
