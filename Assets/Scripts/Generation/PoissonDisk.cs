@@ -5,12 +5,12 @@ using Random = System.Random;
 namespace Generation
 {
     // Bridson's Poisson disk sampling over the facility tiles.
-    // Yields cells no two of which are closer than the radius: no clumps, no bare patches.
+    // Yields cells no two of which are closer than the radius, avoiding clumps and bare patches.
     public static class PoissonDisk
     {
         private const int Candidates = 30; // tries per active sample before it is retired
 
-        // Blue-noise cells in the inclusive box [x, xMax] x [y, yMax], at least radius apart.
+        // Cells in the inclusive box [x, xMax] x [y, yMax], at least radius apart.
         public static List<Vector2Int> Sample(int x, int y, int xMax, int yMax, float radius, Random rng)
         {
             var w = xMax - x + 1;

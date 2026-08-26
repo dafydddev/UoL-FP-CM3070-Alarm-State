@@ -2,9 +2,8 @@ using System.Collections.Generic;
 
 namespace Generation
 {
-    // Fisher-Yates over a caller-supplied seeded RNG, shared by the generators that need a
-    // varied but reproducible order. Draws rng.Next(i + 1) with i descending, so a given
-    // seed yields the order it always has.
+    // Fisher-Yates over a caller-supplied seeded RNG, shared by the generators that need a varied but reproducible order.
+    // Draws rng.Next(i + 1) with i descending, so a given seed yields the order it always has.
     public static class Shuffle
     {
         // Shuffles in place; arrays and lists both satisfy IList<T>.
