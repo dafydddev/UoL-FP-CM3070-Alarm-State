@@ -64,9 +64,6 @@ namespace Menu
             else _continued = true;
         }
 
-        // A lost run has no breakdown worth reading, and its total drains from full rather than climbing.
-        // Only a run seen through to the last level is paid the completion bonus, cashes its leftovers in,
-        // or moves the balance.
         private static ResultsView ViewFor(ResultsScreen screen, RunContext run) => screen switch
         {
             ResultsScreen.LevelComplete => new ResultsView
@@ -79,6 +76,7 @@ namespace Menu
                 ShowBreakdown = true, ShowRunBonus = true, ShowUnusedItems = true, ShowBalance = true,
                 InitialTotal = 0
             },
+            // The forfeit drains rather than climbs, so it opens on the full purse.
             ResultsScreen.RunFailed => new ResultsView
             {
                 ShowBreakdown = false, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
@@ -125,6 +123,7 @@ namespace Menu
         }
 
         // A completed run: the tally counts up, then the balance climbs by it.
+        // One skip covers both, since the press clears the flag they share.
         public IEnumerator RunBanked(RunContext run)
         {
             yield return Count(totalLabel, 0, run.PendingCurrency);

@@ -51,6 +51,7 @@ namespace Menu
             var events = EventSystem.current;
             var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
             SetApplyInteractable();
+            // Dimming the button under the focus drops it, so the focus is put back.
             if (!hadFocus || events.currentSelectedGameObject) return;
             events.SetSelectedGameObject(applyButton.gameObject);
         }

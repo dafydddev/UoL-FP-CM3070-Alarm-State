@@ -57,6 +57,7 @@ namespace Menu
             Pause();
         }
 
+        // The pause button hides itself, so the panel's resume button is the only way back.
         private void Pause()
         {
             _isPaused = true;

@@ -83,7 +83,11 @@ namespace Menu
                 offer.upgradeButton.onClick.RemoveAllListeners();
             }
 
-            foreach (var offer in skinOffers) offer.button.onClick.RemoveAllListeners();
+            foreach (var offer in skinOffers)
+            {
+                offer.button.onClick.RemoveAllListeners();
+            }
+
             checkoutButton.onClick.RemoveAllListeners();
             resetCartButton.onClick.RemoveAllListeners();
             balanceLabel.color = _balanceTextColor;
@@ -187,7 +191,7 @@ namespace Menu
 
         private void Checkout()
         {
-            var paid = _cart.Total > 0;
+            var paid = _cart.Total > 0; // read first: committing empties the cart
             _cart.Commit();
             if (paid && uiSfxController) uiSfxController.PlayPurchase();
             ShowBalance();
@@ -225,7 +229,8 @@ namespace Menu
 
         private void ShowItem(ItemOffer itemOffer)
         {
-            itemLabel.text = $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.type)})";
+            itemLabel.text =
+                $"{itemOffer.definition.displayName}: {itemOffer.definition.price} points (Owned {OwnedCount(itemOffer.definition.type)})";
             var pending = _cart.CountOf(itemOffer.definition.type);
             if (pending > 0) itemLabel.text += $" (Pending {pending})";
             if (itemOffer.definition.price > Remaining) itemLabel.text += " Insufficient funds";
@@ -278,7 +283,8 @@ namespace Menu
         {
             if (_balanceErrorTimer <= 0f) return;
             _balanceErrorTimer = Mathf.Max(0f, _balanceErrorTimer - Time.unscaledDeltaTime);
-            balanceLabel.color = Color.Lerp(_balanceTextColor, balanceErrorColor,_balanceErrorTimer / balanceErrorDuration);
+            balanceLabel.color = Color.Lerp(_balanceTextColor, balanceErrorColor,
+                _balanceErrorTimer / balanceErrorDuration);
         }
     }
 }

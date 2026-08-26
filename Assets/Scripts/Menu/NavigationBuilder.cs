@@ -29,7 +29,7 @@ namespace Menu
                 var current = items[i];
                 if (!current) continue;
 
-                // Resolve the neighbours
+                // Resolve the neighbours, wrapping at both ends so the navigation loops.
                 var previous = i > 0 ? items[i - 1] : items[^1];
                 var next = i < items.Count - 1 ? items[i + 1] : items[0];
 

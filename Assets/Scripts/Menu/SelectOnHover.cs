@@ -11,6 +11,8 @@ namespace Menu
     {
         private Selectable _selectable;
         private void Awake() => _selectable = GetComponent<Selectable>();
+
+        // Selecting from the pointer is what SelectableSfx's PointerEventData test is there to keep quiet.
         public void OnPointerEnter(PointerEventData eventData) => _selectable.Select();
     }
 }

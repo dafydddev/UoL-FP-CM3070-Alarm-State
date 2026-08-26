@@ -54,6 +54,7 @@ namespace Menu
                 var captured = entry;
                 entry.button.onClick.AddListener(() => StartRebind(captured));
             }
+
             resetButton?.onClick.AddListener(ResetBindings);
             if (autoDetectToggle) autoDetectToggle.onValueChanged.AddListener(OnAutoDetectChanged);
             if (deviceDropdown) deviceDropdown.onValueChanged.AddListener(OnDeviceDropdownChanged);
@@ -66,6 +67,7 @@ namespace Menu
             {
                 entry.button.onClick.RemoveListener(() => StartRebind(entry));
             }
+
             resetButton?.onClick.RemoveListener(ResetBindings);
             if (autoDetectToggle) autoDetectToggle.onValueChanged.RemoveListener(OnAutoDetectChanged);
             if (deviceDropdown) deviceDropdown.onValueChanged.RemoveListener(OnDeviceDropdownChanged);
@@ -158,14 +160,15 @@ namespace Menu
             if (_activeIndex < 0) return;
             // Disable navigation while rebinding.
             uiNavigateReference?.action.Disable();
-            // Disable all other bindings.
             _activeEntry = entry;
             _oldPath = entry.action.action.bindings[_activeIndex].effectivePath;
             entry.label.text = "...";
+            // Disable every bindable action, the one being rebound included, so the press only feeds the rebind.
             foreach (var r in entries)
             {
                 r.action.action.Disable();
             }
+
             _rebind = entry.action.action.PerformInteractiveRebinding(_activeIndex)
                 .WithControlsHavingToMatchPath(DevicePath)
                 .WithControlsExcluding("<Mouse>/*")
@@ -179,6 +182,7 @@ namespace Menu
             var action = _activeEntry.action.action;
             var newPath = action.bindings[_activeIndex].effectivePath;
 
+            // A control another entry already holds is refused outright rather than swapped with it.
             if (IsUsedByAnotherEntry(newPath)) action.ApplyBindingOverride(_activeIndex, _oldPath);
 
             BindingSettings.Overrides = Asset.SaveBindingOverridesAsJson();
@@ -197,6 +201,7 @@ namespace Menu
             {
                 entry.action.action.Enable();
             }
+
             RefreshLabels();
             // Re-enable navigation.
             uiNavigateReference?.action.Enable();
@@ -229,6 +234,7 @@ namespace Menu
                 var index = BindingIndex(entry.action.action);
                 if (index >= 0 && entry.action.action.bindings[index].effectivePath == path) return true;
             }
+
             return false;
         }
 
@@ -254,6 +260,7 @@ namespace Menu
 
         private string DevicePath => _useGamepad ? "<Gamepad>" : "<Keyboard>";
 
+        // The action's first binding for the device in use, or -1 where it has none.
         private int BindingIndex(InputAction action)
         {
             var path = DevicePath;
