@@ -13,7 +13,7 @@ using UnityEngine.Tilemaps;
 namespace Generation.Facility
 {
     // Top-level level builder. Runs the full generation pipeline in order:
-    // mission -> room -> layout -> tiles -> paint -> spawn entites (player, items, etc.).
+    // mission -> room -> layout -> tiles -> paint -> spawn entities (player, items, etc.).
     [RequireComponent(typeof(MissionGenerator))]
     [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
@@ -27,7 +27,7 @@ namespace Generation.Facility
         [SerializeField] private SimulationClock clock;
 
         [Header("Run")]
-        [SerializeField] private RunDifficulty profile;
+        [SerializeField] private RunDifficulty profile; // preview only; a real run carries its own profile.
         
         [Header("UI")]
         [SerializeField] private MinimapHud minimap;
@@ -56,7 +56,6 @@ namespace Generation.Facility
         [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
 
         private MissionGenerator _missionGenerator;
-
         private MissionGenerator MissionGenerator => _missionGenerator ??= GetComponent<MissionGenerator>();
 
         // The exterior terrain generator lives on the same GameObject, like MissionGenerator.
@@ -75,8 +74,7 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview() =>
-            Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
+        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
@@ -102,13 +100,14 @@ namespace Generation.Facility
             var tiles = new TileDefinition[gridW, gridH];
 
             for (var x = 0; x < gridW; x++)
-            for (var y = 0; y < gridH; y++)
             {
-                var tile = tileset.For(roles[x, y]);
-                tiles[x, y] = tile;
+                for (var y = 0; y < gridH; y++)
+                {
+                    var tile = tileset.For(roles[x, y]);
+                    tiles[x, y] = tile;
 
-                if (tile)
-                    tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
+                    if (tile) tilemap.SetTile(new Vector3Int(x, y, 0), tile.TileBase);
+                }
             }
 
             // Wire up the fresh level context that everything spawned below receives.
@@ -120,7 +119,7 @@ namespace Generation.Facility
             // Generate and paint the exterior terrain behind the facility using PCG noise.
             ExteriorGenerator.Paint(roles, rooms.seed, rooms.level, run.TotalLevels);
 
-            // Populate the level: sim participants get the world, set dressing just the tilemap.
+            // Populate the level: sim participants get the world, set dressing just the tilemap. Order matters where noted.
             pressureRoomSpawner?.Spawn(rooms, rects, World);
             playerSpawner?.Spawn(rooms, rects, World);
             keycardSpawner?.Spawn(rooms, rects, World);
