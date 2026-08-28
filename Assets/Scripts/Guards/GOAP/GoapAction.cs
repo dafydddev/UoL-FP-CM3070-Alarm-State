@@ -8,16 +8,14 @@ namespace Guards.Goap
         Failed
     }
 
-    // One step a guard can take. Preconditions and Effects describe the action to the planner; OnEnter/Run execute it.
-    // An action only reports on its own progress interruption by more important goals is the agent's job,
-    // so actions never need to know about the goal hierarchy.
-    // Instances are per-agent and may keep execution state across ticks (timers, indices).
+    // One step a guard can take. Preconditions and Effects describe the action to the planner.
+    // An action only reports on its own progress, interruption by more important goals is the agent's job.
     public abstract class GoapAction
     {
         public WorldState Preconditions { get; protected set; } = WorldState.Empty;
         public WorldState Effects { get; protected set; } = WorldState.Empty;
 
-        // Planning cost; the planner prefers the cheapest total plan.
+        // Planning cost, the planner prefers the cheapest total plan.
         public virtual int Cost => 1;
 
         // Called once when the action becomes the plan's current step.

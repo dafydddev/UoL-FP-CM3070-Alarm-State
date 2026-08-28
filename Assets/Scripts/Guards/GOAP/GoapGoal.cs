@@ -1,7 +1,6 @@
 namespace Guards.Goap
 {
-    // A candidate goal:
-    // The world state it wants to bring about, how important it is, and the (partial) state under which it applies.
+    // A candidate goal: the world state it wants to bring about, how important it is, and the (partial) state under which it applies.
     // Both conditions are plain WorldStates, so relevance and desire live in one representation and cannot drift apart.
     public sealed class GoapGoal
     {
