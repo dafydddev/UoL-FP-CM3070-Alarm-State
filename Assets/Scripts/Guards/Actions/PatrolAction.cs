@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace Guards.Actions
 {
-    // Walks the guard's patrol route forever, pausing briefly at each waypoint.
-    // Never completes and never fails: an unreachable waypoint is simply skipped
-    // after the pause, and a guard with nothing to walk to stands its post.
+    // Walks the guard's patrol route, pausing briefly at each waypoint.
+    // Never completes and never fails. An unreachable waypoint is skipped.
     public sealed class PatrolAction : GoapAction
     {
         private const int PauseTicks = 4; // linger at each waypoint before moving on
@@ -21,6 +20,7 @@ namespace Guards.Actions
             Effects = WorldState.Empty.With(Fact.OnPatrol, true);
         }
 
+        // The index survives, so a guard returning from a chase picks the route up where it left off.
         public override void OnEnter(GuardAgent agent)
         {
             _pause = 0;
