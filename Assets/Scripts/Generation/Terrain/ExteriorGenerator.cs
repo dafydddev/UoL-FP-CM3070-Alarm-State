@@ -6,6 +6,9 @@ using UnityEngine.Tilemaps;
 namespace Generation.Terrain
 {
     // Generates PCG terrain around (and in the gaps of) the facility and paints it onto a background tilemap.
+    // Based on research from the following sources:
+    // - https://www.redblobgames.com/maps/terrain-from-noise/
+    // - https://catlikecoding.com/unity/tutorials/hex-map/
     public class ExteriorGenerator : MonoBehaviour
     {
         [SerializeField] private Tilemap tilemap; // the background tilemap terrain is painted onto
