@@ -25,6 +25,7 @@ namespace Generation.Terrain
         [SerializeField] private TileDefinition shoreS;
         [SerializeField] private TileDefinition shoreW;
 
+        [Header("Water — shore on two adjacent sides")]
         [SerializeField] private TileDefinition shoreNE;
         [SerializeField] private TileDefinition shoreES;
         [SerializeField] private TileDefinition shoreSW;
@@ -59,6 +60,7 @@ namespace Generation.Terrain
             if (variants == null || variants.Length == 0) return null;
 
             // Reuse seeds mixer for a stable, well-distributed pick rather than hand-rolling a second one.
+            // The position stands in for the subsystem id and salt, so this shares no stream with the terrain's own.
             var pick = (uint)Seeds.For(seed, x, y) % (uint)variants.Length;
             return variants[pick];
         }
