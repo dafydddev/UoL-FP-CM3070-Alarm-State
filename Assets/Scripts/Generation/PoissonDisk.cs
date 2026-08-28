@@ -6,6 +6,10 @@ namespace Generation
 {
     // Bridson's Poisson disk sampling over the facility tiles.
     // Yields cells no two of which are closer than the radius, avoiding clumps and bare patches.
+    // Based on research from the following sources:
+    // - https://sighack.com/post/poisson-disk-sampling-bridsons-algorithm
+    // - https://www.redblobgames.com/x/1830-jittered-grid/
+    // - http://devmag.org.za/2009/05/03/poisson-disk-sampling/
     public static class PoissonDisk
     {
         private const int Candidates = 30; // tries per active sample before it is retired
