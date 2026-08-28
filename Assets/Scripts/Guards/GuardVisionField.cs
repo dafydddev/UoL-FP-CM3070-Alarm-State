@@ -16,7 +16,7 @@ namespace Guards
         [SerializeField] private int sortingOrder = 1; // over the floor, under the guard sprites
         [SerializeField, Min(0.1f)] private float refreshFallbackSeconds = 0.5f; // staleness bound for cached cones
 
-        // A cached cone: the cells a guard saw, and where it stood and faced when they were collected.
+        // A cached cone. The cells a guard saw, and where the guard stood and faced when the sightings were collected.
         private sealed class Cone
         {
             public readonly List<Vector3> Cells = new();
@@ -40,6 +40,7 @@ namespace Guards
             _alert = new CellSurface(transform, "AlertVision", sortingOrder);
         }
 
+        // Two surfaces rather than one, as a surface carries a single colour across all its quads.
         private void LateUpdate()
         {
             _calm.SetVisible(show);
@@ -75,6 +76,7 @@ namespace Guards
         }
 
         // Recollects a guard's visible cells only when it has moved or turned since the last collection,
+        // or once the fallback has elapsed, so a door opening in a still guard's cone is picked up.
         private void Refresh(GuardAgent guard, Cone cone)
         {
             var motor = guard.Motor;

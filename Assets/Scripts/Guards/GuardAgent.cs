@@ -9,18 +9,16 @@ using UnityEngine;
 
 namespace Guards
 {
-    // The guard's brain, driven by the simulation tick like every other actor.
-    // Each Act():
-    // - sense the world, snapshot it as facts, pick the most important relevant goal,
-    // - plan a route of actions to it (replanning only when the goal changes or an action fails),
-    // - run the current action, then take one grid step.
-    // Interruption is central: a higher-priority goal becoming relevant simply wins the next selection,
-    // so actions never need to know about the goal hierarchy.
+    // The guard's brain, driven by the simulation tick. Each Act, the guard:
+    // - senses the world, snapshots it as a collection of facts, and picks the most important relevant goal.
+    // - plans a route of actions to it, replanning only when the goal changes or an action fails.
+    // - runs the current action, then takes one grid step.
+    // Interruption is a by-product: a higher-priority goal wins the selection. Actions never need to know about the goal hierarchy.
     public class GuardAgent : Actor
     {
         [SerializeField] private GuardSenses senses = new();
 
-        // How often the guard takes a grid step (in ticks; 1 matches the player's pace).
+        // How often the guard takes a grid step (in ticks, 1 matches the player's movement speed).
         [SerializeField, Min(1)] private int patrolStepEveryTicks = 3; // while calm
         [SerializeField, Min(1)] private int alertStepEveryTicks = 2; // while chasing or investigating
 
@@ -110,6 +108,7 @@ namespace Guards
 
         protected override void Act()
         {
+            // Init may not have run yet, as the scheduler holds us from the moment it does.
             if (Motor == null) return;
 
             var sawPlayer = Memory.SeesPlayer;
@@ -136,6 +135,7 @@ namespace Guards
 
         // The facts as they stand this tick.
         // Every fact is specified, so goals and preconditions can also test for absence (e.g. HasLead == false).
+        // PlayerCaught and OnPatrol are always false here: they are what actions bring about, never what is observed.
         private WorldState Snapshot()
         {
             var atPlayer = Memory.SeesPlayer && IsAdjacent(Motor.Cell, Memory.PlayerCell);
@@ -158,12 +158,12 @@ namespace Guards
         }
 
         // While the alarm sounds, a guard within earshot that isn't chasing or on its own trail sweeps the escape line.
-        // A relayed contact reaches every guard, earshot or not.
-        // Responders string out across where the player likely fled.
+        // A relayed contact reaches every guard, earshot or not. Responders string out across where the player likely fled.
         private void HearAlarm()
         {
             var alarm = World.Alarm;
             if (!alarm.Active) return;
+            // A sounding alarm settles the matter, so no guard sets off to raise one that is already up.
             if (!Memory.SeesPlayer) Memory.MarkAlarmSought();
 
             if (Memory.SeesPlayer || Memory.LeadIsPlayerTrail) return;

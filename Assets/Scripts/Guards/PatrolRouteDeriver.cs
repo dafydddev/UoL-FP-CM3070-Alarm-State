@@ -13,6 +13,7 @@ namespace Guards
     {
         public static List<Vector2Int> Derive(string homeRoomId, RoomGraph graph, IReadOnlyDictionary<string, RoomRect> rects)
         {
+            // The post first, so the route reads as a circuit out from it and back.
             var route = new List<Vector2Int>();
             AddRoomCentre(route, rects, homeRoomId);
 
@@ -27,12 +28,14 @@ namespace Guards
             return route;
         }
 
+        // A room with no rectangle is skipped, so the route is shorter rather than routed at nothing.
         private static void AddRoomCentre(List<Vector2Int> route, IReadOnlyDictionary<string, RoomRect> rects, string roomId)
         {
             if (rects.TryGetValue(roomId, out var rect)) route.Add(new Vector2Int(rect.CenterX, rect.CenterY));
         }
 
-        // Undirected neighbours across an unlocked edge: patrols stay this side of locked doors,
+        // Undirected neighbours across an unlocked edge.
+        // Patrols stay this side of locked doors, so a guard never needs a key to walk its own route.
         private static IEnumerable<string> Neighbours(string id, RoomGraph graph)
         {
             foreach (var edge in graph.edges.Where(edge => !edge.locked))
