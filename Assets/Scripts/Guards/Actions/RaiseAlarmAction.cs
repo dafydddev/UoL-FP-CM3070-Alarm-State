@@ -18,6 +18,7 @@ namespace Guards.Actions
             Effects = WorldState.Empty.With(Fact.AlarmRaised, true);
         }
 
+        // The contact is taken once, at the outset, so the broadcast reports the sighting that sent the guard.
         public override void OnEnter(GuardAgent agent)
         {
             _contactCell = agent.Memory.PlayerCell; // where the player was last seen
