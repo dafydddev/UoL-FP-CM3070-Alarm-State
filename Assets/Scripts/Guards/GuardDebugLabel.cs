@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace Guards
 {
-    // Floats a text label above the guard showing its current goal,
-    // so what the AI is "thinking" is visible at a glance while playing.
+    // Floats a text label above the guard showing its current goal, so what the AI is "thinking" is visible.
     [RequireComponent(typeof(GuardAgent))]
     public class GuardDebugLabel : MonoBehaviour
     {
@@ -14,6 +13,7 @@ namespace Guards
         private GuardAgent _agent;
         private TextMesh _text;
 
+        // Built-in code rather than authored, so the label can be attached to any guard prefab.
         private void Awake()
         {
             _agent = GetComponent<GuardAgent>();

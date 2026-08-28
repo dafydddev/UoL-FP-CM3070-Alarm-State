@@ -5,13 +5,11 @@ using UnityEngine;
 namespace Guards
 {
     // Moves an actor across the grid one cell per tick, following A* routes from the world's navigator.
-    // Owns the actor's logical cell (the transform only renders it).
-    // Mirrors the player's movement idiom: enter cells through EntryRules so doors,
-    // occupants and future rules apply to guards exactly as they do to the player.
+    // Owns the actor's logical cell. Mirrors the player's movement idiom, entering cells through EntryRules.
     public class GridMotor
     {
-        // After a pathfind fails, don't retry the same goal for this many ticks,
-        // so an unreachable target can't trigger an A* search every tick.
+        // After a pathfind fails, don't retry the same goal for this many ticks.
+        // Makes sure that an unreachable target can't trigger a pointless A* search every tick.
         private const int PathRetryTicks = 10;
 
         // Ceiling for the ticks-since-move counter so idling can't overflow it.
@@ -30,14 +28,12 @@ namespace Guards
         private Vector2Int PrevCell { get; set; }
         public Vector2Int Facing { get; private set; } = Vector2Int.right; // direction of the last step
 
-        // Move one cell per this many ticks (1 = every tick, i.e. the player's pace).
-        // The agent sets it each tick from its patrol/alert tuning.
+        // Move one cell per this many ticks, e.g. 1 = every tick, which is the player's pace.
         public int StepEveryTicks { get; set; } = 1;
 
         public bool HasRoute => _route.Count > 0;
 
-        // Set when the route (or a replan around an obstacle) turned out impossible;
-        // cleared by the next SetGoal or Stop.
+        // Set when the route turned out impossible. Cleared by the next SetGoal or Stop.
         public bool Blocked { get; private set; }
 
         public GridMotor(Actor owner, WorldContext world, Vector2Int startCell)
@@ -47,8 +43,8 @@ namespace Guards
             Cell = PrevCell = startCell;
         }
 
-        // Routes to the goal cell. Returns false (and remembers the failure briefly)
-        // if no path exists for this actor right now.
+        // Routes to the goal cell. Returns false if no path exists for this actor right now.
+        // A goal already stood on clears the route and reports success, so callers need not test for it.
         public bool SetGoal(Vector2Int goal)
         {
             Blocked = false;
@@ -80,10 +76,7 @@ namespace Guards
             _route.Clear();
             Blocked = false;
         }
-
-        // Advances at most one cell, and only on every StepEveryTicks-th tick —
-        // that is what makes a guard slower than the player. 
-        // Called exactly once per agent tick, after thinking.
+        
         public void Step()
         {
             if (_failedMemoTicks > 0) _failedMemoTicks--;
@@ -108,8 +101,8 @@ namespace Guards
             if (!SetGoal(_goal)) Blocked = true;
         }
 
-        // Where to draw the guard this frame: the hop to the current cell plays out over the single tick it happened in —
-        // the same stepped look as the player — and the guard then rests on the cell until its next move tick.
+        // Where to draw the guard this frame, allowing guards to transition between cells.
+        // Clamped, so a guard standing still is drawn on the cell it holds rather than past it.
         public Vector3 RenderPosition(float alpha)
         {
             var progress = _ticksSinceMove + alpha;

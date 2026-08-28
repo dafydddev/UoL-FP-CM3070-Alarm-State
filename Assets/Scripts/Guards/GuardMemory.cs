@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Guards
 {
-    // What kind of lead a guard is holding; higher values matter more.
+    // What kind of lead a guard is holding. Higher values matter more.
     // A last-seen player position displaces a noticed distraction but not vice versa, and a sounding alarm displaces both.
     public enum LeadKind
     {
@@ -12,7 +12,7 @@ namespace Guards
         Alarm
     }
 
-    // The guard's working memory:
+    // The guard's working memory.
     // What its senses last established about the player, and the single most important lead worth investigating.
     public class GuardMemory
     {

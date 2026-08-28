@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace Guards
 {
-    // The guard's eyes and ears, tuned per guard in the inspector.
-    // Vision works entirely on the grid, rather than physics.
+    // The guard's eyes and ears. Tuned per guard in the inspector.
     // Guards have a sense range, a facing cone (with a point-blank bubble), and Bresenham line of sight.
     // Sense() runs once per tick and writes what it establishes into GuardMemory.
     [Serializable]
@@ -18,8 +17,7 @@ namespace Guards
         [SerializeField, Min(0)] private int pointBlankCells = 1;
         [SerializeField, Min(0)] private int hearingRangeCells = 9;
 
-        // On losing sight, follow the player's momentum:
-        // investigate a point projected this many cells ahead of where they were last seen.
+        // On losing sight, follow the player's momentum: investigate a point projected ahead of where they were last seen.
         [SerializeField] private bool projectLostLeadForward = true;
         [SerializeField, Min(1)] private int leadProjectionCells = 3;
 
@@ -43,9 +41,8 @@ namespace Guards
             else if (memory.SeesPlayer) memory.NotePlayerLost(LostLeadCell(world, memory));
         }
 
-        // Where to send a guard that has just lost the player: normally the last-seen cell,
-        // but with projection on, a point a few cells further along the player's heading — so the guard heads
-        // where they were likely running to instead of pulling up short at the spot they vanished from.
+        // Where to send a guard that has just lost the player.
+        // With projection on, a point a few cells further along the player's heading direction.
         private Vector2Int LostLeadCell(WorldContext world, GuardMemory memory)
         {
             if (!projectLostLeadForward || memory.PlayerHeading == Vector2Int.zero) return memory.PlayerCell;
@@ -64,7 +61,9 @@ namespace Guards
             return lead;
         }
 
-        private bool CanSeePlayer(WorldContext world, GridMotor motor, GuardMemory memory, Actor player, Vector2Int playerCell)
+        // The player's drawn position is read, not their logical cell, so a guard sees where they appear to be.
+        private bool CanSeePlayer(WorldContext world, GridMotor motor, GuardMemory memory, Actor player,
+            Vector2Int playerCell)
         {
             if (!CanSee(world, motor, playerCell)) return false;
 
@@ -85,6 +84,7 @@ namespace Guards
         // A cell is visible when it's in range, inside the facing cone, and not screened by terrain.
         public bool CanSee(WorldContext world, GridMotor motor, Vector2Int cell)
         {
+            // Chebyshev, so the range reads as a square rather than a diamond.
             var offset = cell - motor.Cell;
             var distance = Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
             if (distance > viewRangeCells) return false;
@@ -98,6 +98,9 @@ namespace Guards
 
         // Walks the Bresenham line between the two cells.
         // Sight is blocked by any unwalkable terrain in between and closed locked doors.
+        // Based on research from the following sources:
+        // - https://www.cs.helsinki.fi/group/goa/mallinnus/lines/bresenh.html
+        // - https://zingl.github.io/bresenham.html
         private static bool HasLineOfSight(WorldContext world, Vector2Int from, Vector2Int to)
         {
             int dx = Mathf.Abs(to.x - from.x), dy = -Mathf.Abs(to.y - from.y);
