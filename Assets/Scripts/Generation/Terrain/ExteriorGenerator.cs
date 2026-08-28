@@ -48,8 +48,8 @@ namespace Generation.Terrain
         [Tooltip("How the light goes across the run: 0 is the first level, 1 the last.")]
         public AnimationCurve nightfallShape = AnimationCurve.Linear(0, 0, 1, 1);
 
-        // Clears any terrain this component previously painted. Kept separate from Paint because
-        // the terrain shares its tilemap with the facility, which is cleared in the same phase.
+        // Clears any terrain this component previously painted.
+        // Kept separate from Paint because the terrain shares its tilemap with the facility.
         public void Clear()
         {
             if (tilemap) tilemap.ClearAllTiles();
@@ -66,25 +66,28 @@ namespace Generation.Terrain
             var tint = TintFor(level, totalLevels);
 
             for (var i = 0; i < w; i++)
-            for (var j = 0; j < h; j++)
             {
-                var type = terrain[i, j];
-                if (!type.HasValue) continue; // facility cell — leave the background layer blank here
+                for (var j = 0; j < h; j++)
+                {
+                    var type = terrain[i, j];
+                    if (!type.HasValue) continue; // facility cell — leave the background layer blank here
 
-                // Undo the margin offset so terrain aligns with the facility grid at (0,0).
-                var pos = new Vector3Int(i - margin, j - margin, 0);
+                    // Undo the margin offset so terrain aligns with the facility grid at (0,0).
+                    var pos = new Vector3Int(i - margin, j - margin, 0);
 
-                var def = type.Value == TerrainType.Water
-                    ? tileset.WaterTile(Shoreline(terrain, i, j))
-                    : tileset.For(type.Value, seed, pos.x, pos.y);
+                    // Water picks its tile from the shoreline it sits on; the rest vary by position.
+                    var def = type.Value == TerrainType.Water
+                        ? tileset.WaterTile(Shoreline(terrain, i, j))
+                        : tileset.For(type.Value, seed, pos.x, pos.y);
 
-                if (!def) continue;
+                    if (!def) continue;
 
-                tilemap.SetTile(pos, def.TileBase);
+                    tilemap.SetTile(pos, def.TileBase);
 
-                // Clear LockColor so SetColor takes effect, then dim the tile for the hour.
-                tilemap.SetTileFlags(pos, TileFlags.None);
-                tilemap.SetColor(pos, tint);
+                    // Clear LockColor so SetColor takes effect, then dim the tile for the hour.
+                    tilemap.SetTileFlags(pos, TileFlags.None);
+                    tilemap.SetColor(pos, tint);
+                }
             }
         }
 
@@ -114,22 +117,24 @@ namespace Generation.Terrain
             var terrain = new TerrainType?[paddedW, paddedH];
 
             for (var i = 0; i < paddedW; i++)
-            for (var j = 0; j < paddedH; j++)
             {
-                var tx = i - margin;
-                var ty = j - margin;
-
-                // Inside the facility footprint (or its buffer)? Leave it to the facility tilemap.
-                if (tx >= 0 && ty >= 0 && tx < gridW && ty < gridH && blocked[tx, ty])
+                for (var j = 0; j < paddedH; j++)
                 {
-                    terrain[i, j] = null;
-                    continue;
-                }
+                    var tx = i - margin;
+                    var ty = j - margin;
 
-                // Sample both fields at the true tile coordinate so terrain is seamless.
-                var elevation = Fbm(tx + eOff.x, ty + eOff.y);
-                var moisture = Fbm(tx + mOff.x, ty + mOff.y);
-                terrain[i, j] = Classify(elevation, moisture);
+                    // Inside the facility footprint (or its buffer)? Leave it to the facility tilemap.
+                    if (tx >= 0 && ty >= 0 && tx < gridW && ty < gridH && blocked[tx, ty])
+                    {
+                        terrain[i, j] = null;
+                        continue;
+                    }
+
+                    // Sample both fields at the true tile coordinate so terrain is seamless.
+                    var elevation = Fbm(tx + eOff.x, ty + eOff.y);
+                    var moisture = Fbm(tx + mOff.x, ty + mOff.y);
+                    terrain[i, j] = Classify(elevation, moisture);
+                }
             }
 
             return terrain;
@@ -148,6 +153,7 @@ namespace Generation.Terrain
         }
 
         // The sides of the water cell at (i, j) that touch land.
+        // A facility cell is not water, so the footprint reads as a shore too.
         private static Shore Shoreline(TerrainType?[,] grid, int i, int j)
         {
             var shore = Shore.None;
@@ -179,7 +185,7 @@ namespace Generation.Terrain
             return range > 0f ? Mathf.Clamp01(sum / range + 0.5f) : 0.5f;
         }
 
-        // Dilates the facility footprint by `buffer` cells (Chebyshev) so terrain keeps its distance.
+        // Dilates the facility footprint by buffer cells (Chebyshev) so terrain keeps its distance.
         private static bool[,] BuildBlockedMask(CellRole[,] roles, int buffer)
         {
             var w = roles.GetLength(0);
@@ -187,23 +193,28 @@ namespace Generation.Terrain
             var blocked = new bool[w, h];
 
             for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
             {
-                if (roles[x, y] == CellRole.None) continue;
-
-                // Mark this facility cell and everything within `buffer` of it.
-                for (var dx = -buffer; dx <= buffer; dx++)
-                for (var dy = -buffer; dy <= buffer; dy++)
+                for (var y = 0; y < h; y++)
                 {
-                    var nx = x + dx;
-                    var ny = y + dy;
-                    if (nx >= 0 && ny >= 0 && nx < w && ny < h) blocked[nx, ny] = true;
+                    if (roles[x, y] == CellRole.None) continue;
+
+                    // Mark this facility cell and everything within buffer of it.
+                    for (var dx = -buffer; dx <= buffer; dx++)
+                    {
+                        for (var dy = -buffer; dy <= buffer; dy++)
+                        {
+                            var nx = x + dx;
+                            var ny = y + dy;
+                            if (nx >= 0 && ny >= 0 && nx < w && ny < h) blocked[nx, ny] = true;
+                        }
+                    }
                 }
             }
 
             return blocked;
         }
 
+        // Set well apart from each other and from the origin, so the two fields never correlate.
         private static float NextOffset(System.Random rng) => (float)(rng.NextDouble() * 10000.0 - 5000.0);
     }
 }
