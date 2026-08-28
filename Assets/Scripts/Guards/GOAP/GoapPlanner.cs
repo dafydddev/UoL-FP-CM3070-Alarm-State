@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace Guards.Goap
 {
-    // Finds the cheapest action sequence that takes the world from a start state to one satisfying the goal:
-    // uniform-cost search forward over action effects.
+    // Finds the cheapest action sequence that takes the world from a start state to one satisfying the goal.
+    // Performs uniform-cost search forward over action effects.
     // States are small value types, so the visited set and frontier stay allocation-light.
     public static class GoapPlanner
     {
@@ -60,7 +60,11 @@ namespace Guards.Goap
         private static List<GoapAction> Reconstruct(Node node)
         {
             var plan = new List<GoapAction>();
-            for (; node.Action != null; node = node.Parent) plan.Add(node.Action);
+            for (; node.Action != null; node = node.Parent)
+            {
+                plan.Add(node.Action);
+            }
+
             plan.Reverse();
             return plan;
         }
