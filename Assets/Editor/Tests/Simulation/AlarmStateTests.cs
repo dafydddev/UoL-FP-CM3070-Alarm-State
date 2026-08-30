@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Editor.Tests.Pathfinding;
 using NUnit.Framework;
 using Simulation;
 using UnityEngine;
 
 namespace Editor.Tests.Simulation
 {
+    // The level's alarm: which switch a guard walks to, and what a raise broadcasts.
     public class AlarmStateTests
     {
         private static readonly string[] DividedFacility =
@@ -113,6 +115,7 @@ namespace Editor.Tests.Simulation
             CollectionAssert.AreEqual(new[] { true }, _broadcasts);
         }
 
+        // The second raise is dropped whole and does not interrupt the sweep.
         [Test]
         public void RaisingAnAlreadySoundingAlarmChangesNothing()
         {
@@ -205,6 +208,7 @@ namespace Editor.Tests.Simulation
         private readonly List<bool> _broadcasts = new();
         private Action<bool> _listener;
 
+        // The event is static, so it is subscribed and dropped around each test rather than per instance.
         [SetUp]
         public void ListenForBroadcasts()
         {

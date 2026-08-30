@@ -4,8 +4,10 @@ using NUnit.Framework;
 
 namespace Editor.Tests.Simulation
 {
+    // The planner's fact set: specified against unspecified, and how effects overlay a state.
     public class WorldStateTests
     {
+        // Unspecified is a third case, not a false: a partial state says nothing about what it omits.
         [Test]
         public void AnUnspecifiedFactDoesNotSatisfyARequirementForFalse()
         {
@@ -82,12 +84,14 @@ namespace Editor.Tests.Simulation
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
         }
 
-        // Facts are packed one bit each into an int, so a 33rd fact would silently alias onto another.
+        // Facts are packed one bit each into an int.
         [Test]
         public void EveryFactFitsInTheBitmask()
         {
             foreach (Fact fact in Enum.GetValues(typeof(Fact)))
+            {
                 Assert.Less((int)fact, 32, $"{fact} is out of bitmask range");
+            }
         }
     }
 }
