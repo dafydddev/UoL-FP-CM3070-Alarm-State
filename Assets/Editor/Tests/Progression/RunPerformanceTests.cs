@@ -12,7 +12,10 @@ namespace Editor.Tests.Progression
         public void StandingIsLevelUntilTheWindowFills()
         {
             var performance = new RunPerformance();
-            for (var i = 0; i < RunPerformance.Window - 1; i++) performance.RecordLevel(1, MaxHearts, 2);
+            for (var i = 0; i < RunPerformance.Window - 1; i++)
+            {
+                performance.RecordLevel(1, MaxHearts, 2);
+            }
 
             Assert.That(performance.Standing, Is.EqualTo(0f), "standing should be 0 until the window is full");
             Assert.That(performance.CanInject(1), Is.False, "no room should be added before the window fills");
@@ -27,6 +30,7 @@ namespace Editor.Tests.Progression
             Assert.That(performance.CanInject(RunPerformance.Window), Is.True);
         }
 
+        // The score measures the bar above the first heart, so one heart left reads as nothing left.
         [Test]
         public void ALastHeartReadsAsStruggling()
         {
@@ -56,8 +60,15 @@ namespace Editor.Tests.Progression
         public void FormOlderThanTheWindowIsForgotten()
         {
             var performance = new RunPerformance();
-            for (var i = 0; i < RunPerformance.Window; i++) performance.RecordLevel(MaxHearts, MaxHearts, 0);
-            for (var i = 0; i < RunPerformance.Window; i++) performance.RecordLevel(1, MaxHearts, 0);
+            for (var i = 0; i < RunPerformance.Window; i++)
+            {
+                performance.RecordLevel(MaxHearts, MaxHearts, 0);
+            }
+
+            for (var i = 0; i < RunPerformance.Window; i++)
+            {
+                performance.RecordLevel(1, MaxHearts, 0);
+            }
 
             Assert.That(performance.Standing, Is.EqualTo(-1f));
         }
@@ -89,10 +100,15 @@ namespace Editor.Tests.Progression
             Assert.That(performance.CanInject(10), Is.True);
         }
 
+        // A full window of identical levels.
         private static RunPerformance Filled(int hearts, int alarms)
         {
             var performance = new RunPerformance();
-            for (var i = 0; i < RunPerformance.Window; i++) performance.RecordLevel(hearts, MaxHearts, alarms);
+            for (var i = 0; i < RunPerformance.Window; i++)
+            {
+                performance.RecordLevel(hearts, MaxHearts, alarms);
+            }
+
             return performance;
         }
     }
