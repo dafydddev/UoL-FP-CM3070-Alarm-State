@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace Editor.Tests.Pathfinding
 {
+    // A* over the entry rules: routes are shortest, contiguous, and absent where no way exists.
     public class AStarPathfinderTests
     {
+        // Rows read top-down, so the first row is the highest y; '#' is wall, anything else floor.
         private static readonly string[] Corridor =
         {
             "#######",
@@ -32,6 +34,7 @@ namespace Editor.Tests.Pathfinding
             "#####"
         };
 
+        // The route includes the cell the mover stands on, so a walk of four steps is five cells.
         [Test]
         public void AStraightWalkIsTheStepsTakenPlusTheStartCell()
         {
@@ -44,6 +47,7 @@ namespace Editor.Tests.Pathfinding
             Assert.AreEqual(new Vector2Int(5, 1), path[^1]);
         }
 
+        // Every pair of floor cells, checked against a search that cannot take a detour.
         [Test]
         public void EveryPathIsAsShortAsABreadthFirstSearchMakesIt()
         {
@@ -101,6 +105,7 @@ namespace Editor.Tests.Pathfinding
             Assert.IsNull(grid.Pathfinder.FindPath(floor, new Vector2Int(99, 99), null), "goal is off the grid");
         }
 
+        // A null mover is the anonymous, keyless query the rules answer for.
         [Test]
         public void OnlyFloorInsideTheGridIsWalkable()
         {
@@ -137,12 +142,17 @@ namespace Editor.Tests.Pathfinding
         {
             var floors = new List<Vector2Int>();
             for (var y = 0; y < rows.Length; y++)
-            for (var x = 0; x < rows[0].Length; x++)
-                if (rows[rows.Length - 1 - y][x] != '#')
-                    floors.Add(new Vector2Int(x, y));
+            {
+                for (var x = 0; x < rows[0].Length; x++)
+                {
+                    if (rows[rows.Length - 1 - y][x] != '#') floors.Add(new Vector2Int(x, y));
+                }
+            }
+
             return floors;
         }
 
+        // The independent shortest distance reference that the routes are measured against.
         private static Dictionary<Vector2Int, int> BreadthFirstDistances(string[] rows, Vector2Int start)
         {
             var distances = new Dictionary<Vector2Int, int> { [start] = 0 };
