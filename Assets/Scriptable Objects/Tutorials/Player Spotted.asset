@@ -15,5 +15,5 @@ MonoBehaviour:
   topic: 10
   title: Spotted!
   body: One of the guard has seen you! They will chase you and attempt to arrest
-    you. If they hurt you twice, it's game over! So run away and hide!
+    you. If they catch you three times, it's game over! So run away and hide!
   image: {fileID: 21300000, guid: f2c4e06d3b08ecd46a25f901f78a945f, type: 3}
