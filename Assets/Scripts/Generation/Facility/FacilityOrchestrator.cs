@@ -36,7 +36,7 @@ namespace Generation.Facility
         [SerializeField] private PipeGameController pipeGameController;
         [SerializeField] private SequenceGameController sequenceGameController;
 
-        [Header("Spawners")] 
+        [Header("Spawners")]
         [SerializeField] private PlayerSpawner playerSpawner;
         [SerializeField] private KeycardSpawner keycardSpawner;
         [SerializeField] private LockedDoorSpawner lockedDoorSpawner;
@@ -74,7 +74,8 @@ namespace Generation.Facility
         }
 
         [ContextMenu("Generate Preview")]
-        public void GeneratePreview() => Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
+        public void GeneratePreview() =>
+            Generate(new RunContext(profile, previewLevel, previewTotalLevels, previewLayoutStyle));
 
         // Builds a complete level using the supplied run state.
         public void Generate(RunContext run)
@@ -116,25 +117,37 @@ namespace Generation.Facility
             // Tint rooms by role for readability.
             FacilityColourCoder.Apply(tilemap, rooms, rects);
 
-            // Generate and paint the exterior terrain behind the facility using PCG noise.
-            ExteriorGenerator.Paint(roles, rooms.seed, rooms.level, run.TotalLevels);
-
             // Populate the level: sim participants get the world, set dressing just the tilemap. Order matters where noted.
-            pressureRoomSpawner?.Spawn(rooms, rects, World);
-            playerSpawner?.Spawn(rooms, rects, World);
-            keycardSpawner?.Spawn(rooms, rects, World);
-            lockedDoorSpawner?.Spawn(rooms, rects, World);
-            objectiveSpawner?.Spawn(rooms, rects, World);
-            exitSpawner?.Spawn(rooms, rects, World);
-            coverSpawner?.Spawn(rooms, rects, World);
+            
+            // Spawn the adaptive rooms.
+            pressureRoomSpawner?.Spawn(rooms, rects, World); 
+            supplyRoomSpawner?.Spawn(rooms, rects, World);
+            
+            // Spawn the level entities (player, items, etc.)
+            playerSpawner?.Spawn(rooms, rects, World); // Spawn the player first, the most important entity.
+            keycardSpawner?.Spawn(rooms, rects, World); // Spawn the keycards
+            lockedDoorSpawner?.Spawn(rooms, rects, World); // Spawn the locked doors
+            objectiveSpawner?.Spawn(rooms, rects, World); // Spawn the objectives
+            exitSpawner?.Spawn(rooms, rects, World); // Spawn the exits
+            coverSpawner?.Spawn(rooms, rects, World); // Spawn the cover tiles
+
+            // Spawn the guards and switches after the player.
             guardSpawner?.Spawn(rooms, rects, World); // after the player, so guards can sense them from the first tick
             alarmSwitchSpawner?.Spawn(rooms, rects, World); // after guards, so switches avoid the guard's cell
-            supplyRoomSpawner?.Spawn(rooms, rects, World);
+
+            // Spawn the level's set dressing.
             lightSpawner?.Spawn(rooms, rects, tilemap);
             floorDetailSpawner?.Spawn(rooms, rects, tilemap);
-            pipeGameController?.Prepare(run); // Hand the minigame screens the run state.
+
+            // Hand the minigame screens the run state.
+            pipeGameController?.Prepare(run);
             sequenceGameController?.Prepare(run);
-            minimap?.Fit(); // Scale the mini-map for the generated level.
+
+            // Scale the mini-map for the generated level.
+            minimap?.Fit();
+
+            // Generate and paint the exterior terrain behind the facility using PCG noise.
+            ExteriorGenerator.Paint(roles, rooms.seed, rooms.level, run.TotalLevels);
         }
 
         // Destroys everything spawned under each spawner from the previous level.
