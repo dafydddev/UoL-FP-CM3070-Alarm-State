@@ -5,8 +5,10 @@ using NUnit.Framework;
 
 namespace Editor.Tests.Goap
 {
+    // The planner: it finds the cheapest chain of actions to a goal, or reports that there is none.
     public class GoapPlannerTests
     {
+        // Empty and null are distinct outcomes: nothing to do, against nothing that would do.
         [Test]
         public void AnAlreadySatisfiedGoalPlansAsAnEmptyList()
         {
@@ -35,6 +37,7 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.EqualTo(new[] { catchPlayer }));
         }
 
+        // Passed out of order, so the chain is worked out by the planner.
         [Test]
         public void PreconditionsAreChainedIntoThePlan()
         {
@@ -48,6 +51,7 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.EqualTo(new[] { approach, catchPlayer }));
         }
 
+        // The lunge reaches the goal in one step, but costs more than the two steps together.
         [Test]
         public void TheCheapestRouteWinsEvenWhenItTakesMoreSteps()
         {
@@ -74,6 +78,7 @@ namespace Editor.Tests.Goap
             Assert.That(plan, Is.Null);
         }
 
+        // An action that leaves the state as it found it would loop the search were the visited set not consulted.
         [Test]
         public void ActionsThatDoNotChangeTheStateTerminate()
         {
