@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Editor.Tests.Guards
 {
+    // The guard's working memory: what it knows of the player, and which lead displaces which.
     public class GuardMemoryTests
     {
         private readonly List<GameObject> _spawned = new();
@@ -13,10 +14,15 @@ namespace Editor.Tests.Guards
         [TearDown]
         public void DestroySpawnedItems()
         {
-            foreach (var spawned in _spawned) Object.DestroyImmediate(spawned);
+            foreach (var spawned in _spawned)
+            {
+                Object.DestroyImmediate(spawned);
+            }
+
             _spawned.Clear();
         }
 
+        // Distractions are MonoBehaviours, so each needs a host object; the teardown clears them.
         private DistractionItem NewDistraction()
         {
             var host = new GameObject("distraction");
@@ -36,6 +42,7 @@ namespace Editor.Tests.Guards
             Assert.AreEqual(Vector2Int.zero, memory.PlayerHeading);
         }
 
+        // The last four are diagonal steps, which resolve to the dominant axis.
         [TestCase(1, 0, 1, 0)]
         [TestCase(-1, 0, -1, 0)]
         [TestCase(0, 1, 0, 1)]
@@ -67,6 +74,7 @@ namespace Editor.Tests.Guards
             Assert.AreEqual(new Vector2Int(1, 0), memory.PlayerHeading);
         }
 
+        // The senses may project the trail ahead of the last-seen cell, so the cell they pass is the one taken.
         [Test]
         public void LosingSightLeavesAPlayerTrailAtTheGivenCell()
         {
@@ -102,6 +110,7 @@ namespace Editor.Tests.Guards
             Assert.AreEqual(new Vector2Int(8, 5), memory.LeadCell);
         }
 
+        // Every pairing of the three kinds, so the whole displacement table is covered at once.
         [Test]
         public void OnlyAnEqualOrMoreImportantLeadDisplacesTheOneHeld([Values] LeadKind held, [Values] LeadKind offered)
         {
@@ -216,6 +225,7 @@ namespace Editor.Tests.Guards
             Assert.IsTrue(memory.HasAnsweredAlarm(1, contact));
         }
 
+        // A relayed sighting moves the contact, which puts the guard back on the sweep.
         [Test]
         public void AMovedContactHasNotBeenAnswered()
         {
