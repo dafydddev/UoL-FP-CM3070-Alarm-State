@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1369544491, guid: 30f860e818fe0ec45ad5e2f1cd117e7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entities.Objectives.PrimaryObjective
   id: 
   text: 
+  completedColour: {r: 0, g: 0, b: 0, a: 0}
   miniGameSeed: 0
 --- !u!114 &8393439670567885429
 MonoBehaviour:
