@@ -45,6 +45,7 @@ namespace Editor
         private string _selectedNodeId; // id of the node shown in the inspector, or null
 
         // Computed screen positions for each node, per graph.
+        // Held unzoomed, so the zoom is applied at draw time rather than by laying the graph out again.
         private readonly Dictionary<string, Vector2> _missionPositions = new();
         private readonly Dictionary<string, Vector2> _roomPositions = new();
 
@@ -179,6 +180,7 @@ namespace Editor
                 _seed = _missionGraph.seed; // reflect the used seed back into the field
 
                 // Compute node positions for both diagrams.
+                // Mission edges run dependency -> dependent, so they are reversed into from/to pairs here.
                 LayoutGraph(
                     _missionGraph.nodes.Select(n => n.id),
                     _missionGraph.nodes.SelectMany(n => n.dependencies.Select(d => (d, n.id))),
@@ -216,9 +218,15 @@ namespace Editor
         {
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Toggle(_editorTab == EditorTab.Mission, "Mission Graph", EditorStyles.toolbarButton))
+            {
                 _editorTab = EditorTab.Mission;
+            }
+
             if (GUILayout.Toggle(_editorTab == EditorTab.Room, "Room Graph", EditorStyles.toolbarButton))
+            {
                 _editorTab = EditorTab.Room;
+            }
+
             GUILayout.FlexibleSpace();
             GUILayout.Label($"Zoom {_zoom:0.00}x", GUILayout.Width(ZoomLabelWidth));
             _zoom = GUILayout.HorizontalSlider(_zoom, MinZoom, MaxZoom, GUILayout.Width(ZoomSliderWidth));
@@ -343,9 +351,7 @@ namespace Editor
             EditorGUILayout.EndVertical();
         }
 
-        // Assigns each node an (x, y) position using a layered layout:
-        // a topological pass puts each node at a "level" = its longest dependency depth, nodes within each
-        // level are ordered to reduce edge crossings (barycenter sweeps), and columns are vertically centred.
+        // Assigns each node an (x, y) position using a layered layout.
         private static void LayoutGraph(
             IEnumerable<string> ids,
             IEnumerable<(string from, string to)> edges,
@@ -399,7 +405,10 @@ namespace Editor
             }
 
             // Any node not reached (e.g. in a cycle) defaults to level 0.
-            foreach (var id in idList) levels.TryAdd(id, 0);
+            foreach (var id in idList)
+            {
+                levels.TryAdd(id, 0);
+            }
 
             // Group nodes by level, keeping levels in left-to-right order for the sweeps below.
             var byLevel = new SortedDictionary<int, List<string>>();
@@ -416,30 +425,34 @@ namespace Editor
                 for (var i = 0; i < group.Count; i++)
                     rows[group[i]] = i;
 
-            // Barycenter ordering: alternate downward sweeps (align each node with its predecessors)
-            // and upward sweeps (align with its successors) to reduce edge crossings.
+            // Barycenter ordering: alternate downward sweeps (align each node with its predecessors).
+            // Upward sweeps (align with its successors) to reduce edge crossings.
+            // The sweeps reorder the lists byLevel holds, which is what the placement below then reads.
             for (var pass = 0; pass < OrderingPasses; pass++)
             {
                 SortLevelsByBarycenter(byLevel.Values, preds, rows);
                 SortLevelsByBarycenter(byLevel.Values.Reverse(), adj, rows);
             }
 
-            // Place each level in its own column,
-            // stacking its nodes vertically and centring shorter columns against the tallest one.
+            // Place each level in its own column, stacking its nodes vertically and centring shorter columns against the tallest one.
             var tallest = 0;
-            foreach (var group in byLevel.Values) tallest = Mathf.Max(tallest, group.Count);
+            foreach (var group in byLevel.Values)
+            {
+                tallest = Mathf.Max(tallest, group.Count);
+            }
 
             foreach (var (level, group) in byLevel)
             {
                 var x = CanvasOffsetX + level * LevelSpacingX + NodeW * 0.5f;
                 var yStart = CanvasOffsetY + NodeH * 0.5f + (tallest - group.Count) * LevelSpacingY * 0.5f;
                 for (var i = 0; i < group.Count; i++)
+                {
                     positions[group[i]] = new Vector2(x, yStart + i * LevelSpacingY);
+                }
             }
         }
-
-        // One barycenter sweep: reorders every level so each node sits near the average row of its
-        // linked neighbours (predecessors or successors, depending on the sweep direction).
+        
+        // Reorders every level so each node sits near the average row of its linked neighbours.
         // Nodes with no neighbours keep their current row; OrderBy is stable, so ties keep their order.
         private static void SortLevelsByBarycenter(
             IEnumerable<List<string>> levelGroups,
@@ -451,13 +464,15 @@ namespace Editor
                 var ordered = group.OrderBy(id => Barycenter(id, neighbours, rows)).ToList();
                 group.Clear();
                 group.AddRange(ordered);
-                for (var i = 0; i < group.Count; i++) rows[group[i]] = i;
+                for (var i = 0; i < group.Count; i++)
+                {
+                    rows[group[i]] = i;
+                }
             }
         }
 
         // Average row of a node's neighbours, or its own row when it has none to follow.
-        private static float Barycenter(string id, Dictionary<string, List<string>> neighbours,
-            Dictionary<string, float> rows)
+        private static float Barycenter(string id, Dictionary<string, List<string>> neighbours, Dictionary<string, float> rows)
         {
             if (!neighbours.TryGetValue(id, out var linked) || linked.Count == 0) return rows[id];
             var sum = 0f;
@@ -526,8 +541,7 @@ namespace Editor
                     rect.height * TitleHeightRatio), text, labelStyle);
             GUI.Label(
                 new Rect(rect.x + NodePadding, rect.y + rect.height * SubtitleTopRatio, rect.width - NodePadding * 2,
-                    rect.height * SubtitleHeightRatio), subtitle,
-                subStyle);
+                    rect.height * SubtitleHeightRatio), subtitle, subStyle);
 
             // Toggle selection if this node was clicked.
             if (Event.current.type != EventType.MouseDown || !rect.Contains(Event.current.mousePosition)) return;
@@ -599,6 +613,7 @@ namespace Editor
     }
 
     // A standalone copy of the mission generator used by the editor window. Mirrors MissionGenerator's logic.
+    // Kept separate because MissionGenerator is a MonoBehaviour and needs a scene object to run.
     public class MissionGeneratorRuntime
     {
         public RunDifficulty Profile;
