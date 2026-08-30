@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Editor.Tests
+namespace Editor.Tests.Pathfinding
 {
     // A facility written as ASCII rows: "#" wall, anything else is a floor.
     public sealed class AsciiGrid : IDisposable
@@ -28,8 +28,12 @@ namespace Editor.Tests
 
             var tiles = new TileDefinition[width, height];
             for (var y = 0; y < height; y++)
-            for (var x = 0; x < width; x++)
-                tiles[x, y] = rows[height - 1 - y][x] == '#' ? wall : floor;
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    tiles[x, y] = rows[height - 1 - y][x] == '#' ? wall : floor;
+                }
+            }
 
             var scheduler = NewGameObject().AddComponent<Scheduler>();
             Pathfinder = new AStarPathfinder(new EntryRules(new FacilityGrid(tiles), Occupancy, scheduler));
@@ -45,7 +49,11 @@ namespace Editor.Tests
 
         public void Dispose()
         {
-            foreach (var created in _created) Object.DestroyImmediate(created);
+            foreach (var created in _created)
+            {
+                Object.DestroyImmediate(created);
+            }
+
             _created.Clear();
         }
 
