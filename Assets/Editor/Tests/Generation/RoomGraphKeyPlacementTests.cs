@@ -21,7 +21,6 @@ namespace Editor.Tests.Generation
             var profile = LockEverything();
             var graph = RoomGraphGenerator.Generate(ChainMission(), profile, level, TotalLevels);
             Object.DestroyImmediate(profile);
-
             var lockedDoors = graph.edges.FindAll(e => e.locked);
             Assert.That(lockedDoors, Is.Not.Empty, "the profile should force at least one locked door");
 
@@ -38,6 +37,7 @@ namespace Editor.Tests.Generation
         }
 
         // Rooms reachable from the entrance by following edges, with the given door treated as shut.
+        // Edges are followed one way only, as the generator lays them out from the entrance onward.
         private static HashSet<string> ReachableFromEntrance(RoomGraph graph, RoomEdge shut)
         {
             var children = new Dictionary<string, List<string>>();
@@ -61,7 +61,7 @@ namespace Editor.Tests.Generation
             return seen;
         }
 
-        // entry -> prerequisite -> primary: the smallest mission with a lockable objective door.
+        // entry -> prerequisite -> primary: the smallest mission with a locked door to an objective.
         private static MissionGraph ChainMission()
         {
             var mission = new MissionGraph { type = MissionType.Theft, facility = "Test Facility", seed = 1 };
@@ -90,6 +90,7 @@ namespace Editor.Tests.Generation
             return profile;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,

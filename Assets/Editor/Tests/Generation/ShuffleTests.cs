@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace Editor.Tests.Generation
 {
+    // The shared shuffle: a seed fixes the order, and the order is always a permutation of what went in.
     public class ShuffleTests
     {
         private static int[] Sequence(int count) => Enumerable.Range(0, count).ToArray();
@@ -34,6 +35,7 @@ namespace Editor.Tests.Generation
             CollectionAssert.AreNotEqual(first, second);
         }
 
+        // From zero, so the empty and single-item cases are covered as well.
         [Test]
         public void ShufflingIsAPermutation([Range(0, 8)] int count)
         {
@@ -44,6 +46,7 @@ namespace Editor.Tests.Generation
             CollectionAssert.AreEquivalent(Sequence(count), items);
         }
 
+        // Both go through IList, so the two callers of the shuffle draw on the stream identically.
         [Test]
         public void AListShufflesTheSameWayAsAnArray()
         {
@@ -69,6 +72,7 @@ namespace Editor.Tests.Generation
             CollectionAssert.AreNotEqual(source, shuffled, "Copy cloned without shuffling");
         }
 
+        // A biased shuffle would leave some unreachable, regardless of many seeds were tried.
         [Test]
         public void EveryOrderingOfThreeItemsIsReachable()
         {
@@ -79,7 +83,6 @@ namespace Editor.Tests.Generation
                 Shuffle.InPlace(items, new Random(seed));
                 seen.Add(string.Join("", items));
             }
-
             Assert.AreEqual(6, seen.Count, $"only reached {string.Join(" ", seen.OrderBy(order => order))}");
         }
     }

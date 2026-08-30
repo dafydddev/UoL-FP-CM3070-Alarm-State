@@ -33,7 +33,6 @@ namespace Editor.Tests.Generation
             var profile = Profile();
             var graph = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Struggling);
             Object.DestroyImmediate(profile);
-
             Assert.That(Pressures(graph), Is.Empty);
         }
 
@@ -45,7 +44,6 @@ namespace Editor.Tests.Generation
             var thriving = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Thriving);
             var struggling = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Struggling);
             Object.DestroyImmediate(profile);
-
             Assert.That(Supplies(thriving), Is.Empty);
             Assert.That(Pressures(struggling), Is.Empty);
         }
@@ -58,7 +56,6 @@ namespace Editor.Tests.Generation
             var passedZero = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, 0f);
             var passedNothing = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels);
             Object.DestroyImmediate(profile);
-
             Assert.That(Pressures(passedZero), Is.Empty);
             Assert.That(Pressures(passedNothing), Is.Empty);
         }
@@ -70,23 +67,22 @@ namespace Editor.Tests.Generation
             var profile = Profile();
             var graph = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Thriving);
             Object.DestroyImmediate(profile);
-
             var primary = graph.rooms.Find(r => r.type == RoomType.PrimaryObjectiveRoom);
             Assert.That(primary, Is.Not.Null);
-
             foreach (var pressure in Pressures(graph))
+            {
                 Assert.That(Reaches(graph, primary.id, pressure.id), Is.False,
                     $"the objective is reachable without crossing {pressure.id}");
+            }
         }
 
-        // Splicing must leave the objective a single approach, or the reroute has opened a second way in.
+        // Splicing must leave the objective a single approach.
         [Test]
         public void TheObjectiveKeepsASingleApproach()
         {
             var profile = Profile();
             var graph = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Thriving);
             Object.DestroyImmediate(profile);
-
             var primary = graph.rooms.Find(r => r.type == RoomType.PrimaryObjectiveRoom);
             Assert.That(graph.edges.Count(e => e.toId == primary.id), Is.EqualTo(1));
         }
@@ -100,6 +96,7 @@ namespace Editor.Tests.Generation
             var plain = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels);
             Object.DestroyImmediate(profile);
 
+            // Measured against the plain level, so the room is only held to not making a crowded graph worse.
             Assert.That(MaxDoors(injected), Is.LessThanOrEqualTo(Mathf.Max(4, MaxDoors(plain))));
         }
 
@@ -111,11 +108,11 @@ namespace Editor.Tests.Generation
             var first = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Thriving);
             var second = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels, Thriving);
             Object.DestroyImmediate(profile);
-
             Assert.That(Pressures(second).Count, Is.EqualTo(Pressures(first).Count));
         }
 
         // Whether a room is reachable from the graph root with one room cut out of it.
+        // The root is the room nothing leads into, as the layout passes take it to be.
         private static bool Reaches(RoomGraph graph, string goalId, string withoutId)
         {
             var inbound = new HashSet<string>(graph.edges.Select(e => e.toId));
@@ -145,6 +142,7 @@ namespace Editor.Tests.Generation
         private static List<RoomNode> Supplies(RoomGraph graph) =>
             graph.rooms.FindAll(r => r.type == RoomType.SupplyRoom);
 
+        // Edges are undirected for this count: a door tells on both the rooms it joins.
         private static int MaxDoors(RoomGraph graph)
         {
             var doors = new Dictionary<string, int>();
@@ -157,6 +155,7 @@ namespace Editor.Tests.Generation
             return doors.Count == 0 ? 0 : doors.Values.Max();
         }
 
+        // A fixed mission, so what varies between these tests is the standing alone.
         private static MissionGraph Mission()
         {
             var mission = new MissionGraph { type = MissionType.Theft, facility = "Test Facility", seed = 1 };
@@ -187,6 +186,7 @@ namespace Editor.Tests.Generation
             return profile;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,

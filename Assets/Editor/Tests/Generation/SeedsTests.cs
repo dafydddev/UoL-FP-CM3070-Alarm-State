@@ -5,8 +5,10 @@ using NUnit.Framework;
 
 namespace Editor.Tests.Generation
 {
+    // The seed mixer: each subsystem and level draws its own stream from the one base seed.
     public class SeedsTests
     {
+        // Read by reflection, so a subsystem added to Seeds is covered without touching these tests.
         private static readonly (string Name, int Id)[] Subsystems = typeof(Seeds)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Where(field => field.IsLiteral && field.FieldType == typeof(int))
@@ -33,13 +35,16 @@ namespace Editor.Tests.Generation
             var derived = Subsystems.Select(s => (s.Name, Seed: Seeds.For(seed, s.Id))).ToArray();
 
             foreach (var a in derived)
-            foreach (var b in derived)
             {
-                if (a.Name == b.Name) continue;
-                Assert.AreNotEqual(a.Seed, b.Seed, $"{a.Name} and {b.Name} share a stream from base seed {seed}");
+                foreach (var b in derived)
+                {
+                    if (a.Name == b.Name) continue;
+                    Assert.AreNotEqual(a.Seed, b.Seed, $"{a.Name} and {b.Name} share a stream from base seed {seed}");
+                }
             }
         }
 
+        // A mixer that just added the salt would leave the levels in order.
         [Test]
         public void ConsecutiveLevelsDoNotWalkTheSeedInStep([ValueSource(nameof(BaseSeeds))] int seed)
         {

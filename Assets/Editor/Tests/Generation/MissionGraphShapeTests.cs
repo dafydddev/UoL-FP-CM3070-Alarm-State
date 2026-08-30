@@ -17,7 +17,6 @@ namespace Editor.Tests.Generation
         public void ThereIsExactlyOneEntryAndOnePrimary([Values(1, 7, 42)] int seed)
         {
             var mission = GenerateMission(seed);
-
             Assert.That(mission.nodes.Count(n => n.nodeType == NodeType.Entry), Is.EqualTo(1));
             Assert.That(mission.nodes.Count(n => n.nodeType == NodeType.Primary), Is.EqualTo(1));
         }
@@ -102,16 +101,18 @@ namespace Editor.Tests.Generation
             Assert.That(Describe(second), Is.EqualTo(Describe(first)));
         }
 
+        // Flattens the graph to one string, so a single comparison covers ids, types, wording and dependencies.
         private static string Describe(MissionGraph mission) =>
             string.Join("|",
                 mission.nodes.Select(n => $"{n.id}:{n.nodeType}:{n.text}:{string.Join(",", n.dependencies)}"));
 
+        // The generator is a MonoBehaviour, so it needs a host object; both it and the profile are torn down after.
         private static MissionGraph GenerateMission(int seed, int level = 1)
         {
             var profile = Profile();
             var host = new GameObject("~MissionGraphShapeTests") { hideFlags = HideFlags.HideAndDontSave };
             var generator = host.AddComponent<MissionGenerator>();
-            generator.randomSeed = false;
+            generator.randomSeed = false; // the seed is the tests, not a fresh one per call
             generator.randomType = true;
             generator.seed = seed;
 
@@ -134,6 +135,7 @@ namespace Editor.Tests.Generation
             return profile;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,

@@ -43,7 +43,7 @@ namespace Editor.Tests.Generation
             }
         }
 
-        // 4-connected flood fill over Floor cells, returning every cell reached.
+        // 4-connected flood fill over Floor cells, returning every cell reached. Matches how the game moves.
         private static HashSet<Vector2Int> FloodFill(CellRole[,] grid, Vector2Int start)
         {
             var width = grid.GetLength(0);

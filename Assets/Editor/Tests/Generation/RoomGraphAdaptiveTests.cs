@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace Editor.Tests.Generation
 {
+    // The adaptive pass: a struggling player is given a supply room, a thriving one is not.
     public class RoomGraphAdaptiveTests
     {
         private const int TotalLevels = 20;
@@ -36,6 +37,7 @@ namespace Editor.Tests.Generation
             Assert.That(Supplies(graph), Is.Empty);
         }
 
+        // Zero is what a run inside the cooldown reports, and it is also the default.
         [Test]
         public void ALevelStandingAddsNothing()
         {
@@ -57,7 +59,10 @@ namespace Editor.Tests.Generation
             Object.DestroyImmediate(profile);
 
             var parents = new Dictionary<string, string>();
-            foreach (var edge in graph.edges) parents[edge.toId] = edge.fromId;
+            foreach (var edge in graph.edges)
+            {
+                parents[edge.toId] = edge.fromId;
+            }
 
             foreach (var supply in Supplies(graph))
             {
@@ -84,6 +89,7 @@ namespace Editor.Tests.Generation
             var plain = RoomGraphGenerator.Generate(Mission(), profile, Level, TotalLevels);
             Object.DestroyImmediate(profile);
 
+            // Measured against the plain level, so the room is only held to not making a crowded graph worse.
             Assert.That(MaxDoors(injected), Is.LessThanOrEqualTo(Mathf.Max(4, MaxDoors(plain))));
         }
 
@@ -102,6 +108,7 @@ namespace Editor.Tests.Generation
         private static List<RoomNode> Supplies(RoomGraph graph) =>
             graph.rooms.FindAll(r => r.type == RoomType.SupplyRoom);
 
+        // Edges are undirected for this count: a door tells on both the rooms it joins.
         private static int MaxDoors(RoomGraph graph)
         {
             var doors = new Dictionary<string, int>();
@@ -114,6 +121,7 @@ namespace Editor.Tests.Generation
             return doors.Count == 0 ? 0 : doors.Values.Max();
         }
 
+        // A fixed mission, so what varies between these tests is just the standing.
         private static MissionGraph Mission()
         {
             var mission = new MissionGraph { type = MissionType.Theft, facility = "Test Facility", seed = 1 };
@@ -144,6 +152,7 @@ namespace Editor.Tests.Generation
             return profile;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,

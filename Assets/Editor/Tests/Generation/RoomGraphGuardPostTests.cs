@@ -42,6 +42,7 @@ namespace Editor.Tests.Generation
         }
 
         // Walks up the parent chain, stepping over the corridors SpliceCorridors inserts.
+        // The seen set guards against a malformed cyclic graph rather than an expected one.
         private static RoomNode FirstNonCorridorAncestor(RoomGraph graph,
             Dictionary<string, string> parents, string roomId)
         {
@@ -75,6 +76,7 @@ namespace Editor.Tests.Generation
             return node;
         }
 
+        // The mission supplies the objectives, so the profile's own secondary count is held at zero.
         private static RunDifficulty Profile()
         {
             var profile = ScriptableObject.CreateInstance<RunDifficulty>();
@@ -86,6 +88,7 @@ namespace Editor.Tests.Generation
             return profile;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,

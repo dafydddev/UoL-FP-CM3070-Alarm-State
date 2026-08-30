@@ -50,13 +50,16 @@ namespace Editor.Tests.Generation
         {
             var rect = Room();
             for (var seed = 0; seed < Seeds; seed++)
-                foreach (var spec in Layout(seed))
-                foreach (var cell in LaserGridLayout.BeamCells(spec, rect, null))
+            {
+                // Null blocker: nothing stops the beams, so they run their full interior length.
+                foreach (var cell in Layout(seed).SelectMany(spec => LaserGridLayout.BeamCells(spec, rect, null)))
                 {
-                    Assert.That(cell.x, Is.InRange(rect.X + 1, rect.Right - 2), $"seed {seed} runs a beam into a wall");
+                    Assert.That(cell.x, Is.InRange(rect.X + 1, rect.Right - 2),
+                        $"seed {seed} runs a beam into a wall");
                     Assert.That(cell.y, Is.InRange(rect.Y + 1, rect.Bottom - 2),
                         $"seed {seed} runs a beam into a wall");
                 }
+            }
         }
 
         // An emitter on a wall midpoint would sit in a doorway.
@@ -71,9 +74,13 @@ namespace Editor.Tests.Generation
             };
 
             for (var seed = 0; seed < Seeds; seed++)
+            {
                 foreach (var spec in Layout(seed))
+                {
                     Assert.That(doorways.Contains(spec.Emitter), Is.False,
                         $"seed {seed} mounts a laser in a doorway");
+                }
+            }
         }
 
         // Lasers of an axis are spaced evenly either side of the centre, not bunched to one side of the room.
@@ -103,6 +110,7 @@ namespace Editor.Tests.Generation
             for (var seed = 0; seed < Seeds; seed++)
             {
                 var specs = Layout(seed);
+                // Two full cycles, so a phase that only misbehaves on the wrap is caught.
                 for (var tick = 0; tick < Period * 2; tick++)
                 {
                     var firing = specs.Count(spec => LaserGridLayout.IsLive(spec, tick, Period));
@@ -127,6 +135,7 @@ namespace Editor.Tests.Generation
             }
         }
 
+        // A cramped room takes fewer lasers than asked rather than none at all.
         [Test]
         public void ASmallerRoomStillLaysOut()
         {
@@ -144,7 +153,9 @@ namespace Editor.Tests.Generation
         {
             var live = new HashSet<Vector2Int>();
             foreach (var spec in specs.Where(s => LaserGridLayout.IsLive(s, tick, Period)))
+            {
                 live.UnionWith(LaserGridLayout.BeamCells(spec, rect, null));
+            }
 
             return live;
         }
@@ -153,9 +164,11 @@ namespace Editor.Tests.Generation
         private static IEnumerable<Vector2Int> Line(RoomRect rect, bool vertical)
         {
             for (var i = 0; i < RoomSize; i++)
+            {
                 yield return vertical
                     ? new Vector2Int(rect.CenterX, rect.Y + i)
                     : new Vector2Int(rect.X + i, rect.CenterY);
+            }
         }
 
         private static void ForEverySeedAndTick(RoomRect rect, System.Action<HashSet<Vector2Int>, int, int> assert)
@@ -163,7 +176,10 @@ namespace Editor.Tests.Generation
             for (var seed = 0; seed < Seeds; seed++)
             {
                 var specs = Layout(seed);
-                for (var tick = 0; tick < Period * 2; tick++) assert(LiveCells(rect, specs, tick), seed, tick);
+                for (var tick = 0; tick < Period * 2; tick++)
+                {
+                    assert(LiveCells(rect, specs, tick), seed, tick);
+                }
             }
         }
     }
