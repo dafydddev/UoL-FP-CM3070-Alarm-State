@@ -16,6 +16,7 @@ namespace Editor.Tests.Mini_Games
         {
             for (var seed = 0; seed < Seeds; seed++)
             {
+                // A scramble chance of 1 disturbs every tile, which is the hardest case to solve back.
                 var board = PipePuzzleGenerator.Generate(new System.Random(seed), size,
                     complexity: 0.5f, decoyPaths: 2, scrambleChance: 1f);
 
@@ -57,14 +58,17 @@ namespace Editor.Tests.Mini_Games
             Assert.That(Describe(second), Is.EqualTo(Describe(first)));
         }
 
+        // Flattens the board to one string, so a single comparison covers every tile's shape and rotation.
         private static string Describe(PipeBoard board)
         {
             var description = new System.Text.StringBuilder();
             for (var x = 0; x < board.Width; x++)
-            for (var y = 0; y < board.Height; y++)
             {
-                var tile = board.At(new Vector2Int(x, y));
-                description.Append($"{tile.Type}:{tile.Rotation}|");
+                for (var y = 0; y < board.Height; y++)
+                {
+                    var tile = board.At(new Vector2Int(x, y));
+                    description.Append($"{tile.Type}:{tile.Rotation}|");
+                }
             }
 
             return description.ToString();
@@ -76,7 +80,7 @@ namespace Editor.Tests.Mini_Games
         };
 
         // A route exists when every cell along it can be turned to carry the flow through.
-        // Rotations are chosen per cell, which is exactly what the player does.
+        // Rotations are chosen per cell. The start tile is entered from the west, the same as in gameplay.
         private static bool IsSolvable(PipeBoard board) =>
             Walk(board, board.StartCell, PipeDirection.West, new HashSet<Vector2Int>());
 
@@ -102,8 +106,9 @@ namespace Editor.Tests.Mini_Games
         private static bool CanOpen(PipeTile tile, PipeDirection sides)
         {
             for (var rotation = 0; rotation < 4; rotation++)
-                if ((tile.Type.Ends().Rotated(rotation) & sides) == sides)
-                    return true;
+            {
+                if ((tile.Type.Ends().Rotated(rotation) & sides) == sides) return true;
+            }
 
             return false;
         }
