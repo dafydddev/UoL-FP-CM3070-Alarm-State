@@ -35,8 +35,8 @@ namespace Editor
             public long ReliefLevels, ReliefRooms, TotalRooms;
             public int MaxRooms;
 
-            public bool HasViolation =>
-                MultiParent + OverBudget + Unreachable + StackedLevels + NonAdjLevels + Missing > 0;
+            // Relief corridors are reported but not counted against the run: they are the fix, not the fault.
+            public bool HasViolation => MultiParent + OverBudget + Unreachable + StackedLevels + NonAdjLevels + Missing > 0;
         }
 
         // One difficulty profile's graph checks plus both layout styles.
@@ -62,7 +62,7 @@ namespace Editor
             public bool AnyViolation => Profiles.Exists(p => p.HasViolation);
         }
 
-        // Runs the full audit. Returns null if cancelled or difficulty profiles could be loaded.
+        // Runs the full audit. Returns null if cancelled or no difficulty profiles could be loaded.
         public static AuditResult RunAudit(int seeds, bool includeStress)
         {
             var profiles = LoadProfiles(includeStress);
@@ -90,6 +90,7 @@ namespace Editor
 
                     for (var seed = 0; seed < seeds; seed++)
                     {
+                        // Polled every sixteenth seed, as the progress bar costs more than a level does.
                         if ((seed & 15) == 0 &&
                             EditorUtility.DisplayCancelableProgressBar("Layout Audit",
                                 $"{name}: seed {seed}/{seeds}", (p + seed / (float)seeds) / profiles.Count))
@@ -134,6 +135,7 @@ namespace Editor
             return result;
         }
 
+        // The graph as the generator left it, before any layout has had a chance to add relief corridors.
         private static void CheckGraph(RoomGraph g, Stats s)
         {
             s.Levels++;
@@ -180,6 +182,7 @@ namespace Editor
         private static void CheckLayout(RoomGraph g, TileLayoutStyle style, Stats s)
         {
             s.Levels++;
+            // Counted before and after, as the only sign of relief is rooms the graph did not have going in.
             var roomsBefore = g.rooms.Count;
             TileLayoutGenerator.Generate(g, style, out var rects);
             if (g.rooms.Count > roomsBefore)
@@ -189,6 +192,7 @@ namespace Editor
             }
 
             // Rect origins are cell * (RoomW - 1). Infer the stride rather than hardcoding room size.
+            // The smallest non-zero origin is one cell across, as the layout is normalised to start at (0, 0).
             var stride = int.MaxValue;
             foreach (var r in rects.Values)
             {
@@ -209,6 +213,7 @@ namespace Editor
                 s.StackedCells += stacked;
             }
 
+            // A door between rooms that are not neighbours would be carved into a wall with nothing behind it.
             var nonAdj = 0;
             foreach (var e in g.edges)
             {
@@ -247,6 +252,7 @@ namespace Editor
             return p;
         }
 
+        // A range that reads the same at every level, so a test's figures don't drift with difficulty progress.
         private static RunDifficulty.Range Flat(float min, float max) => new()
         {
             minFloor = min, minCeiling = min, maxFloor = max, maxCeiling = max,
