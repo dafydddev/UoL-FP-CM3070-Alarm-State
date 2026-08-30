@@ -51,7 +51,10 @@ namespace Editor
 
             DrawBanner();
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
-            foreach (var profile in _result.Profiles) DrawProfile(profile);
+            foreach (var profile in _result.Profiles)
+            {
+                DrawProfile(profile);
+            }
             EditorGUILayout.EndScrollView();
         }
 
