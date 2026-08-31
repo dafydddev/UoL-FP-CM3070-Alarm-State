@@ -234,7 +234,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  hackingBoardSize:
+  pipeGameBoardSize:
     minFloor: 4
     minCeiling: 6
     minShape:
@@ -287,7 +287,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  hackingComplexity:
+  pipeGameComplexity:
     minFloor: 0.3
     minCeiling: 0.6
     minShape:
@@ -340,7 +340,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  hackingDecoyPaths:
+  pipeGameDecoyPaths:
     minFloor: 1
     minCeiling: 2
     minShape:
@@ -393,7 +393,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  hackingScrambleChance:
+  pipeGameScrambleChance:
     minFloor: 0.7
     minCeiling: 0.9
     minShape:
