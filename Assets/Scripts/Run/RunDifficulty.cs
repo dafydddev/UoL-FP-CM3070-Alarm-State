@@ -66,7 +66,7 @@ namespace Run
         public Range pipeGameBoardSize;
         public Range pipeGameComplexity;
         public Range pipeGameDecoyPaths;
-        public Range pipGameScrambleChance;
+        public Range pipeGameScrambleChance;
 
         // Sequence minigame balance: how many bound keys the order runs to.
         public int sequenceLength = 3;
@@ -146,8 +146,8 @@ namespace Run
         public float PipeGameScrambleChance(int level, int totalLevels, Random rng)
         {
             var p = Progress(level, totalLevels);
-            var min = CurrentMin(pipGameScrambleChance, p);
-            var max = Mathf.Max(CurrentMax(pipGameScrambleChance, p), min);
+            var min = CurrentMin(pipeGameScrambleChance, p);
+            var max = Mathf.Max(CurrentMax(pipeGameScrambleChance, p), min);
             return min + (float)rng.NextDouble() * (max - min);
         }
     }
