@@ -4,7 +4,7 @@ University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Gen
 
 A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C#). The player infiltrates a procedurally generated facility, evades GOAP-driven guards, completes mission objectives, and reaches an exit, over a run of 10, 20, or 30 escalating levels.
 
-<img width="1280" height="725" alt="gameplay scene preview" src="https://github.com/user-attachments/assets/3d4572ad-08df-4d82-82d0-f395432a1952" />
+<img width="1925" height="1075" alt="Alarm State gameplay scene preview" src="https://github.com/user-attachments/assets/62c0e871-fa87-42ae-a849-20e716e495aa" />
 
 ## Playable Build
 
@@ -79,7 +79,7 @@ Supporting systems:
 - [`Entities/`](Assets/Scripts/Entities): doors, keycards, items, cover, lasers, alarm switches, and exits.
 - [`HUD/`](Assets/Scripts/HUD): objectives, hearts, keycards, inventory, alarm, and the minimap.
 
-### 5: Run Structure & Meta-Progression
+### 5: Run Structure and Meta-Progression
 
 - [`Run/RunController.cs`](Assets/Scripts/Run/RunController.cs): builds each level and advances the run as the player exits.
 - [`Run/RunContext.cs`](Assets/Scripts/Run/RunContext.cs): the current run's difficulty, length, progress, and points.
@@ -88,7 +88,28 @@ Supporting systems:
 - [`Analytics/Telemetry.cs`](Assets/Scripts/Analytics/Telemetry.cs): sends the run's progress to Unity Analytics.
 - [`Effects/BlueprintSchematic.cs`](Assets/Scripts/Effects/BlueprintSchematic.cs): the generated floor-plan that drifts behind the menu.
 
-## Verification & Tooling
+### 6: Onboarding and Tutorials
+
+Modal dialogs that pause the gameplay the first time the player interacts with a mechanic.
+
+- [`Tutorials/TutorialController.cs`](Assets/Scripts/Tutorials/TutorialController.cs): the modal dialog. Holds the [`GameLock`](Assets/Scripts/Simulation/GameLock.cs) while open.
+- [`Tutorials/Tutorial.cs`](Assets/Scripts/Tutorials/Tutorial.cs): the static `ShowOnce` entry point the rest of the game calls, with an optional dismissal callback so a caller can defer its own work behind the briefing.
+- [`Tutorials/TutorialCatalogue.cs`](Assets/Scripts/Tutorials/TutorialCatalogue.cs) and [`TutorialEntry.cs`](Assets/Scripts/Tutorials/TutorialEntry.cs): the authored content, as ScriptableObjects under [`Assets/Scriptable Objects/Tutorials`](Assets/Scriptable%20Objects/Tutorials): a title, a body, and an optional image per topic.
+- [`Settings/TutorialSettings.cs`](Assets/Scripts/Settings/TutorialSettings.cs): which topics the save profile has seen. Tools -> Reset Tutorials replays them without wiping the profile.
+
+The topics in [`TutorialTopic`](Assets/Scripts/Tutorials/TutorialTopic.cs), and what raises them:
+
+| Topic | First Time Trigger | Raised By |
+|-------|---------|-----------|
+| `FirstLevel` | The player starts a run. | [`RunController.cs`](Assets/Scripts/Run/RunController.cs) |
+| `PlayerSpotted` | A guard catches sight of the player. | [`GuardAgent.cs`](Assets/Scripts/Guards/GuardAgent.cs) |
+| `AlarmRaised` | An alarm is triggered. | [`AlarmState.cs`](Assets/Scripts/Simulation/AlarmState.cs) |
+| `CoverEntered` | The player enters cover and becomes hidden. | [`PlayerHiding.cs`](Assets/Scripts/Player/PlayerHiding.cs) |
+| `KeycardFound` | The player collects a keycard. | [`Keycard.cs`](Assets/Scripts/Entities/Keycards/Keycard.cs) |
+| `ItemDistraction`, `ItemDisguise`, `ItemLockPick`, `ItemHealthPack` | The player collects an item of the corresponding type. | [`PlayerInventory.cs`](Assets/Scripts/Player/PlayerInventory.cs) |
+| `PipeMiniGame`, `SequenceMiniGame` | A mini-game is opened, with play resumes once the tutorial is dismissed. | [`Mini Games/`](Assets/Scripts/Mini%20Games) |
+
+## Verification and Tooling
 
 ### Editor tools
 
@@ -118,6 +139,7 @@ Assets/
 │   ├── Player/                # Actor, inventory, hiding, disguise, health, keyring, skins
 │   ├── Entities/              # Doors, keycards, objectives, items, cover, lasers, alarm switches, exits
 │   ├── Mini Games/            # Pipe circuit and key sequence mini games
+│   ├── Tutorials/             # Tutorial modals introducing game mechanics
 │   ├── Spawners/              # Level population
 │   ├── Run/                   # Run context, difficulty profiles, performance tracking, loadout
 │   ├── HUD/ Menu/             # In-game HUD (e.g. minimap) and menus (play, shop, pause, results, etc.)
@@ -143,7 +165,7 @@ Assets/
 
 ## Asset Attribution
 
-### Sprites & Tiles
+### Sprites and Tiles
 
 **1-Bit Pack, by Kenney**
 - Facility tiles, entities, water sprites and shore tiles.
