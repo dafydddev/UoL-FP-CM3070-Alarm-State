@@ -159,7 +159,6 @@ namespace Menu
             _cart.AddUpgrade(itemOffer.definition);
             ShowBalance();
             ShowCartButtons();
-            ShowUpgradeSprite(itemOffer);
             ShowUpgrade(itemOffer);
         }
 
@@ -194,6 +193,10 @@ namespace Menu
             var paid = _cart.Total > 0; // read first: committing empties the cart
             _cart.Commit();
             if (paid && uiSfxController) uiSfxController.PlayPurchase();
+            foreach (var offer in offers)
+            {
+                ShowUpgradeSprite(offer);
+            }
             ShowBalance();
             ShowCartButtons();
             ShowOffer(_shown);
