@@ -8969,11 +8969,11 @@ MonoBehaviour:
   pauseAction: {fileID: 5469640936615731471, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   deviceState: {fileID: 911139095}
-  pendingColour: {r: 0.35, g: 0.35, b: 0.35, a: 1}
+  pendingColour: {r: 1, g: 1, b: 1, a: 1}
   nextColour: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   enteredColour: {r: 0, g: 1, b: 1, a: 1}
   wrongColour: {r: 1, g: 0.19607843, b: 0.19607843, a: 1}
-  hoverColour: {r: 1, g: 1, b: 1, a: 1}
+  hoverColour: {r: 0.3019608, g: 0.6, b: 0.9960785, a: 1}
   resetFlash: 0.25
   winFlash: 0.15
 --- !u!1 &811000010
@@ -19867,7 +19867,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Generation.LevelController
   startLevel: 1
   totalLevels: 20
-  default: {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
+  default: {fileID: 11400000, guid: 4dbcffe389577bd4ab41d4ef1e68dbb8, type: 2}
   defaultLayoutStyle: 0
   wipeEffect: {fileID: 331585042}
   audioFader: {fileID: 331278665}
