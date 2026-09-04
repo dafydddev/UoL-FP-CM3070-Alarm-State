@@ -15896,6 +15896,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258603792}
   - component: {fileID: 1258603791}
+  - component: {fileID: 1258603793}
   m_Layer: 0
   m_Name: Input Device Controller
   m_TagString: Untagged
@@ -15930,6 +15931,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 778698432}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1258603793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258603790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9504175f88a6a040a35b4d51b343b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Settings.BindingLoader
+  asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!1 &1263185219
 GameObject:
   m_ObjectHideFlags: 0
