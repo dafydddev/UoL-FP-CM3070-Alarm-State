@@ -21,7 +21,9 @@ namespace Settings
             set => PlayerPrefs.SetInt(AutoDetectKey, value ? 1 : 0);
         }
 
-        // 0 = keyboard, 1 = gamepad.
+        public const int KeyboardOption = 0;
+        public const int GamepadOption = 1;
+
         public static int DeviceIndex
         {
             get => PlayerPrefs.GetInt(DeviceIndexKey, 0);

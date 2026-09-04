@@ -273,14 +273,18 @@ namespace Mini_Games
         };
 
         // Only the typed variant labels off the device; a clicked row is numbered either way.
+        // With auto detect off the labels stay on the chosen device, so a stray press changes nothing.
         private void OnDeviceChanged(InputDevice device)
         {
-            if (_running && !_pointer) RefreshLabels();
+            if (_running && !_pointer && BindingSettings.AutoDetectDevice) RefreshLabels();
         }
 
         private int BindingIndex(InputAction action)
         {
-            var path = deviceState.CurrentDevice is Gamepad ? "<Gamepad>" : "<Keyboard>";
+            var gamepad = BindingSettings.AutoDetectDevice
+                ? deviceState.CurrentDevice is Gamepad
+                : BindingSettings.DeviceIndex == BindingSettings.GamepadOption;
+            var path = gamepad ? "<Gamepad>" : "<Keyboard>";
             return action.bindings.IndexOf(b => b.path.StartsWith(path));
         }
 
