@@ -18,9 +18,6 @@ namespace Menu
             public TMP_Text label;
         }
 
-        private const int KeyboardOption = 0;
-        private const int GamepadOption = 1;
-
         [SerializeField] private InputDeviceState inputDeviceState;
         [SerializeField] private InputActionReference uiNavigateReference;
 
@@ -83,7 +80,8 @@ namespace Menu
         private void LoadDeviceSettings()
         {
             _autoDetect = BindingSettings.AutoDetectDevice;
-            var index = Mathf.Clamp(BindingSettings.DeviceIndex, KeyboardOption, GamepadOption);
+            var index = Mathf.Clamp(BindingSettings.DeviceIndex, BindingSettings.KeyboardOption,
+                BindingSettings.GamepadOption);
 
             if (deviceDropdown)
             {
@@ -95,7 +93,7 @@ namespace Menu
 
             _useGamepad = _autoDetect
                 ? inputDeviceState.CurrentDevice is Gamepad
-                : index == GamepadOption;
+                : index == BindingSettings.GamepadOption;
 
             // Repair the saved value if it was invalid.
             BindingSettings.DeviceIndex = index;
@@ -111,7 +109,7 @@ namespace Menu
             // Fall back to whichever source now owns the selection.
             SetUseGamepad(value
                 ? inputDeviceState.CurrentDevice is Gamepad
-                : deviceDropdown && deviceDropdown.value == GamepadOption);
+                : deviceDropdown && deviceDropdown.value == BindingSettings.GamepadOption);
 
             SyncDropdownInteractable();
         }
@@ -121,7 +119,7 @@ namespace Menu
             BindingSettings.DeviceIndex = index;
             BindingSettings.Save();
             if (_autoDetect) return;
-            SetUseGamepad(index == GamepadOption);
+            SetUseGamepad(index == BindingSettings.GamepadOption);
         }
 
         private void OnInputEvent(InputDevice deviceType)
@@ -142,7 +140,9 @@ namespace Menu
         private void SyncDropdownValue()
         {
             if (!deviceDropdown || !_autoDetect) return;
-            deviceDropdown.SetValueWithoutNotify(_useGamepad ? GamepadOption : KeyboardOption);
+            deviceDropdown.SetValueWithoutNotify(_useGamepad
+                ? BindingSettings.GamepadOption
+                : BindingSettings.KeyboardOption);
             deviceDropdown.RefreshShownValue();
         }
 
