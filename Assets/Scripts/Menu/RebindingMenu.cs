@@ -76,8 +76,6 @@ namespace Menu
         private void Start()
         {
             LoadDeviceSettings();
-            var json = BindingSettings.Overrides;
-            if (!string.IsNullOrEmpty(json)) Asset.LoadBindingOverridesFromJson(json);
             RefreshLabels();
             RefreshImages();
         }

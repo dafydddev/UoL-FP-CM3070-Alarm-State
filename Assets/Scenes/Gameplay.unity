@@ -9923,6 +9923,7 @@ GameObject:
   m_Component:
   - component: {fileID: 911139094}
   - component: {fileID: 911139095}
+  - component: {fileID: 911139096}
   m_Layer: 0
   m_Name: Input Device Controller
   m_TagString: Untagged
@@ -9957,6 +9958,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2092228649cc46bc8b54f75aa4187d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Settings.InputDeviceState
+--- !u!114 &911139096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 911139093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9504175f88a6a040a35b4d51b343b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Settings.BindingLoader
+  asset: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!1 &924456999
 GameObject:
   m_ObjectHideFlags: 0
