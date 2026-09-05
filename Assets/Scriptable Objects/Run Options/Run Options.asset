@@ -16,4 +16,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4dbcffe389577bd4ab41d4ef1e68dbb8, type: 2}
   - {fileID: 11400000, guid: ebc59509eb7d2f54d9ca50064425f8a9, type: 2}
   - {fileID: 11400000, guid: cca5df6c4c2467f4a9092b884e46d9e8, type: 2}
+  defaultProfile: {fileID: 11400000, guid: ebc59509eb7d2f54d9ca50064425f8a9, type: 2}
   runLengths: 0a000000140000001e000000

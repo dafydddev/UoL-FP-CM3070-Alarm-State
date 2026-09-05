@@ -34,6 +34,10 @@ namespace Menu
                 difficultyDropdown.options.Add(new TMP_Dropdown.OptionData(profile.label));
             }
 
+            // Opens on the default
+            var defaultIndex = System.Array.IndexOf(options.profiles, options.defaultProfile);
+            if (defaultIndex >= 0) difficultyDropdown.SetValueWithoutNotify(defaultIndex);
+
             difficultyDropdown.RefreshShownValue();
 
             // One entry per run length.
