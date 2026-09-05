@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44cdaa18fd8e40baad162919df7e5594, type: 3}
   m_Name: Medium
   m_EditorClassIdentifier: Assembly-CSharp::Generation.DifficultyProfile
-  label: Normal
+  label: Medium
   primaryObjectiveReward: 100
   secondaryObjectiveReward: 50
   runCompletedRewards:
@@ -447,3 +447,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   sequenceLength: 4
+  adaptiveRoomChance: 0.5

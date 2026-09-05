@@ -8,6 +8,7 @@ namespace Run
     public class RunOptions : ScriptableObject
     {
         public RunDifficulty[] profiles;
+        public RunDifficulty defaultProfile;
         public int[] runLengths; // e.g. 10, 20, 30
     }
 }
