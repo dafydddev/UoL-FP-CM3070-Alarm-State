@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Settings
 {
+    // Whether rooms are lit. Off trades the look for frames on low-end devices, on by default.
     public static class LightSettings
     {
         private const string LightingKey = "Lighting";
@@ -12,7 +13,7 @@ namespace Settings
 
         public static bool Lighting
         {
-            get => PlayerPrefs.GetInt(LightingKey, 0) == 1;
+            get => PlayerPrefs.GetInt(LightingKey, 1) == 1;
             set
             {
                 if (Lighting == value) return;

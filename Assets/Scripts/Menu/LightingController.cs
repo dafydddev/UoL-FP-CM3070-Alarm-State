@@ -16,14 +16,14 @@ namespace Menu
         {
             // Seeded before the listener is attached, so it does not read as a change.
             SeedControls();
-            lightingToggle.onValueChanged.AddListener(OnHighContrastChanged);
+            lightingToggle.onValueChanged.AddListener(OnLightingChanged);
             applyButton.onClick.AddListener(ApplySettings);
             SetApplyInteractable();
         }
 
         private void OnDisable()
         {
-            lightingToggle.onValueChanged.RemoveListener(OnHighContrastChanged);
+            lightingToggle.onValueChanged.RemoveListener(OnLightingChanged);
             applyButton.onClick.RemoveListener(ApplySettings);
             // Leaving the panel drops anything unapplied.
             SeedControls();
@@ -37,7 +37,7 @@ namespace Menu
         }
 
         // Held rather than written, so the lighting only changes on Apply.
-        private void OnHighContrastChanged(bool value)
+        private void OnLightingChanged(bool value)
         {
             _lighting = value;
             SetApplyInteractable();
