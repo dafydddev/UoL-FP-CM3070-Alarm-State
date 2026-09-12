@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -18,7 +19,8 @@ namespace Menu
         private int _appliedIndex;
         private bool _appliedFullscreen;
 
-        // The saved index points into this, so entries are append-only: reordering would remap saved settings.
+        // The dropdown labels and the saved index both come from this,
+        // so entries are append-only: reordering would remap saved settings.
         private readonly Vector2Int[] _supportedResolutions =
         {
             new(640, 360),
@@ -30,8 +32,16 @@ namespace Menu
 
         private void Awake()
         {
+            BuildOptions();
             LoadSettings();
             ApplyResolution();
+        }
+
+        // Authored options are replaced, so no scene can offer a resolution the list does not have.
+        private void BuildOptions()
+        {
+            dropdown.ClearOptions();
+            dropdown.AddOptions(_supportedResolutions.Select(resolution => $"{resolution.x}x{resolution.y}").ToList());
         }
 
         private void OnEnable()
@@ -73,6 +83,8 @@ namespace Menu
             _index = _appliedIndex;
             _isFullscreen = _appliedFullscreen;
             dropdown.value = _appliedIndex;
+            // Assigning an unchanged value does not redraw the caption, which ClearOptions left stale.
+            dropdown.RefreshShownValue();
             fullscreenToggle.isOn = _appliedFullscreen;
         }
 
@@ -91,14 +103,20 @@ namespace Menu
 
         private void ApplySettings()
         {
+            // Apply is shared with the other graphics options, so the screen is only touched when it changed.
+            var changed = _index != _appliedIndex || _isFullscreen != _appliedFullscreen;
+
             _appliedIndex = _index;
             _appliedFullscreen = _isFullscreen;
 
-            ResolutionSettings.ResolutionIndex = _appliedIndex;
-            ResolutionSettings.Fullscreen = _appliedFullscreen;
+            if (changed)
+            {
+                ResolutionSettings.ResolutionIndex = _appliedIndex;
+                ResolutionSettings.Fullscreen = _appliedFullscreen;
 
-            ApplyResolution();
-            ResolutionSettings.Save();
+                ApplyResolution();
+                ResolutionSettings.Save();
+            }
 
             var events = EventSystem.current;
             var hadFocus = events && events.currentSelectedGameObject == applyButton.gameObject;
@@ -113,11 +131,10 @@ namespace Menu
             // The page owns the canvas size on web.
 #if !UNITY_WEBGL || UNITY_EDITOR
             var resolution = _supportedResolutions[_appliedIndex];
-
             Screen.SetResolution(
                 resolution.x,
                 resolution.y,
-                _appliedFullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed
+                _appliedFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed
             );
 #endif
         }
