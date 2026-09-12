@@ -16,9 +16,9 @@ namespace Spawners
 
         private void OnDisable() => LightSettings.LightingChanged -= SetLights;
 
-        private void SetLights(bool highContrast)
+        private void SetLights(bool lighting)
         {
-            foreach (Transform child in transform) child.gameObject.SetActive(!highContrast);
+            foreach (Transform child in transform) child.gameObject.SetActive(lighting);
         }
 
         public override void Spawn(RoomGraph graph, Dictionary<string, RoomRect> rects, Tilemap tilemap)
@@ -29,7 +29,7 @@ namespace Spawners
                 var pos = tilemap.GetCellCenterWorld(new Vector3Int(rect.CenterX, rect.CenterY, 0));
                 var go = Instantiate(lightPrefab, pos, Quaternion.identity, transform);
                 go.name = $"Light_{room.id}";
-                go.SetActive(!LightSettings.Lighting);
+                go.SetActive(LightSettings.Lighting);
             }
         }
     }
