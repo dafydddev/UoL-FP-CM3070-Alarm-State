@@ -34,6 +34,9 @@ namespace Player
         // Alive while at least one heart remains.
         private bool IsAlive => Current > 0;
 
+        // True while an arrest would cost nothing.
+        public bool Invulnerable => _iFrames > 0f;
+
         private float _iFrames; // seconds of invulnerability remaining
 
         private void Awake()

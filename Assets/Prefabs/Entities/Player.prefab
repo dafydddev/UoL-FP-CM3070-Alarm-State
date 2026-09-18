@@ -417,6 +417,7 @@ GameObject:
   - component: {fileID: 1304217561672542086}
   - component: {fileID: 3028417256172367525}
   - component: {fileID: 3394875128568395120}
+  - component: {fileID: 6450295312158955634}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -694,6 +695,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.UsePrompt
   prompt: {fileID: 3044257572846670421}
+--- !u!114 &6450295312158955634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505076589466554815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 499c2793fd2c19245a762c0aecfcd9c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHitFlash
+  hitColour: {r: 1, g: 0.3, b: 0.3, a: 1}
+  flashSeconds: 0.15
+  blinkInterval: 0.1
+  blinkAlpha: 0.5
 --- !u!1 &5519261102728203849
 GameObject:
   m_ObjectHideFlags: 0
