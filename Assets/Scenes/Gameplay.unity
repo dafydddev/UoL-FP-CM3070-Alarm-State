@@ -18329,6 +18329,7 @@ MonoBehaviour:
   backdrop: {fileID: 3994901}
   openAction: {fileID: 623540399426046508, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   pauseAction: {fileID: 5469640936615731471, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  useAction: {fileID: 1781555164194001046, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!4 &1421318876
 Transform:
   m_ObjectHideFlags: 0
