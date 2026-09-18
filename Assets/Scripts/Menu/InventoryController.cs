@@ -33,6 +33,7 @@ namespace Menu
         [Header("Input Actions")]
         [SerializeField] private InputActionReference openAction;
         [SerializeField] private InputActionReference pauseAction;
+        [SerializeField] private InputActionReference useAction;
 
         private PlayerInventory _inventory; // bound to the spawned player each level
         private GameObject _highlighted;
@@ -42,6 +43,7 @@ namespace Menu
         {
             openAction.action.Enable();
             pauseAction.action.Enable();
+            useAction.action.Enable();
             if (openButton) openButton.onClick.AddListener(OpenFromButton);
             if (backdrop) backdrop.onClick.AddListener(Close);
             foreach (var slot in slots) slot.button.onClick.AddListener(() => Choose(slot));
@@ -51,6 +53,7 @@ namespace Menu
         {
             openAction.action.Disable();
             pauseAction.action.Disable();
+            useAction.action.Disable();
             if (openButton) openButton.onClick.RemoveListener(OpenFromButton);
             if (backdrop) backdrop.onClick.RemoveListener(Close);
             foreach (var slot in slots) slot.button.onClick.RemoveAllListeners();
@@ -69,6 +72,7 @@ namespace Menu
             }
 
             ShowHighlighted();
+            if (useAction.action.WasPressedThisFrame()) ChooseHighlighted();
             if (pauseAction.action.WasPressedThisFrame()) Close();
             if (openAction.action.WasPressedThisFrame()) Close();
         }
@@ -104,6 +108,13 @@ namespace Menu
         {
             _inventory.Select(slot.definition.type);
             Close();
+        }
+
+        // The use key picks the highlighted slot, skipping an empty one.
+        private void ChooseHighlighted()
+        {
+            var slot = slots.FirstOrDefault(s => s.button.gameObject == _highlighted);
+            if (slot != null && slot.button.interactable) Choose(slot);
         }
 
         private void Close()
