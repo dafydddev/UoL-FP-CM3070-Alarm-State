@@ -11,9 +11,9 @@ namespace Player
     // PlayerActor owns the use key and calls TryUse, the inventory does not read input itself.
     public class PlayerInventory : MonoBehaviour
     {
-        // Fires with the item type now shown in the use slot, or null once the slot is empty.
+        // Fires with the item type in the use slot and how many are held, or null and 0 once the slot is empty.
         // Static so the scene's HUD can listen without a reference to the spawned player.
-        public static event Action<ItemType?> OnSlotChanged;
+        public static event Action<ItemType?, int> OnSlotChanged;
 
         // Fires when an item is picked up, but not when a loadout is granted at spawn.
         public static event Action<ItemType> Collected;
@@ -33,7 +33,7 @@ namespace Player
         public int CashInValue => _items.Sum(item => item.CashInValue);
 
         // Announce the empty slot on spawn, the way PlayerHealth announces its hearts, so the HUD starts clean.
-        private void Awake() => OnSlotChanged?.Invoke(Selected);
+        private void Awake() => AnnounceSlot();
 
         // How many of an item type the player is holding, for the inventory screen's slots.
         public int CountOf(ItemType type)
@@ -52,21 +52,20 @@ namespace Player
         // Fills the inventory from a loadout at spawn. Nothing was picked up, so nothing is announced.
         public void Grant(IInventoryItem item) => Add(item);
 
-        // The first item into an empty inventory fills the use slot.
+        // The first item into an empty inventory fills the use slot. Another of the selected type raises its count.
         private void Add(IInventoryItem item)
         {
             var wasEmpty = _items.Count == 0;
             _items.Add(item);
-            if (!wasEmpty) return;
-            Selected = item.Type;
-            OnSlotChanged?.Invoke(Selected);
+            if (wasEmpty) Selected = item.Type;
+            if (item.Type == Selected) AnnounceSlot();
         }
 
         // Puts an item into the use slot; called by the inventory screen.
         public void Select(ItemType type)
         {
             Selected = type;
-            OnSlotChanged?.Invoke(Selected);
+            AnnounceSlot();
         }
 
         // Uses one item of the selected type, dropping it only once it has acted and been used up.
@@ -82,13 +81,14 @@ namespace Player
                 Used?.Invoke(type);
                 if (!_items[i].IsSpent) return true; // it acted but has uses left; keep it in hand
                 _items.RemoveAt(i);
-                if (CountOf(type) != 0) return true; // more of it in hand; the slot stands
-                Selected = null;
-                OnSlotChanged?.Invoke(Selected);
+                if (CountOf(type) == 0) Selected = null;
+                AnnounceSlot();
                 return true;
             }
 
             return false; // nothing of the selected type to spend
         }
+
+        private void AnnounceSlot() => OnSlotChanged?.Invoke(Selected, Selected.HasValue ? CountOf(Selected.Value) : 0);
     }
 }
