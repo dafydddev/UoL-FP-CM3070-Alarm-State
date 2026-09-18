@@ -11,6 +11,9 @@ namespace Entities
     {
         [SerializeField] private Color activeColour = Color.red;
 
+        // The minimap blip child, live only while the alarm sounds.
+        [SerializeField] private GameObject blip;
+
         public Vector2Int Cell { get; private set; }
 
         private WorldContext _world;
@@ -53,6 +56,7 @@ namespace Entities
         private void Tint(bool active)
         {
             if (_renderer) _renderer.color = active ? activeColour : _idleColour;
+            if (blip) blip.SetActive(active);
         }
 
         private void OnDestroy()
