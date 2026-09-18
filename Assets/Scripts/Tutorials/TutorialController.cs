@@ -7,6 +7,7 @@ using Settings;
 using Simulation;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Tutorials
@@ -24,6 +25,11 @@ namespace Tutorials
         [Header("Dismissal")] [SerializeField] private Button continueButton;
 
         [Header("Timing")] [SerializeField] private SimulationClock clock;
+
+        // Any action named {Like This} in a body gives way to the key it is bound to.
+        [Header("Bindings")] [SerializeField] private InputActionAsset bindings;
+
+        [SerializeField] private InputDeviceState deviceState;
 
         private readonly Queue<(TutorialEntry entry, Action onDismissed)> _queue = new();
 
@@ -108,7 +114,7 @@ namespace Tutorials
             WaitOutStep(); // so anything still queued waits out its own step rather than inheriting this one
 
             titleText.text = request.entry.title;
-            bodyText.text = request.entry.body;
+            bodyText.text = WithBindings(request.entry.body);
             if (image)
             {
                 image.sprite = request.entry.image;
@@ -117,6 +123,17 @@ namespace Tutorials
 
             GameLock.Acquire();
             panel.SetActive(true);
+        }
+
+        // Read at the point of showing, so a rebind lands on a body written long before it.
+        private string WithBindings(string body)
+        {
+            foreach (var action in bindings)
+            {
+                body = body.Replace($"{{{action.name}}}", BindingDisplay.For(action, deviceState));
+            }
+
+            return body;
         }
 
         private void Dismiss()

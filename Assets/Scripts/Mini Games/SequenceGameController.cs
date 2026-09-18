@@ -246,13 +246,7 @@ namespace Mini_Games
                     continue;
                 }
 
-                var action = keyActions[_order[i]].action;
-                var index = BindingIndex(action);
-                _slots[i].text = index < 0
-                    ? ""
-                    : action
-                        .GetBindingDisplayString(index, InputBinding.DisplayStringOptions.DontIncludeInteractions)
-                        .ToUpper();
+                _slots[i].text = BindingDisplay.For(keyActions[_order[i]].action, deviceState);
             }
         }
 
@@ -277,15 +271,6 @@ namespace Mini_Games
         private void OnDeviceChanged(InputDevice device)
         {
             if (_running && !_pointer && BindingSettings.AutoDetectDevice) RefreshLabels();
-        }
-
-        private int BindingIndex(InputAction action)
-        {
-            var gamepad = BindingSettings.AutoDetectDevice
-                ? deviceState.CurrentDevice is Gamepad
-                : BindingSettings.DeviceIndex == BindingSettings.GamepadOption;
-            var path = gamepad ? "<Gamepad>" : "<Keyboard>";
-            return action.bindings.IndexOf(b => b.path.StartsWith(path));
         }
 
         // Backing out leaves the process incomplete. Using the objective again reopens the same order.
