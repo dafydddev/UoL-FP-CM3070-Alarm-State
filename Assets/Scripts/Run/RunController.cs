@@ -260,6 +260,19 @@ namespace Run
                 resultsController.Hide();
             }
 
+            LeaveRun();
+        }
+
+        // Retry starts the same run over from level 1, otherwise back to the menu.
+        private void LeaveRun()
+        {
+            if (resultsController && resultsController.Retried)
+            {
+                RunContext.Pending = new RunContext(_run.DifficultyProfile, 1, _run.TotalLevels, _run.LayoutStyle);
+                SceneManager.LoadScene("Gameplay");
+                return;
+            }
+
             SceneManager.LoadScene("Main Menu");
         }
     }

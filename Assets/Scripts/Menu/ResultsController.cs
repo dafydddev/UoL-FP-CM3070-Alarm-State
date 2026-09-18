@@ -27,6 +27,7 @@ namespace Menu
             public bool ShowRunBonus;
             public bool ShowUnusedItems;
             public bool ShowBalance;
+            public bool ShowRetry;
             public int InitialTotal;
             public int Level;
         }
@@ -34,6 +35,7 @@ namespace Menu
         [Header("Results screen scaffold")]
         [SerializeField] private MenuPanel resultsMenu;
         [SerializeField] private Button continueButton;
+        [SerializeField] private Button retryButton;
         [SerializeField] private TMP_Text headingLabel;
         [SerializeField] private TMP_Text levelLabel;
 
@@ -55,9 +57,20 @@ namespace Menu
         private bool _continued;
         private bool _counting;
 
-        private void OnEnable() => continueButton.onClick.AddListener(OnContinue);
+        // Set when the player chose retry over continue.
+        public bool Retried { get; private set; }
 
-        private void OnDisable() => continueButton.onClick.RemoveListener(OnContinue);
+        private void OnEnable()
+        {
+            continueButton.onClick.AddListener(OnContinue);
+            retryButton.onClick.AddListener(OnRetry);
+        }
+
+        private void OnDisable()
+        {
+            continueButton.onClick.RemoveListener(OnContinue);
+            retryButton.onClick.RemoveListener(OnRetry);
+        }
 
         // Mid-count the button skips the tally to its finished figures; only a press after that continues.
         private void OnContinue()
@@ -66,11 +79,20 @@ namespace Menu
             else _continued = true;
         }
 
+        // Lands any count still running and ends the screen.
+        private void OnRetry()
+        {
+            Retried = true;
+            _counting = false;
+            _continued = true;
+        }
+
         private static ResultsView ViewFor(ResultsScreen screen, RunContext run) => screen switch
         {
             ResultsScreen.LevelComplete => new ResultsView
             {
                 ShowBreakdown = true, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
+                ShowRetry = false,
                 InitialTotal = 0,
                 // Shown after Advance, so the cleared level is the one before.
                 Level = run.CurrentLevel - 1
@@ -78,6 +100,7 @@ namespace Menu
             ResultsScreen.RunComplete => new ResultsView
             {
                 ShowBreakdown = true, ShowRunBonus = true, ShowUnusedItems = true, ShowBalance = true,
+                ShowRetry = false,
                 InitialTotal = 0,
                 Level = run.CurrentLevel
             },
@@ -85,6 +108,7 @@ namespace Menu
             ResultsScreen.RunFailed => new ResultsView
             {
                 ShowBreakdown = false, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
+                ShowRetry = true,
                 InitialTotal = run.PendingCurrency,
                 Level = run.CurrentLevel
             },
@@ -96,6 +120,7 @@ namespace Menu
         {
             _continued = false;
             _counting = true;
+            Retried = false;
             if (headingLabel) headingLabel.text = heading;
 
             var view = ViewFor(screen, run);
@@ -105,6 +130,7 @@ namespace Menu
             runCompleteRow.SetActive(view.ShowRunBonus);
             unusedItemsRow.SetActive(view.ShowUnusedItems);
             balanceRow.SetActive(view.ShowBalance);
+            retryButton.gameObject.SetActive(view.ShowRetry);
 
             if (view.ShowBreakdown)
             {
