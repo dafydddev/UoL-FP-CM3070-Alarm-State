@@ -7667,7 +7667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 576564920c262054d84cc07ccb222232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Menu.MenuPanel
-  firstSelectable: {fileID: 0}
+  firstSelectable: {fileID: 1871531619}
 --- !u!1 &633048074
 GameObject:
   m_ObjectHideFlags: 0
@@ -10588,6 +10588,8 @@ MonoBehaviour:
   image: {fileID: 2087572232}
   continueButton: {fileID: 446698795}
   clock: {fileID: 1125184272}
+  bindings: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  deviceState: {fileID: 911139095}
 --- !u!1 &816689772
 GameObject:
   m_ObjectHideFlags: 0
@@ -20765,9 +20767,9 @@ MonoBehaviour:
   m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 8
+  m_fontSizeMax: 18
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
