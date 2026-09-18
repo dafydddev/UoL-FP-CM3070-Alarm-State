@@ -1,5 +1,6 @@
 ﻿using Generation.Tiles;
 using Run;
+using Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -34,9 +35,10 @@ namespace Menu
                 difficultyDropdown.options.Add(new TMP_Dropdown.OptionData(profile.label));
             }
 
-            // Opens on the default
-            var defaultIndex = System.Array.IndexOf(options.profiles, options.defaultProfile);
-            if (defaultIndex >= 0) difficultyDropdown.SetValueWithoutNotify(defaultIndex);
+            // Opens on the last run's difficulty, else the default.
+            var difficultyIndex = System.Array.FindIndex(options.profiles, p => p.label == RunSettings.Difficulty);
+            if (difficultyIndex < 0) difficultyIndex = System.Array.IndexOf(options.profiles, options.defaultProfile);
+            if (difficultyIndex >= 0) difficultyDropdown.SetValueWithoutNotify(difficultyIndex);
 
             difficultyDropdown.RefreshShownValue();
 
@@ -47,6 +49,10 @@ namespace Menu
                 levelsDropdown.options.Add(new TMP_Dropdown.OptionData($"{length}"));
             }
 
+            // Opens on the last run's length, else the first.
+            var lengthIndex = System.Array.IndexOf(options.runLengths, RunSettings.Length);
+            if (lengthIndex >= 0) levelsDropdown.SetValueWithoutNotify(lengthIndex);
+
             levelsDropdown.RefreshShownValue();
 
             // One entry per layout style.
@@ -56,19 +62,29 @@ namespace Menu
                 layoutDropdown.options.Add(new TMP_Dropdown.OptionData(label));
             }
 
+            // Opens on the last run's layout, else the first.
+            var layoutIndex = System.Array.FindIndex(Layouts, l => l.style == RunSettings.Layout);
+            if (layoutIndex >= 0) layoutDropdown.SetValueWithoutNotify(layoutIndex);
+
             layoutDropdown.RefreshShownValue();
             startRunButton.onClick.AddListener(Play);
         }
 
         private void Play()
         {
-            // Stash the selection for RunController, then enter the gameplay scene.
             // Each dropdown was filled from its source in order, so its value indexes straight back into it.
-            RunContext.Pending = new RunContext(
-                options.profiles[difficultyDropdown.value],
-                1,
-                options.runLengths[levelsDropdown.value],
-                Layouts[layoutDropdown.value].style);
+            var profile = options.profiles[difficultyDropdown.value];
+            var length = options.runLengths[levelsDropdown.value];
+            var layout = Layouts[layoutDropdown.value].style;
+
+            // Remembered so the menu opens on this selection next time.
+            RunSettings.Difficulty = profile.label;
+            RunSettings.Length = length;
+            RunSettings.Layout = layout;
+            RunSettings.Save();
+
+            // Stash the selection for RunController, then enter the gameplay scene.
+            RunContext.Pending = new RunContext(profile, 1, length, layout);
             SceneManager.LoadScene("Gameplay");
         }
     }
