@@ -28,12 +28,14 @@ namespace Menu
             public bool ShowUnusedItems;
             public bool ShowBalance;
             public int InitialTotal;
+            public int Level;
         }
 
         [Header("Results screen scaffold")]
         [SerializeField] private MenuPanel resultsMenu;
         [SerializeField] private Button continueButton;
         [SerializeField] private TMP_Text headingLabel;
+        [SerializeField] private TMP_Text levelLabel;
 
         [Header("Result screen data")]
         [SerializeField] private GameObject primaryObjectiveRow;
@@ -69,18 +71,22 @@ namespace Menu
             ResultsScreen.LevelComplete => new ResultsView
             {
                 ShowBreakdown = true, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
-                InitialTotal = 0
+                InitialTotal = 0,
+                // Shown after Advance, so the cleared level is the one before.
+                Level = run.CurrentLevel - 1
             },
             ResultsScreen.RunComplete => new ResultsView
             {
                 ShowBreakdown = true, ShowRunBonus = true, ShowUnusedItems = true, ShowBalance = true,
-                InitialTotal = 0
+                InitialTotal = 0,
+                Level = run.CurrentLevel
             },
             // The forfeit drains rather than climbs, so it opens on the full purse.
             ResultsScreen.RunFailed => new ResultsView
             {
                 ShowBreakdown = false, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
-                InitialTotal = run.PendingCurrency
+                InitialTotal = run.PendingCurrency,
+                Level = run.CurrentLevel
             },
             _ => throw new ArgumentOutOfRangeException(nameof(screen), screen, null)
         };
@@ -93,6 +99,7 @@ namespace Menu
             if (headingLabel) headingLabel.text = heading;
 
             var view = ViewFor(screen, run);
+            if (levelLabel) levelLabel.text = $"Level {view.Level} of {run.TotalLevels}";
             primaryObjectiveRow.SetActive(view.ShowBreakdown);
             secondaryObjectiveRow.SetActive(view.ShowBreakdown);
             runCompleteRow.SetActive(view.ShowRunBonus);
