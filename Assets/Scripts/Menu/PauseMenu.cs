@@ -62,6 +62,7 @@ namespace Menu
         {
             _isPaused = true;
             GameLock.Acquire();
+            InputSystem.ResetHaptics();
             ShowPanel(defaultPanel);
             pauseButton.gameObject.SetActive(false);
         }
