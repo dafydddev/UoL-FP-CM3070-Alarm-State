@@ -27,6 +27,7 @@ namespace Menu
 
         [SerializeField] private Toggle autoDetectToggle;
         [SerializeField] private TMP_Dropdown deviceDropdown;
+        [SerializeField] private Toggle rumbleToggle;
 
         [SerializeField] private Entry[] entries;
 
@@ -55,6 +56,7 @@ namespace Menu
             resetButton?.onClick.AddListener(ResetBindings);
             if (autoDetectToggle) autoDetectToggle.onValueChanged.AddListener(OnAutoDetectChanged);
             if (deviceDropdown) deviceDropdown.onValueChanged.AddListener(OnDeviceDropdownChanged);
+            if (rumbleToggle) rumbleToggle.onValueChanged.AddListener(OnRumbleChanged);
         }
 
         private void OnDisable()
@@ -68,6 +70,7 @@ namespace Menu
             resetButton?.onClick.RemoveListener(ResetBindings);
             if (autoDetectToggle) autoDetectToggle.onValueChanged.RemoveListener(OnAutoDetectChanged);
             if (deviceDropdown) deviceDropdown.onValueChanged.RemoveListener(OnDeviceDropdownChanged);
+            if (rumbleToggle) rumbleToggle.onValueChanged.RemoveListener(OnRumbleChanged);
         }
 
         private void Start()
@@ -90,6 +93,7 @@ namespace Menu
             }
 
             autoDetectToggle?.SetIsOnWithoutNotify(_autoDetect);
+            if (rumbleToggle) rumbleToggle.SetIsOnWithoutNotify(RumbleSettings.Enabled);
 
             _useGamepad = _autoDetect
                 ? inputDeviceState.CurrentDevice is Gamepad
@@ -98,6 +102,7 @@ namespace Menu
             // Repair the saved value if it was invalid.
             BindingSettings.DeviceIndex = index;
             SyncDropdownInteractable();
+            SyncRumbleInteractable();
         }
 
         private void OnAutoDetectChanged(bool value)
@@ -112,6 +117,12 @@ namespace Menu
                 : deviceDropdown && deviceDropdown.value == BindingSettings.GamepadOption);
 
             SyncDropdownInteractable();
+        }
+
+        private void OnRumbleChanged(bool value)
+        {
+            RumbleSettings.Enabled = value;
+            RumbleSettings.Save();
         }
 
         private void OnDeviceDropdownChanged(int index)
@@ -132,6 +143,7 @@ namespace Menu
         {
             _useGamepad = useGamepad;
             SyncDropdownValue();
+            SyncRumbleInteractable();
             RefreshLabels();
             RefreshImages();
         }
@@ -149,6 +161,12 @@ namespace Menu
         private void SyncDropdownInteractable()
         {
             if (deviceDropdown) deviceDropdown.interactable = !_autoDetect;
+        }
+
+        // Rumble toggle only available when using gamepad.
+        private void SyncRumbleInteractable()
+        {
+            if (rumbleToggle) rumbleToggle.interactable = _useGamepad;
         }
 
         private void StartRebind(Entry entry)
