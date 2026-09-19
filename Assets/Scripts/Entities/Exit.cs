@@ -14,6 +14,9 @@ namespace Entities
         // Worn while the exit is sealed. The prefab's own sprite is the open look.
         [SerializeField] private Sprite lockedSprite;
 
+        // The minimap blip child, live only while the exit is open.
+        [SerializeField] private GameObject blip;
+
         private SpriteRenderer _sprite;
         private Sprite _openSprite;
         private Vector2Int _cell;
@@ -49,10 +52,11 @@ namespace Entities
 
         private void OnAlarmChanged(bool active) => Refresh();
 
-        // Puts up whichever sprite matches the state the exit is in.
+        // Puts up whichever sprite and blip match the state the exit is in.
         private void Refresh()
         {
             if (_sprite && lockedSprite) _sprite.sprite = Locked ? lockedSprite : _openSprite;
+            if (blip) blip.SetActive(!Locked);
         }
 
         public bool CanUse(Actor user) => user is PlayerActor && !Locked;
