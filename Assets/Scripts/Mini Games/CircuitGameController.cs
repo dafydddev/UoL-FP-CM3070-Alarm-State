@@ -12,9 +12,9 @@ using UnityEngine.UI;
 
 namespace Mini_Games
 {
-    // The pipe minigame. Opens when the player activates a primary objective.
+    // The circuit minigame. Opens when the player activates a primary objective.
     // The objective completes once the pipes are rotated into a circuit from the feed to the outlet.
-    public class PipeGameController : MonoBehaviour
+    public class CircuitGameController : MonoBehaviour
     {
         // Fires each time the player turns a tile, by click or by the use key.
         public static event Action TileRotated;
@@ -56,7 +56,7 @@ namespace Mini_Games
 
         private RunContext _run;
         private Objective _objective; // the objective being attempted
-        private PipeBoard _board;
+        private CircuitBoard _board;
         private PipeTileButton[,] _buttons;
         private Vector2Int _selected; // the tile the move keys are parked on
         private bool _attempting; // a minigame is on screen and holding the game lock
@@ -127,7 +127,7 @@ namespace Mini_Games
             var complexity = profile.PipeGameComplexity(_run.CurrentLevel, _run.TotalLevels, rng);
             var decoys = profile.PipeGameDecoyPathCount(_run.CurrentLevel, _run.TotalLevels, rng);
             var scramble = profile.PipeGameScrambleChance(_run.CurrentLevel, _run.TotalLevels, rng);
-            _board = PipePuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
+            _board = CircuitPuzzleGenerator.Generate(rng, size, complexity, decoys, scramble);
 
             startMarkerImage.color = pipeColour;
             endMarkerImage.color = pipeColour;

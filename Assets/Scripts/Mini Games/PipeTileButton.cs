@@ -9,7 +9,7 @@ namespace Mini_Games
     [RequireComponent(typeof(Button))]
     public class PipeTileButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
-        private PipeGameController _controller;
+        private CircuitGameController _controller;
 
         [SerializeField] private Image pipeImage;
 
@@ -18,7 +18,7 @@ namespace Mini_Games
         // The tile this button renders, assigned by the minigame when the board is built.
         public PipeTile Tile { get; private set; }
 
-        public void SetController(PipeGameController controller) => _controller = controller;
+        public void SetController(CircuitGameController controller) => _controller = controller;
 
         private void Awake() => Button = GetComponent<Button>();
 
