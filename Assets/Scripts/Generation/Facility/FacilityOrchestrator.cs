@@ -33,7 +33,7 @@ namespace Generation.Facility
         [SerializeField] private MinimapHud minimap;
         
         [Header("Mini Game Controllers")]
-        [SerializeField] private PipeGameController pipeGameController;
+        [SerializeField] private CircuitGameController circuitGameController;
         [SerializeField] private SequenceGameController sequenceGameController;
 
         [Header("Spawners")]
@@ -140,7 +140,7 @@ namespace Generation.Facility
             floorDetailSpawner?.Spawn(rooms, rects, tilemap);
 
             // Hand the minigame screens the run state.
-            pipeGameController?.Prepare(run);
+            circuitGameController?.Prepare(run);
             sequenceGameController?.Prepare(run);
 
             // Scale the mini-map for the generated level.

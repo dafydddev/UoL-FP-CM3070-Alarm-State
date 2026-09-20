@@ -5,7 +5,7 @@ namespace Mini_Games
 {
     // A grid of rotatable pipe tiles plus the two fixed nodes power flows between.
     // Power feeds into the start tile from the west, off the board, and the circuit completes when it can leave the end tile eastward.
-    public class PipeBoard
+    public class CircuitBoard
     {
         private readonly PipeTile[,] _tiles;
 
@@ -13,7 +13,7 @@ namespace Mini_Games
         public Vector2Int StartCell { get; }
         public Vector2Int EndCell { get; }
 
-        public PipeBoard(PipeTile[,] tiles, Vector2Int startCell, Vector2Int endCell)
+        public CircuitBoard(PipeTile[,] tiles, Vector2Int startCell, Vector2Int endCell)
         {
             _tiles = tiles;
             StartCell = startCell;

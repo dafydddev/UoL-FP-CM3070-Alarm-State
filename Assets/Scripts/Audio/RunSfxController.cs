@@ -38,7 +38,7 @@ namespace Audio
             Objective.MiniGameRequested += OnObjectiveStarted;
             Objective.Complete += OnObjectiveCompleted;
             SequenceGameController.KeyEntered += OnSequenceKeyEntered;
-            PipeGameController.TileRotated += OnTileRotated;
+            CircuitGameController.TileRotated += OnTileRotated;
         }
 
         private void OnDisable()
@@ -51,7 +51,7 @@ namespace Audio
             Objective.MiniGameRequested -= OnObjectiveStarted;
             Objective.Complete -= OnObjectiveCompleted;
             SequenceGameController.KeyEntered -= OnSequenceKeyEntered;
-            PipeGameController.TileRotated -= OnTileRotated;
+            CircuitGameController.TileRotated -= OnTileRotated;
         }
 
         private void OnDied() => Play(death);

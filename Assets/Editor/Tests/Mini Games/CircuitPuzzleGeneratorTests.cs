@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Editor.Tests.Mini_Games
 {
-    // Solvability of the generated pipe game board.
+    // Solvability of the generated circuit game board.
     // An unsolvable board would strand the player on an objective with no way to finish it.
-    public class PipePuzzleGeneratorTests
+    public class CircuitPuzzleGeneratorTests
     {
         private const int Seeds = 25;
 
@@ -17,7 +17,7 @@ namespace Editor.Tests.Mini_Games
             for (var seed = 0; seed < Seeds; seed++)
             {
                 // A scramble chance of 1 disturbs every tile, which is the hardest case to solve back.
-                var board = PipePuzzleGenerator.Generate(new System.Random(seed), size,
+                var board = CircuitPuzzleGenerator.Generate(new System.Random(seed), size,
                     complexity: 0.5f, decoyPaths: 2, scrambleChance: 1f);
 
                 Assert.IsTrue(IsSolvable(board), $"size {size} seed {seed} generated an unsolvable board");
@@ -30,7 +30,7 @@ namespace Editor.Tests.Mini_Games
         {
             for (var seed = 0; seed < Seeds; seed++)
             {
-                var board = PipePuzzleGenerator.Generate(new System.Random(seed), size,
+                var board = CircuitPuzzleGenerator.Generate(new System.Random(seed), size,
                     complexity: 0.5f, decoyPaths: 2, scrambleChance: 1f);
 
                 Assert.IsFalse(board.TryTraceCircuit(out _), $"size {size} seed {seed} arrived already solved");
@@ -40,7 +40,7 @@ namespace Editor.Tests.Mini_Games
         [Test]
         public void BoardsSmallerThanTheMinimumAreClampedUp()
         {
-            var board = PipePuzzleGenerator.Generate(new System.Random(1), size: 1,
+            var board = CircuitPuzzleGenerator.Generate(new System.Random(1), size: 1,
                 complexity: 0.5f, decoyPaths: 0, scrambleChance: 0f);
 
             Assert.That(board.Width, Is.GreaterThanOrEqualTo(3));
@@ -50,8 +50,8 @@ namespace Editor.Tests.Mini_Games
         [Test]
         public void TheSameSeedProducesTheSameBoard()
         {
-            var first = PipePuzzleGenerator.Generate(new System.Random(7), 5, 0.5f, 2, 1f);
-            var second = PipePuzzleGenerator.Generate(new System.Random(7), 5, 0.5f, 2, 1f);
+            var first = CircuitPuzzleGenerator.Generate(new System.Random(7), 5, 0.5f, 2, 1f);
+            var second = CircuitPuzzleGenerator.Generate(new System.Random(7), 5, 0.5f, 2, 1f);
 
             Assert.That(second.StartCell, Is.EqualTo(first.StartCell));
             Assert.That(second.EndCell, Is.EqualTo(first.EndCell));
@@ -59,7 +59,7 @@ namespace Editor.Tests.Mini_Games
         }
 
         // Flattens the board to one string, so a single comparison covers every tile's shape and rotation.
-        private static string Describe(PipeBoard board)
+        private static string Describe(CircuitBoard board)
         {
             var description = new System.Text.StringBuilder();
             for (var x = 0; x < board.Width; x++)
@@ -81,10 +81,10 @@ namespace Editor.Tests.Mini_Games
 
         // A route exists when every cell along it can be turned to carry the flow through.
         // Rotations are chosen per cell. The start tile is entered from the west, the same as in gameplay.
-        private static bool IsSolvable(PipeBoard board) =>
+        private static bool IsSolvable(CircuitBoard board) =>
             Walk(board, board.StartCell, PipeDirection.West, new HashSet<Vector2Int>());
 
-        private static bool Walk(PipeBoard board, Vector2Int cell, PipeDirection entry,
+        private static bool Walk(CircuitBoard board, Vector2Int cell, PipeDirection entry,
             HashSet<Vector2Int> onPath)
         {
             if (board.At(cell) == null || !onPath.Add(cell)) return false;

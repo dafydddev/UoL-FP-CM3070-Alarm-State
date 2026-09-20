@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Mini_Games
 {
     // Builds a game board from a seeded RNG so every puzzle is reproducible.
-    public static class PipePuzzleGenerator
+    public static class CircuitPuzzleGenerator
     {
         private const int MinSize = 3; // below this a board can't hold a non-trivial circuit
         private const int MaxDecoyLength = 3;
@@ -22,7 +22,7 @@ namespace Mini_Games
             PipeDirection.North, PipeDirection.East, PipeDirection.South, PipeDirection.West
         };
 
-        public static PipeBoard Generate(System.Random rng, int size, float complexity, int decoyPaths,
+        public static CircuitBoard Generate(System.Random rng, int size, float complexity, int decoyPaths,
             float scrambleChance)
         {
             size = Mathf.Max(size, MinSize);
@@ -60,7 +60,7 @@ namespace Mini_Games
             }
 
             // 4. Twist the starting rotations so the player has a knot to untangle.
-            var board = new PipeBoard(tiles, start, end);
+            var board = new CircuitBoard(tiles, start, end);
             Scramble(rng, board, solution, scrambleChance);
             return board;
         }
@@ -234,7 +234,7 @@ namespace Mini_Games
 
         // Randomises starting rotations — scrambleChance is the odds each tile is disturbed —
         // then makes sure the board can't open already solved.
-        private static void Scramble(System.Random rng, PipeBoard board, List<Vector2Int> solution,
+        private static void Scramble(System.Random rng, CircuitBoard board, List<Vector2Int> solution,
             float scrambleChance)
         {
             for (var x = 0; x < board.Width; x++)
@@ -259,7 +259,7 @@ namespace Mini_Games
         }
 
         // Turns the start tile until the side the feed enters by is shut.
-        private static void CloseFeed(PipeBoard board)
+        private static void CloseFeed(CircuitBoard board)
         {
             var tile = board.At(board.StartCell);
             for (var turn = 0; turn < 4 && (tile.Connections & PipeDirection.West) != 0; turn++)
