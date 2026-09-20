@@ -6,6 +6,7 @@ using Graphs.Rooms;
 using Menu;
 using Player;
 using Run;
+using Settings;
 using Simulation;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Spawners
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private CameraFollow cameraFollow;
         [SerializeField] private InventoryController inventoryController;
+        [SerializeField] private InputDeviceState deviceState;
 
         // The item types a loadout can grant, each carrying the prefab the player is handed for it.
         [SerializeField] private ItemDefinition[] startingItems;
@@ -35,6 +37,7 @@ namespace Spawners
             world.BindPlayer(actor); // so other sim participants (e.g. guards) can find the player
             if (cameraFollow) cameraFollow.SetTarget(_player.transform);
             if (inventoryController) inventoryController.Bind(_player.GetComponent<PlayerInventory>());
+            if (deviceState && _player.TryGetComponent(out UsePrompt prompt)) prompt.Bind(deviceState);
 
             ApplyLoadout(world);
         }

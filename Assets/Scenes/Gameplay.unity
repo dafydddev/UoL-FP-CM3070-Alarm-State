@@ -1851,6 +1851,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 5505076589466554815, guid: 89924503c0e28ec43a8c77dc4a466172, type: 3}
   cameraFollow: {fileID: 1249475571}
   inventoryController: {fileID: 1421318875}
+  deviceState: {fileID: 911139095}
   startingItems:
   - {fileID: 11400000, guid: 7e2b4c8d1a9f36502bd7e40c95a13f68, type: 2}
   - {fileID: 11400000, guid: 5c9a3e1f7b2d48609ae4c81d3f60b7a2, type: 2}
