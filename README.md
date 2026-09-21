@@ -20,17 +20,41 @@ A WebGL build is available on Itch.io (password: `finalproject`): <https://asdas
 
 ## Accessibility Features
 
-**Adjustable audio levels**: The game contains separate audio sliders for the music, sound effects, and UI. These can be accessed on the Main Menu by navigating Home -> Audio. During gameplay, the same menu can be accessed by navigating Pause -> Audio.
+**Adjustable audio levels:** The game contains separate audio sliders for the music, sound effects, and UI. These can be accessed on the Main Menu by navigating Home -> Audio. During gameplay, the same menu can be accessed by navigating Pause -> Audio.
 
-**Detecting input**: The game automatically detects input devices (e.g. keyboard, gamepad, etc.). This can be toggled off on the Manu Menu by navigating Home -> Controls. During gameplay, the same menu can be access by navigating Pause -> Controls.
+**Detecting input:** The game automatically detects input devices (e.g. keyboard, gamepad, etc.). This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
 
-**Multiple difficulties**: The game has three difficulty levels, Easy, Medium, and Hard, and run lengths, 10, 20, and 30 levels. These can be accessed on the Main Menu by navigating Home -> Play.
+**Multiple difficulties:** The game has three difficulty levels: Easy, Medium, and Hard. It also has three run lengths: 10, 20, and 30 levels. These can be accessed on the Main Menu by navigating Home -> Play.
 
-**Rebindable controls**: The game features rebindable controls, which can be accessed on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+**Rebindable controls:** The game features rebindable controls, which can be accessed on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
 
-**Toggleable haptics**: The game supports controller rumble. This can be toggled off on the Manu Menu by navigating Home -> Controls. During gameplay, the same menu can be access by navigating Pause -> Controls.
+**Toggleable haptics:** The game supports controller rumble. This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
 
-**Toggleable motion**: The game contains an automatically scrolling background on the Main Menu and Results screen. This can be toggled off on the Manu Menu by navigating Home -> Graphics. During gameplay, the same menu can be access by navigating Pause -> Graphics.
+**Toggleable motion:** The game contains an automatically scrolling background on the Main Menu and Results screen. This can be toggled off on the Main Menu by navigating Home -> Graphics. During gameplay, the same menu can be accessed by navigating Pause -> Graphics.
+
+## Default Controls
+
+### Gameplay
+
+| Action     | Keyboard & Mouse       | Gamepad                  |
+| ---------- | ---------------------- | ------------------------ |
+| Move Up    | W                      | D-pad Up                 |
+| Move Down  | S                      | D-pad Down               |
+| Move Left  | A                      | D-pad Left               |
+| Move Right | D                      | D-pad Right              |
+| Move To    | Left Mouse Button      | None                     |
+| Interact   | E / Right Mouse Button | South button (A / Cross) |
+| Inventory  | Q                      | West button (X / Square) |
+
+### Menus
+
+| Action   | Keyboard & Mouse    | Gamepad                        |
+| -------- | ------------------- | ------------------------------ |
+| Navigate | W/A/S/D, Arrow keys | Left Stick, Right Stick, D-pad |
+| Submit   | Enter               | South button (A / Cross)       |
+| Cancel   | Escape              | East button (B / Circle)       |
+| Pause    | Escape              | Start                          |
+| Point    | Mouse position      | None                           |
 
 ---
 
