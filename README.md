@@ -1,6 +1,6 @@
 # Alarm State: Procedural Stealth-Action Roguelite
 
-University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Generation in Roguelike Games). 
+University of London: CM3070 Final Project (Template 6.2: Procedural Dungeon Generation in Roguelike Games).
 
 A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C#). The player infiltrates a procedurally generated facility, evades GOAP-driven guards, completes mission objectives, and reaches an exit, over a run of 10, 20, or 30 escalating levels.
 
@@ -10,27 +10,39 @@ A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C
 
 A WebGL build is available on Itch.io (password: `finalproject`): <https://asdasdasduu.itch.io/cm3070-final-project-roguelike-prototype>
 
-## The Loop
+## Gameplay Loop
 
 1. Pick a difficulty profile, run length, and layout style in the Play menu.
 2. Spend banked points in the Shop on items, upgrades, and skins.
 3. Per level: infiltrate -> find keycards -> complete the primary objective -> reach an exit.
-4. Guards that lose your trail run for an alarm switch, which broadcasts your last seen position to every guard in earshot.
-5. Arrests cost hearts. Losing the last one ends the run and all pending points with it.
+4. Guards that lose your trail run for an alarm switch, which broadcasts your last-seen position to every guard in earshot.
+5. Arrests cost hearts. Losing the last one ends the run, and all pending points with it.
 
 ## Accessibility Features
 
-**Adjustable audio levels:** The game contains separate audio sliders for the music, sound effects, and UI. These can be accessed on the Main Menu by navigating Home -> Audio. During gameplay, the same menu can be accessed by navigating Pause -> Audio.
+**Adjustable audio levels:** 
 
-**Detecting input:** The game automatically detects input devices (e.g. keyboard, gamepad, etc.). This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+The game contains separate audio sliders for the music, sound effects, and UI. These can be accessed on the Main Menu by navigating Home -> Audio. During gameplay, the same menu can be accessed by navigating Pause -> Audio.
 
-**Multiple difficulties:** The game has three difficulty levels: Easy, Medium, and Hard. It also has three run lengths: 10, 20, and 30 levels. These can be accessed on the Main Menu by navigating Home -> Play.
+**Detecting input:**
 
-**Rebindable controls:** The game features rebindable controls, which can be accessed on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+The game automatically detects input devices (e.g. keyboard or gamepad). This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
 
-**Toggleable haptics:** The game supports controller rumble. This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+**Multiple difficulties:**
 
-**Toggleable motion:** The game contains an automatically scrolling background on the Main Menu and Results screen. This can be toggled off on the Main Menu by navigating Home -> Graphics. During gameplay, the same menu can be accessed by navigating Pause -> Graphics.
+The game has three difficulty levels: Easy, Medium, and Hard. It also has three run lengths: 10, 20, and 30 levels. These can be accessed on the Main Menu by navigating Home -> Play.
+
+**Rebindable controls:**
+
+The game features rebindable controls, which can be accessed on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+
+**Toggleable haptics:**
+
+The game supports controller rumble. This can be toggled off on the Main Menu by navigating Home -> Controls. During gameplay, the same menu can be accessed by navigating Pause -> Controls.
+
+**Toggleable motion:**
+
+The game contains an automatically scrolling background on the Main Menu and Results screen. This can be toggled off on the Main Menu by navigating Home -> Graphics. During gameplay, the same menu can be accessed by navigating Pause -> Graphics.
 
 ## Default Controls
 
@@ -70,8 +82,8 @@ The most interesting scripts, grouped by system. Paths are relative to [`Assets/
 | 1 - Mission | [`Graphs/Missions/MissionGenerator.cs`](Assets/Scripts/Graphs/Missions/MissionGenerator.cs) | Seeded RNG picks a mission type and builds a directed acyclic graph of objectives and their dependencies. |
 | 2 - Rooms | [`Graphs/Rooms/RoomGraphGenerator.cs`](Assets/Scripts/Graphs/Rooms/RoomGraphGenerator.cs) | Expands the mission graph into a room graph, adding guard posts, extra exits, and locked doors. |
 | 3 - Layout | [`Generation/Tiles/TileLayoutGenerator.cs`](Assets/Scripts/Generation/Tiles/TileLayoutGenerator.cs) | Places the rooms on a tile grid, paints walls and floor, and carves doorways between connected rooms. |
-| 4 - Exterior | [`Generation/Terrain/ExteriorGenerator.cs`](Assets/Scripts/Generation/Terrain/ExteriorGenerator.cs) | Layered Perlin noise (fractal Brownian motion) that creates an outside terrain, painted around and between the facility. |
-| 5 - Population | The spawners (below) | Instantiates the player, guards, items, doors, objectives, and exits. |
+| 4 - Exterior | [`Generation/Terrain/ExteriorGenerator.cs`](Assets/Scripts/Generation/Terrain/ExteriorGenerator.cs) | Layered Perlin noise (fractional Brownian motion) that creates the outside terrain, painted around and between the facility. |
+| 5 - Population | The spawners (below) | Instantiate the player, guards, items, doors, objectives, and exits. |
 
 Two layout strategies, chosen per run ([`TileLayoutStyle`](Assets/Scripts/Generation/Tiles/TileLayoutStyle.cs)):
 
@@ -83,7 +95,7 @@ Supporting systems:
 - [`Generation/Seeds.cs`](Assets/Scripts/Generation/Seeds.cs): a splitmix-style hash derives one RNG stream per subsystem, per level, from a single master seed.
 - [`Run/RunDifficulty.cs`](Assets/Scripts/Run/RunDifficulty.cs): the difficulty profile. Each scaled quantity is a min-max band evaluated along an animation curve against run progress.
 - [`Run/RunPerformance.cs`](Assets/Scripts/Run/RunPerformance.cs): a rolling window over recent levels, scored on hearts and alarms, which the room graph uses to add a [supply room](Assets/Scripts/Spawners/SupplyRoomSpawner.cs) or a [pressure room](Assets/Scripts/Spawners/PressureRoomSpawner.cs).
-- [`Spawners/`](Assets/Scripts/Spawners): places the player, guards, keycards, doors, objectives, exits, cover and distractions in the generated rooms.
+- [`Spawners/`](Assets/Scripts/Spawners): places the player, guards, keycards, doors, objectives, exits, cover, and distractions in the generated rooms.
 
 ### 2: Guard AI (GOAP + A*)
 
@@ -104,16 +116,16 @@ Supporting systems:
 - [`Simulation/EntryRules.cs`](Assets/Scripts/Simulation/EntryRules.cs): the single authority on whether a cell can be entered, which the pathfinder queries as its walkability test.
 - [`Simulation/WorldContext.cs`](Assets/Scripts/Simulation/WorldContext.cs): everything a spawned entity needs from the level it lives in.
 - [`Simulation/AlarmState.cs`](Assets/Scripts/Simulation/AlarmState.cs): the facility alarm, its broadcast radius, and the switches that raise and disable it.
-- [`Simulation/GameLock.cs`](Assets/Scripts/Simulation/GameLock.cs): stops the simulation while a menu, level transition, or mini game is open.
+- [`Simulation/GameLock.cs`](Assets/Scripts/Simulation/GameLock.cs): stops the simulation while a menu, level transition, or mini-game is open.
 
 ### 4: Gameplay
 
 - [`Player/PlayerActor.cs`](Assets/Scripts/Player/PlayerActor.cs): grid movement and input, keyboard and click-to-move, on the same tick as the guards.
-- [`Player/PlayerInventory.cs`](Assets/Scripts/Player/PlayerInventory.cs): what the player is carrying (e.g. lock pick, health pack, etc.), and the item in the use slot.
+- [`Player/PlayerInventory.cs`](Assets/Scripts/Player/PlayerInventory.cs): what the player is carrying (e.g. lock pick, health pack), and the item in the use slot.
 - [`Player/PlayerHiding.cs`](Assets/Scripts/Player/PlayerHiding.cs): cover, which hides the player from guards that are not already chasing them.
 - [`Player/PlayerDisguise.cs`](Assets/Scripts/Player/PlayerDisguise.cs): a timed disguise the guards cannot see through.
-- [`Entities/Objectives/`](Assets/Scripts/Entities/Objectives): the primary and secondary objectives, each with a seeded mini game, and the rewards they leave behind.
-- [`Mini Games/`](Assets/Scripts/Mini%20Games): the two mini games. One has the player rotate tiles until a circuit connects, the other has them repeat a sequence of key presses.
+- [`Entities/Objectives/`](Assets/Scripts/Entities/Objectives): the primary and secondary objectives, each with a seeded mini-game, and the rewards they leave behind.
+- [`Mini Games/`](Assets/Scripts/Mini%20Games): the two mini-games. One has the player rotate tiles until a circuit connects, the other has them repeat a sequence of key presses.
 - [`Entities/`](Assets/Scripts/Entities): doors, keycards, items, cover, lasers, alarm switches, and exits.
 - [`HUD/`](Assets/Scripts/HUD): objectives, hearts, keycards, inventory, alarm, and the minimap.
 
@@ -145,7 +157,7 @@ The topics in [`TutorialTopic`](Assets/Scripts/Tutorials/TutorialTopic.cs), and 
 | `CoverEntered` | The player enters cover and becomes hidden. | [`PlayerHiding.cs`](Assets/Scripts/Player/PlayerHiding.cs) |
 | `KeycardFound` | The player collects a keycard. | [`Keycard.cs`](Assets/Scripts/Entities/Keycards/Keycard.cs) |
 | `ItemDistraction`, `ItemDisguise`, `ItemLockPick`, `ItemHealthPack` | The player collects an item of the corresponding type. | [`PlayerInventory.cs`](Assets/Scripts/Player/PlayerInventory.cs) |
-| `PipeMiniGame`, `SequenceMiniGame` | A mini-game is opened, with play resumes once the tutorial is dismissed. | [`Mini Games/`](Assets/Scripts/Mini%20Games) |
+| `PipeMiniGame`, `SequenceMiniGame` | A mini-game is opened, with play resuming once the tutorial is dismissed. | [`Mini Games/`](Assets/Scripts/Mini%20Games) |
 
 ## Verification and Tooling
 
@@ -154,7 +166,7 @@ The topics in [`TutorialTopic`](Assets/Scripts/Tutorials/TutorialTopic.cs), and 
 | Tool | Script | What it does |
 |------|--------|--------------|
 | Tools -> Mission Graph Editor | [`Editor/GraphEditorWindow.cs`](Assets/Editor/GraphEditorWindow.cs) | Generates a mission and room graph from any settings, and draws both as interactive diagrams. |
-| Tools -> Layout Audit | [`Editor/LayoutAudit.cs`](Assets/Editor/LayoutAudit.cs), [`LayoutAuditWindow.cs`](Assets/Editor/LayoutAuditWindow.cs) | Runs the generation pipeline over hundreds of seeds, levels, difficulty profiles and layout styles, and reports structural violations: over-budget doors, unreachable rooms, stacked cells, and non-adjacent doored pairs. |
+| Tools -> Layout Audit | [`Editor/LayoutAudit.cs`](Assets/Editor/LayoutAudit.cs), [`LayoutAuditWindow.cs`](Assets/Editor/LayoutAuditWindow.cs) | Runs the generation pipeline over hundreds of seeds, levels, difficulty profiles, and layout styles, and reports structural violations: over-budget doors, unreachable rooms, stacked cells, and non-adjacent doored pairs. |
 
 ### Unit tests
 
@@ -162,7 +174,7 @@ The topics in [`TutorialTopic`](Assets/Scripts/Tutorials/TutorialTopic.cs), and 
 
 - **Generation:** mission graph shape, room graph key placement / guard posts / adaptive rooms / pressure rooms, tile layout traversability, laser grid layout, seed derivation, shuffle fairness.
 - **AI:** GOAP planner, guard memory.
-- **Systems:** A* pathfinding, alarm state, GOAP world state, pipe mini game generation, run performance scoring.
+- **Systems:** A* pathfinding, alarm state, GOAP world state, pipe mini-game generation, run performance scoring.
 
 ## Project Structure
 
@@ -206,7 +218,7 @@ Assets/
 ### Sprites and Tiles
 
 **1-Bit Pack, by Kenney**
-- Facility tiles, entities, water sprites and shore tiles.
+- Facility tiles, entities, water sprites, and shore tiles.
 - <https://kenney.nl/assets/1-bit-pack>
 - Licence: Creative Commons CC0 1.0, <https://creativecommons.org/publicdomain/zero/1.0/>
 
