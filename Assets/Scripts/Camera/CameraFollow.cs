@@ -4,6 +4,7 @@ namespace Camera
 {
     public class CameraFollow : MonoBehaviour
     {
+        [SerializeField] private Transform targetOverRide;
         // The object the camera follows.
         private Transform _target;
 
@@ -13,11 +14,10 @@ namespace Camera
         // Must match the scene's Pixel Perfect Camera's PPU.
         [SerializeField] private int pixelsPerUnit = 8;
 
-        private void LateUpdate()
-        {
-            if (!_target) return;
-            transform.position = SnapToPixel(_target.position + Vector3.back * zOffset);
-        }
+        // Editor override wins over the runtime target.
+        private Transform Target => targetOverRide ? targetOverRide : _target;
+
+        private void LateUpdate() => SnapToTarget();
 
         public void SetTarget(Transform targetTransform)
         {
@@ -28,8 +28,8 @@ namespace Camera
         // Jump straight to the target (e.g. to the player after a level transition).
         private void SnapToTarget()
         {
-            if (!_target) return;
-            transform.position = SnapToPixel(_target.position + Vector3.back * zOffset);
+            if (!Target) return;
+            transform.position = SnapToPixel(Target.position + Vector3.back * zOffset);
         }
 
         // Round x/y to the nearest whole pixel so the camera never sits mid-pixel.
