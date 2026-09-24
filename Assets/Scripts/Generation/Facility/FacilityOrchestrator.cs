@@ -18,6 +18,11 @@ namespace Generation.Facility
     [RequireComponent(typeof(ExteriorGenerator))]
     public class FacilityOrchestrator : MonoBehaviour
     {
+        [Header("Preview Level in Editor")]
+        [SerializeField] private int previewLevel = 1;
+        [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
+        [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
+        
         [Header("Tiles")]
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Tileset tileset;
@@ -49,11 +54,6 @@ namespace Generation.Facility
         [SerializeField] private PressureRoomSpawner pressureRoomSpawner;
         [SerializeField] private LightSpawner lightSpawner;
         [SerializeField] private FloorDetailSpawner floorDetailSpawner;
-
-        [Header("Preview Level in Editor")]
-        [SerializeField] private int previewLevel = 1;
-        [SerializeField] private int previewTotalLevels = 20; // run length to preview at; drives difficulty progress
-        [SerializeField] private TileLayoutStyle previewLayoutStyle = TileLayoutStyle.Spine;
 
         private MissionGenerator _missionGenerator;
         private MissionGenerator MissionGenerator => _missionGenerator ??= GetComponent<MissionGenerator>();
