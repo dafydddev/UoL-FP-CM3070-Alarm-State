@@ -8,7 +8,7 @@ A single-player, 2D, top-down stealth-action roguelite built in Unity 6.3 LTS (C
 
 ## Playable Build
 
-A WebGL build is available on Itch.io (password: `finalproject`): <https://asdasdasduu.itch.io/cm3070-final-project-roguelike-prototype>
+A WebGL build is available on Itch.io: <https://asdasdasduu.itch.io/cm3070-final-project-roguelike-prototype>
 
 ## Gameplay Loop
 
