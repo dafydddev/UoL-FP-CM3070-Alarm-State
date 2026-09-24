@@ -2951,7 +2951,6 @@ GameObject:
   - component: {fileID: 183550847}
   - component: {fileID: 183550848}
   - component: {fileID: 183550849}
-  - component: {fileID: 183550850}
   - component: {fileID: 183550851}
   m_Layer: 5
   m_Name: Quit Button
@@ -3128,19 +3127,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
   uiSfxController: {fileID: 1360909891}
---- !u!114 &183550850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183550840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
 --- !u!114 &183550851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10694,7 +10680,6 @@ GameObject:
   - component: {fileID: 845916828}
   - component: {fileID: 845916829}
   - component: {fileID: 845916830}
-  - component: {fileID: 845916831}
   - component: {fileID: 845916832}
   m_Layer: 5
   m_Name: Play Button
@@ -10859,19 +10844,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
   uiSfxController: {fileID: 1360909891}
---- !u!114 &845916831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 845916823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
 --- !u!114 &845916832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21720,7 +21692,6 @@ GameObject:
   - component: {fileID: 1717501890}
   - component: {fileID: 1717501891}
   - component: {fileID: 1717501892}
-  - component: {fileID: 1717501893}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -21825,19 +21796,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
   uiSfxController: {fileID: 1360909891}
---- !u!114 &1717501893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1717501888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
 --- !u!1 &1722275918
 GameObject:
   m_ObjectHideFlags: 0
