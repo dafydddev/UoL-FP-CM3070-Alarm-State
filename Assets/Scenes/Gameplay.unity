@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &11515721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3095,7 +3095,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &207582875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4671,7 +4671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &338572786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7569,7 +7569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &591301096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8181,7 +8181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &634691294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8642,7 +8642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &664422551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11842,7 +11842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &872488340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12571,7 +12571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &925036716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13411,7 +13411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &969681270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16548,7 +16548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1275341500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18557,7 +18557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1374018312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18849,7 +18849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1402440423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19209,7 +19209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1409747798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19371,7 +19371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1436710939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23156,7 +23156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1740485107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24657,7 +24657,7 @@ MonoBehaviour:
   clock: {fileID: 1125184272}
   profile: {fileID: 11400000, guid: 4dbcffe389577bd4ab41d4ef1e68dbb8, type: 2}
   minimap: {fileID: 1578414557}
-  pipeGameController: {fileID: 957134664}
+  circuitGameController: {fileID: 957134664}
   sequenceGameController: {fileID: 811000003}
   playerSpawner: {fileID: 150073135}
   keycardSpawner: {fileID: 763302045}
@@ -25296,7 +25296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1853828192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25950,7 +25950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba873f157b22a4a816bd1df8d10a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SelectableSounds
-  uiSfxController: {fileID: 0}
+  uiSfxController: {fileID: 1318884754}
 --- !u!114 &1871531617
 MonoBehaviour:
   m_ObjectHideFlags: 0
