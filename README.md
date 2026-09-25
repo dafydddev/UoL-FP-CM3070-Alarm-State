@@ -13,10 +13,10 @@ A WebGL build is available on Itch.io: <https://asdasdasduu.itch.io/cm3070-final
 ## Gameplay Loop
 
 1. Pick a difficulty profile, run length, and layout style in the Play menu.
-2. Spend banked points in the Shop on items, upgrades, and skins.
-3. Per level: infiltrate -> find keycards -> complete the primary objective -> reach an exit.
-4. Guards that lose your trail run for an alarm switch, which broadcasts your last-seen position to every guard in earshot.
-5. Arrests cost hearts. Losing the last one ends the run, and all pending points with it.
+2. Per level: infiltrate -> find keycards -> complete the primary objective -> reach an exit.
+3. Guards that lose your trail run for an alarm switch, which broadcasts your last-seen position to every guard in earshot.
+4. Arrests cost hearts. Losing the last one ends the run, and all pending points with it.
+5. Bank points by completing the selected number of levels, and Spend banked points in the Shop on items, upgrades, and skins.
 
 ## Accessibility Features
 
