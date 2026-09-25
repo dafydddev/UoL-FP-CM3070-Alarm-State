@@ -925,7 +925,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -187.10277}
+  m_AnchoredPosition: {x: 320, y: -187.10278}
   m_SizeDelta: {x: 500, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &53224056
@@ -2524,7 +2524,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -41.831406}
+  m_AnchoredPosition: {x: 320, y: -41.83142}
   m_SizeDelta: {x: 400, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &197765257
@@ -2730,7 +2730,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 270, y: -237.50002}
+  m_AnchoredPosition: {x: 270, y: -237.5}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &199538272
@@ -6747,7 +6747,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Main Menu
+  m_text: Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b551f29ee7c537246a36f32be9f8a550, type: 2}
   m_sharedMaterial: {fileID: -3805138745680541200, guid: b551f29ee7c537246a36f32be9f8a550, type: 2}
@@ -7281,7 +7281,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -127.994225}
+  m_AnchoredPosition: {x: 320, y: -127.99423}
   m_SizeDelta: {x: 500, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &578603857
@@ -9052,7 +9052,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -14.777136}
+  m_AnchoredPosition: {x: 320, y: -14.777161}
   m_SizeDelta: {x: 200, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &715595386
@@ -10791,7 +10791,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 270, y: -171.66667}
+  m_AnchoredPosition: {x: 270, y: -171.66669}
   m_SizeDelta: {x: 400, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &803336147
@@ -16369,7 +16369,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -98.43995}
+  m_AnchoredPosition: {x: 320, y: -98.43994}
   m_SizeDelta: {x: 500, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1257789319
@@ -16483,6 +16483,7 @@ MonoBehaviour:
   retryButton: {fileID: 951164553}
   headingLabel: {fileID: 715595386}
   levelLabel: {fileID: 197765257}
+  continueLabel: {fileID: 555677697}
   primaryObjectiveRow: {fileID: 1257789317}
   primaryObjectiveLabel: {fileID: 1324156764}
   secondaryObjectiveRow: {fileID: 578603855}
@@ -16807,7 +16808,7 @@ GameObject:
   - component: {fileID: 1288086463}
   - component: {fileID: 1288086464}
   m_Layer: 5
-  m_Name: Main Menu Button
+  m_Name: Continue Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21907,7 +21908,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 270, y: -128.33333}
+  m_AnchoredPosition: {x: 270, y: -128.33331}
   m_SizeDelta: {x: 400, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1638562926
@@ -24651,6 +24652,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29266a9aa82b49c7be438ce93c55bf73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Generation.Layout.FacilityOrchestrator
+  previewLevel: 1
+  previewTotalLevels: 20
+  previewLayoutStyle: 0
   tilemap: {fileID: 1361007047}
   tileset: {fileID: 11400000, guid: 95372241cf7acf242b502fdd6a703f62, type: 2}
   scheduler: {fileID: 1125184273}
@@ -24671,9 +24675,6 @@ MonoBehaviour:
   pressureRoomSpawner: {fileID: 1480036823}
   lightSpawner: {fileID: 416369835}
   floorDetailSpawner: {fileID: 346184640}
-  previewLevel: 1
-  previewTotalLevels: 20
-  previewLayoutStyle: 0
 --- !u!4 &1820973508
 Transform:
   m_ObjectHideFlags: 0
@@ -26462,7 +26463,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 270, y: -189.16667}
+  m_AnchoredPosition: {x: 270, y: -189.16669}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1924655700

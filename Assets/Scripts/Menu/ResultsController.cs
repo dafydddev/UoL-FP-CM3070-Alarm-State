@@ -28,6 +28,7 @@ namespace Menu
             public bool ShowUnusedItems;
             public bool ShowBalance;
             public bool ShowRetry;
+            public string ContinueText;
             public int InitialTotal;
             public int Level;
         }
@@ -38,6 +39,7 @@ namespace Menu
         [SerializeField] private Button retryButton;
         [SerializeField] private TMP_Text headingLabel;
         [SerializeField] private TMP_Text levelLabel;
+        [SerializeField] private TMP_Text continueLabel;
 
         [Header("Result screen data")]
         [SerializeField] private GameObject primaryObjectiveRow;
@@ -93,6 +95,7 @@ namespace Menu
             {
                 ShowBreakdown = true, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
                 ShowRetry = false,
+                ContinueText = "Next Level",
                 InitialTotal = 0,
                 // Shown after Advance, so the cleared level is the one before.
                 Level = run.CurrentLevel - 1
@@ -101,6 +104,7 @@ namespace Menu
             {
                 ShowBreakdown = true, ShowRunBonus = true, ShowUnusedItems = true, ShowBalance = true,
                 ShowRetry = false,
+                ContinueText = "Main Menu",
                 InitialTotal = 0,
                 Level = run.CurrentLevel
             },
@@ -109,6 +113,7 @@ namespace Menu
             {
                 ShowBreakdown = false, ShowRunBonus = false, ShowUnusedItems = false, ShowBalance = false,
                 ShowRetry = true,
+                ContinueText = "Main Menu",
                 InitialTotal = run.PendingCurrency,
                 Level = run.CurrentLevel
             },
@@ -131,6 +136,7 @@ namespace Menu
             unusedItemsRow.SetActive(view.ShowUnusedItems);
             balanceRow.SetActive(view.ShowBalance);
             retryButton.gameObject.SetActive(view.ShowRetry);
+            if (continueLabel) continueLabel.text = view.ContinueText;
 
             if (view.ShowBreakdown)
             {
