@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Sequence Mini Game
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 7
-  title: Complete the sequence!
-  body: Activate the inputs in the right order. Work out the sequence!
+  title: Complete the Sequence!
+  body: Press the keys or buttons shown, from left to right. Using the mouse? Click
+    the numbers in order, starting from 1. Either way, one wrong input and you start
+    again.
   image: {fileID: 0}

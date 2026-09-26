@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Circuit Mini Game
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 6
-  title: Complete the circuit!
-  body: 'Activate the tiles to rotate them. Navigate through the tiles with {Move
-    Up}, {Move Left}, {Move Down}, {Move Right} and rotate them with {Interact} or
-    right-mouse-click. Complete the circuit from left to right! '
+  title: Complete the Circuit!
+  body: Navigate through the tiles with {Move Up}, {Move Left}, {Move Down}, {Move
+    Right} and rotate them with {Interact} or right-click. Complete the circuit from
+    left to right!
   image: {fileID: 0}

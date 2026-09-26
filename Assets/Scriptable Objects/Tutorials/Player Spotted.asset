@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 10
   title: Spotted!
-  body: One of the guards has seen you! They will chase you and attempt to arrest
-    you. If they catch you three times, it's game over! So run away and hide!
+  body: A guard has seen you and will try to arrest you. Each arrest costs a heart,
+    and losing your last one ends the run. Run and hide!
   image: {fileID: 21300000, guid: f2c4e06d3b08ecd46a25f901f78a945f, type: 3}
