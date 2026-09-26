@@ -27,7 +27,7 @@ namespace Settings
 
         public static TileLayoutStyle Layout
         {
-            get => (TileLayoutStyle)PlayerPrefs.GetInt(LayoutKey, (int)TileLayoutStyle.Spine);
+            get => (TileLayoutStyle)PlayerPrefs.GetInt(LayoutKey, (int)TileLayoutStyle.RandomWalk);
             set => PlayerPrefs.SetInt(LayoutKey, (int)value);
         }
 

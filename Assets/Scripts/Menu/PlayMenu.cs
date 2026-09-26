@@ -22,8 +22,8 @@ namespace Menu
         // Player-facing names for the layout styles the game offers, in dropdown order.
         private static readonly (string label, TileLayoutStyle style)[] Layouts =
         {
-            ("Direct", TileLayoutStyle.Spine),
-            ("Winding", TileLayoutStyle.RandomWalk),
+            ("Straight", TileLayoutStyle.Spine),
+            ("Random", TileLayoutStyle.RandomWalk),
         };
 
         private void Start()
