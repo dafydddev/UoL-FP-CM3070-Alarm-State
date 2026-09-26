@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Distraction Found
   m_EditorClassIdentifier: Assembly-CSharp::Tutorials.TutorialEntry
   topic: 2
-  title: Distract the Guards!
-  body: You found a distraction. Use it to lure guards to your location! Open the
-    inventory with {Inventory} and select the distraction with {Interact}, then {Interact}
-    again to activate it.
+  title: Distraction!
+  body: You found a distraction. Use it to lure nearby guards to your position. Open
+    the inventory with {Inventory}, select the distraction with {Interact}, then
+    press {Interact} again to activate it.
   image: {fileID: 21300000, guid: c6ab7aeead6d8924aaca36b3e02f048d, type: 3}

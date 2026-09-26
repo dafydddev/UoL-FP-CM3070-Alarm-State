@@ -15,6 +15,7 @@ MonoBehaviour:
   topic: 0
   title: Good Luck!
   body: Welcome to your first mission. Move with {Move Up}, {Move Left}, {Move Down},
-    {Move Right} or left-mouse click. Check the controls on the pause menu. Find
-    objectives, avoid guards, and escape to the next level!
+    {Move Right}, or left-click where you want to go. Find the objectives, avoid
+    the guards and reach the exit! The full controls are in the pause menu, which
+    can be opened with {Pause} or by left-clicking the top-right button.
   image: {fileID: 21300000, guid: 015edcab07664f74ab1595ee22db14e0, type: 3}
