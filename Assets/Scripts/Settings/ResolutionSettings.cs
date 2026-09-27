@@ -10,7 +10,7 @@ namespace Settings
         // An index into the resolution list the graphics options screen offers.
         public static int ResolutionIndex
         {
-            get => PlayerPrefs.GetInt(ResolutionKey, 2);
+            get => PlayerPrefs.GetInt(ResolutionKey, 0);
             set => PlayerPrefs.SetInt(ResolutionKey, value);
         }
 

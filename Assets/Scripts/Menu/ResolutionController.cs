@@ -23,8 +23,6 @@ namespace Menu
         // so entries are append-only: reordering would remap saved settings.
         private readonly Vector2Int[] _supportedResolutions =
         {
-            new(640, 360),
-            new(854, 480),
             new(1280, 720),
             new(1920, 1080),
             new(2560, 1440),
