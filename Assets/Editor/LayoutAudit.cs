@@ -23,7 +23,7 @@ namespace Editor
     {
         private const string DifficultyDir = "Assets/Scriptable Objects/Difficulties";
         private static readonly string[] ShippedProfiles = { "Easy", "Medium", "Hard" };
-        public const int TotalLevels = 20;
+        public const int TotalLevels = 30;
         public const int QuickSeeds = 150;
         public const int ThoroughSeeds = 500;
 
