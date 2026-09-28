@@ -31,6 +31,7 @@ namespace Mini_Games
         [SerializeField] private InputActionReference leftAction;
         [SerializeField] private InputActionReference rightAction;
         [SerializeField] private InputActionReference useAction;
+        [SerializeField] private InputActionReference submitAction;
         [SerializeField] private InputActionReference pauseAction;
 
         [Header("Start and End Markers")]
@@ -70,6 +71,7 @@ namespace Mini_Games
             leftAction.action.Enable();
             rightAction.action.Enable();
             useAction.action.Enable();
+            submitAction.action.Enable();
             pauseAction.action.Enable();
             if (backdrop) backdrop.onClick.AddListener(Close);
         }
@@ -82,6 +84,7 @@ namespace Mini_Games
             leftAction.action.Disable();
             rightAction.action.Disable();
             useAction.action.Disable();
+            // submitAction is left enabled because the UI module still needs it
             pauseAction.action.Disable();
             if (backdrop) backdrop.onClick.RemoveListener(Close);
         }
@@ -93,7 +96,9 @@ namespace Mini_Games
             if (downAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.down);
             if (leftAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.left);
             if (rightAction.action.WasPressedThisFrame()) MoveSelection(Vector2Int.right);
-            if (useAction.action.WasPressedThisFrame()) OnTileClicked(_buttons[_selected.x, _selected.y]);
+            // Uses or, so a control bound to both (gamepad south) turns the tile once
+            if (useAction.action.WasPressedThisFrame() || submitAction.action.WasPressedThisFrame())
+                OnTileClicked(_buttons[_selected.x, _selected.y]);
             if (pauseAction.action.WasPressedThisFrame()) Close();
         }
 
